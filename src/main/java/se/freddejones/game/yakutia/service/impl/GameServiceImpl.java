@@ -37,7 +37,15 @@ public class GameServiceImpl implements GameService {
     protected GameSetupService gameSetupService;
     @Autowired
     protected UnitDao unitDao;
+    private BattleCalculator battleCalculator;
 
+    public GameServiceImpl() {
+        this.battleCalculator = new BattleCalculator();
+    }
+
+    public void setBattleCalculator(BattleCalculator battleCalculator) {
+        this.battleCalculator = battleCalculator;
+    }
 
     @Override
     @Transactional(readOnly = false)
@@ -159,24 +167,22 @@ public class GameServiceImpl implements GameService {
         Unit defendingUnit = getUnitByTerritory(attackActionUpdate.getTerritoryAttackDest(), defendingGamePlayer.getUnits());
         Unit attackingUnit = getUnitByTerritory(attackActionUpdate.getTerritoryAttackSrc(), attackingGamePlayer.getUnits());
 
-        // create class for handling battleoutcome:
-        // attacking territory wins fully = true/false
-        // defending diff in units
-        // attacking diff in units
+        BattleResult battleResult = battleCalculator.battle(attackingUnit, defendingUnit);
 
-        int battleOutComeWin = 2;
+        int attackingCurrentStrength = attackingUnit.getStrength();
+        attackingUnit.setStrength(attackingCurrentStrength-battleResult.getAttackingTerritoryLosses());
 
-        if (battleOutComeWin > 0) {
-            // decrease strength for defending territory
-        } else {
-            // decrease strength for attacking territory
-            int currentStrength = attackingUnit.getStrength();
-            attackingUnit.setStrength(currentStrength + battleOutComeWin);
+        int defendingCurrentStrenght = defendingUnit.getStrength();
+        defendingUnit.setStrength(defendingCurrentStrenght-battleResult.getDefendingTerritoryLosses());
+
+        if (battleResult.isTakenOver()) {
             gamePlayerDao.setUnitsToGamePlayer(attackingGamePlayer.getGamePlayerId(), attackingUnit);
+            gamePlayerDao.setUnitsToGamePlayer(attackingGamePlayer.getGamePlayerId(), defendingUnit);
         }
 
 
-        TerritoryDTO territoryDTO = new TerritoryDTO("SWEDEN", attackingUnit.getStrength(), true);
+        TerritoryDTO territoryDTO = new TerritoryDTO(
+                attackActionUpdate.getTerritoryAttackSrc(), attackingUnit.getStrength(), true);
         return territoryDTO;
     }
 

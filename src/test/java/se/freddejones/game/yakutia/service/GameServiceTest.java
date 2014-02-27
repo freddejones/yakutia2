@@ -15,6 +15,8 @@ import se.freddejones.game.yakutia.entity.Game;
 import se.freddejones.game.yakutia.entity.GamePlayer;
 import se.freddejones.game.yakutia.entity.Unit;
 import se.freddejones.game.yakutia.exception.*;
+import se.freddejones.game.yakutia.model.BattleCalculator;
+import se.freddejones.game.yakutia.model.BattleResult;
 import se.freddejones.game.yakutia.model.Territory;
 import se.freddejones.game.yakutia.model.TerritoryDTO;
 import se.freddejones.game.yakutia.model.dto.AttackActionUpdate;
@@ -30,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static junit.framework.Assert.fail;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.*;
@@ -268,9 +271,9 @@ public class GameServiceTest {
                     .initializeNewGame(any(List.class));
             gameService.setGameToStarted(1L);
         } catch (NotEnoughPlayersException e) {
-            Assert.fail("Should not enter this exception");
+            fail("Should not enter this exception");
         } catch (ToManyPlayersException e) {
-            Assert.fail("Should not enter this exception");
+            fail("Should not enter this exception");
         } catch (CouldNotCreateGameException e) {
             verifyZeroInteractions(gameDaoMock);
         }
@@ -334,7 +337,6 @@ public class GameServiceTest {
     }
 
     @Test
-    @Ignore
     public void testAttackTerritoryAndClaimTerritory() throws Exception {
 
         AttackActionUpdate attackActionUpdate =
@@ -349,6 +351,7 @@ public class GameServiceTest {
         u.setTerritory(Territory.SWEDEN);
         units.add(u);
         when(gamePlayerMock.getUnits()).thenReturn(units);
+        when(gamePlayerMock.getGamePlayerId()).thenReturn(GAME_PLAYER_ID);
 
 
         TerritoryDTO returnObj = gameService.attackTerritoryAction(attackActionUpdate);
@@ -357,13 +360,16 @@ public class GameServiceTest {
         assertThat(returnObj.getLandName()).isEqualTo(Territory.SWEDEN.toString());
         assertThat(returnObj.isOwnedByPlayer()).isTrue();
         verify(gamePlayerDaoMock, times(2)).setUnitsToGamePlayer(eq(GAME_PLAYER_ID), any(Unit.class));
-        verify(gamePlayerDaoMock, times(1)).setUnitsToGamePlayer(11L, any(Unit.class));
     }
 
     @Test
-    @Ignore
+    public void testAttackTerritoryAndEqualLosses() throws Exception {
+        fail("not implemented yet");
+    }
+
+    @Test
     public void testAttackTerritoryAndLooseBattleAndAllUnits() throws Exception {
-        int attackingTerritoryStrength = 6;
+        int attackingTerritoryStrength = 2;
         AttackActionUpdate attackActionUpdate =
                 new AttackActionUpdate(Territory.SWEDEN.toString(),
                         Territory.NORWAY.toString(), attackingTerritoryStrength-1, GAME_ID, PLAYER_ID);
@@ -375,10 +381,14 @@ public class GameServiceTest {
         when(gameDaoMock.getGameByGameId(GAME_ID)).thenReturn(gameMock);
         List<Unit> units = new ArrayList<Unit>();
         Unit u = new Unit();
-        u.setStrength(6);
+        u.setStrength(attackingTerritoryStrength);
         u.setTerritory(Territory.SWEDEN);
         units.add(u);
         when(gamePlayerMock.getUnits()).thenReturn(units);
+        when(gamePlayerMock.getGamePlayerId()).thenReturn(GAME_PLAYER_ID);
+        BattleCalculator battleCalculator = mock(BattleCalculator.class);
+        gameService.setBattleCalculator(battleCalculator);
+        when(battleCalculator.battle(any(Unit.class), any(Unit.class))).thenReturn(mock(BattleResult.class));
 
         TerritoryDTO returnObj = gameService.attackTerritoryAction(attackActionUpdate);
 
@@ -391,7 +401,7 @@ public class GameServiceTest {
 
     @Test
     public void testAttackTerritoryAndTakeOutSomeUnitsFromOtherPlayer() throws Exception {
-
+        fail("not implemented yet");
     }
 
     private void setupValidNumberOfPlayersInMock() {
