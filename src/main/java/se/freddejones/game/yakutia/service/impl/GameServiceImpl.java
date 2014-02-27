@@ -174,12 +174,13 @@ public class GameServiceImpl implements GameService {
 
         int defendingCurrentStrenght = defendingUnit.getStrength();
         defendingUnit.setStrength(defendingCurrentStrenght-battleResult.getDefendingTerritoryLosses());
+        gamePlayerDao.setUnitsToGamePlayer(attackingGamePlayer.getGamePlayerId(), attackingUnit);
 
         if (battleResult.isTakenOver()) {
-            gamePlayerDao.setUnitsToGamePlayer(attackingGamePlayer.getGamePlayerId(), attackingUnit);
             gamePlayerDao.setUnitsToGamePlayer(attackingGamePlayer.getGamePlayerId(), defendingUnit);
+        } else {
+            gamePlayerDao.setUnitsToGamePlayer(defendingGamePlayer.getGamePlayerId(), defendingUnit);
         }
-
 
         TerritoryDTO territoryDTO = new TerritoryDTO(
                 attackActionUpdate.getTerritoryAttackSrc(), attackingUnit.getStrength(), true);
