@@ -43,6 +43,7 @@ public class GameServiceTest {
     public static final long GAME_ID = 1L;
     public static final long PLAYER_ID = 1L;
     public static final long GAME_PLAYER_ID = 12L;
+    public static final long DEFENDING_GAME_PLAYER_ID = 48L;
     @Mock private GamePlayerDao gamePlayerDaoMock;
     @Mock private UnitDao unitDaoMock;
     @Mock private GameDao gameDaoMock;
@@ -339,20 +340,30 @@ public class GameServiceTest {
     @Test
     public void testAttackTerritoryAndClaimTerritory() throws Exception {
 
+        int attackingTerritoryStrength = 2;
         AttackActionUpdate attackActionUpdate =
-                new AttackActionUpdate(Territory.SWEDEN.toString(), Territory.NORWAY.toString(), 5, GAME_ID, PLAYER_ID);
+                new AttackActionUpdate(Territory.SWEDEN.toString(), Territory.NORWAY.toString(), 2, GAME_ID, PLAYER_ID);
+
+        // attacking part
         when(gamePlayerDaoMock.getGamePlayerByGameIdAndPlayerId(GAME_ID, PLAYER_ID)).thenReturn(gamePlayerMock);
-        GamePlayer defendingGamePlayerMock = mock(GamePlayer.class);
-        when(gamePlayerDaoMock.getGamePlayerByGameIdAndTerritory(GAME_ID, Territory.NORWAY)).thenReturn(defendingGamePlayerMock);
+        when(gamePlayerMock.getGamePlayerId()).thenReturn(GAME_PLAYER_ID);
         when(gameDaoMock.getGameByGameId(GAME_ID)).thenReturn(gameMock);
-        List<Unit> units = new ArrayList<Unit>();
-        Unit u = new Unit();
-        u.setStrength(6);
-        u.setTerritory(Territory.SWEDEN);
-        units.add(u);
-        when(gamePlayerMock.getUnits()).thenReturn(units);
+        when(gamePlayerMock.getUnits()).thenReturn(getUnitsList(Territory.SWEDEN, attackingTerritoryStrength));
         when(gamePlayerMock.getGamePlayerId()).thenReturn(GAME_PLAYER_ID);
 
+        // defending part
+        GamePlayer defendingGamePlayerMock = mock(GamePlayer.class);
+        when(gamePlayerDaoMock.getGamePlayerByGameIdAndTerritory(GAME_ID, Territory.NORWAY)).thenReturn(defendingGamePlayerMock);
+        when(defendingGamePlayerMock.getUnits()).thenReturn(getUnitsList(Territory.NORWAY, 1));
+
+        // battle calc
+        BattleCalculator battleCalculator = mock(BattleCalculator.class);
+        gameService.setBattleCalculator(battleCalculator);
+        BattleResult battleResult = mock(BattleResult.class);
+        when(battleCalculator.battle(any(Unit.class), any(Unit.class))).thenReturn(battleResult);
+        when(battleResult.getAttackingTerritoryLosses()).thenReturn(1);
+        when(battleResult.getDefendingTerritoryLosses()).thenReturn(0);
+        when(battleResult.isTakenOver()).thenReturn(true);
 
         TerritoryDTO returnObj = gameService.attackTerritoryAction(attackActionUpdate);
         // Then:
@@ -364,7 +375,37 @@ public class GameServiceTest {
 
     @Test
     public void testAttackTerritoryAndEqualLosses() throws Exception {
-        fail("not implemented yet");
+        int attackingTerritoryStrength = 2;
+        AttackActionUpdate attackActionUpdate =
+                new AttackActionUpdate(Territory.SWEDEN.toString(), Territory.NORWAY.toString(), 2, GAME_ID, PLAYER_ID);
+
+        // attacking part
+        when(gamePlayerDaoMock.getGamePlayerByGameIdAndPlayerId(GAME_ID, PLAYER_ID)).thenReturn(gamePlayerMock);
+        when(gamePlayerMock.getGamePlayerId()).thenReturn(GAME_PLAYER_ID);
+        when(gameDaoMock.getGameByGameId(GAME_ID)).thenReturn(gameMock);
+        when(gamePlayerMock.getUnits()).thenReturn(getUnitsList(Territory.SWEDEN, attackingTerritoryStrength));
+        when(gamePlayerMock.getGamePlayerId()).thenReturn(GAME_PLAYER_ID);
+
+        // defending part
+        GamePlayer defendingGamePlayerMock = mock(GamePlayer.class);
+        when(gamePlayerDaoMock.getGamePlayerByGameIdAndTerritory(GAME_ID, Territory.NORWAY)).thenReturn(defendingGamePlayerMock);
+        when(defendingGamePlayerMock.getUnits()).thenReturn(getUnitsList(Territory.NORWAY, 2));
+        when(defendingGamePlayerMock.getGamePlayerId()).thenReturn(DEFENDING_GAME_PLAYER_ID);
+
+        // battle calc
+        BattleCalculator battleCalculator = mock(BattleCalculator.class);
+        gameService.setBattleCalculator(battleCalculator);
+        BattleResult battleResult = mock(BattleResult.class);
+        when(battleCalculator.battle(any(Unit.class), any(Unit.class))).thenReturn(battleResult);
+        when(battleResult.getAttackingTerritoryLosses()).thenReturn(1);
+        when(battleResult.getDefendingTerritoryLosses()).thenReturn(1);
+        when(battleResult.isTakenOver()).thenReturn(false);
+
+        gameService.attackTerritoryAction(attackActionUpdate);
+
+        // Then:
+        verify(gamePlayerDaoMock, times(1)).setUnitsToGamePlayer(eq(GAME_PLAYER_ID), any(Unit.class));
+        verify(gamePlayerDaoMock, times(1)).setUnitsToGamePlayer(eq(DEFENDING_GAME_PLAYER_ID), any(Unit.class));
     }
 
     @Test
@@ -408,7 +449,37 @@ public class GameServiceTest {
 
     @Test
     public void testAttackTerritoryAndTakeOutSomeUnitsFromOtherPlayer() throws Exception {
-        fail("not implemented yet");
+        int attackingTerritoryStrength = 2;
+        AttackActionUpdate attackActionUpdate =
+                new AttackActionUpdate(Territory.SWEDEN.toString(), Territory.NORWAY.toString(), 2, GAME_ID, PLAYER_ID);
+
+        // attacking part
+        when(gamePlayerDaoMock.getGamePlayerByGameIdAndPlayerId(GAME_ID, PLAYER_ID)).thenReturn(gamePlayerMock);
+        when(gamePlayerMock.getGamePlayerId()).thenReturn(GAME_PLAYER_ID);
+        when(gameDaoMock.getGameByGameId(GAME_ID)).thenReturn(gameMock);
+        when(gamePlayerMock.getUnits()).thenReturn(getUnitsList(Territory.SWEDEN, attackingTerritoryStrength));
+        when(gamePlayerMock.getGamePlayerId()).thenReturn(GAME_PLAYER_ID);
+
+        // defending part
+        GamePlayer defendingGamePlayerMock = mock(GamePlayer.class);
+        when(gamePlayerDaoMock.getGamePlayerByGameIdAndTerritory(GAME_ID, Territory.NORWAY)).thenReturn(defendingGamePlayerMock);
+        when(defendingGamePlayerMock.getUnits()).thenReturn(getUnitsList(Territory.NORWAY, 2));
+        when(defendingGamePlayerMock.getGamePlayerId()).thenReturn(DEFENDING_GAME_PLAYER_ID);
+
+        // battle calc
+        BattleCalculator battleCalculator = mock(BattleCalculator.class);
+        gameService.setBattleCalculator(battleCalculator);
+        BattleResult battleResult = mock(BattleResult.class);
+        when(battleCalculator.battle(any(Unit.class), any(Unit.class))).thenReturn(battleResult);
+        when(battleResult.getAttackingTerritoryLosses()).thenReturn(0);
+        when(battleResult.getDefendingTerritoryLosses()).thenReturn(1);
+        when(battleResult.isTakenOver()).thenReturn(false);
+
+        gameService.attackTerritoryAction(attackActionUpdate);
+
+        // Then:
+        verify(gamePlayerDaoMock, times(1)).setUnitsToGamePlayer(eq(GAME_PLAYER_ID), any(Unit.class));
+        verify(gamePlayerDaoMock, times(1)).setUnitsToGamePlayer(eq(DEFENDING_GAME_PLAYER_ID), any(Unit.class));
     }
 
     private List<Unit> getUnitsList(Territory territory, int strength) {

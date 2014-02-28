@@ -169,11 +169,9 @@ public class GameServiceImpl implements GameService {
 
         BattleResult battleResult = battleCalculator.battle(attackingUnit, defendingUnit);
 
-        int attackingCurrentStrength = attackingUnit.getStrength();
-        attackingUnit.setStrength(attackingCurrentStrength-battleResult.getAttackingTerritoryLosses());
+        attackingUnit.setStrength(attackingUnit.getStrength()-battleResult.getAttackingTerritoryLosses());
+        defendingUnit.setStrength(defendingUnit.getStrength()-battleResult.getDefendingTerritoryLosses());
 
-        int defendingCurrentStrenght = defendingUnit.getStrength();
-        defendingUnit.setStrength(defendingCurrentStrenght-battleResult.getDefendingTerritoryLosses());
         gamePlayerDao.setUnitsToGamePlayer(attackingGamePlayer.getGamePlayerId(), attackingUnit);
 
         if (battleResult.isTakenOver()) {
