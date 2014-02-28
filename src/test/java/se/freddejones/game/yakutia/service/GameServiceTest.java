@@ -44,6 +44,7 @@ public class GameServiceTest {
     public static final long PLAYER_ID = 1L;
     public static final long GAME_PLAYER_ID = 12L;
     public static final long DEFENDING_GAME_PLAYER_ID = 48L;
+    public static final long DEFENDING_GAMEPLAYER_ID = 45L;
     @Mock private GamePlayerDao gamePlayerDaoMock;
     @Mock private UnitDao unitDaoMock;
     @Mock private GameDao gameDaoMock;
@@ -51,10 +52,12 @@ public class GameServiceTest {
     @InjectMocks private GameServiceImpl gameService;
 
     private GamePlayer gamePlayerMock;
+    private GamePlayer counterGamePlayerMock;
     private Game gameMock;
     @Before
     public void setup() {
         gamePlayerMock = mock(GamePlayer.class);
+        counterGamePlayerMock = mock(GamePlayer.class);
         gameMock = mock(Game.class);
     }
 
@@ -146,16 +149,23 @@ public class GameServiceTest {
 
     @Test
     public void testGetTerritoryInformationReturnsUnitsOnAGamePlayer() throws Exception {
-        when(gamePlayerDaoMock.getGamePlayerByGameIdAndPlayerId(10L, 12L)).thenReturn(gamePlayerMock);
-        List<GamePlayer> gamePlayers = new ArrayList<GamePlayer>();
-        setupUnitsForGamePlayerDefaultMock();
+        // given
+        when(gamePlayerDaoMock.getGamePlayerByGameIdAndPlayerId(PLAYER_ID, GAME_ID)).thenReturn(gamePlayerMock);
+        List<GamePlayer> gamePlayers = new ArrayList<>();
         gamePlayers.add(gamePlayerMock);
-        GamePlayer counterPartGamePlayer = mock(GamePlayer.class);
-        gamePlayers.add(counterPartGamePlayer);
-        when(gamePlayerDaoMock.getGamePlayersByGameId(12L)).thenReturn(gamePlayers);
+        gamePlayers.add(counterGamePlayerMock);
+        when(gamePlayerDaoMock.getGamePlayersByGameId(GAME_ID)).thenReturn(gamePlayers);
 
-        List<TerritoryDTO> territoryDTOList = gameService.getTerritoryInformationForActiveGame(10L,12L);
+        when(gamePlayerMock.getUnits())
+                .thenReturn(new UnitBuilder()
+                        .addUnit(Territory.SWEDEN,1)
+                        .addUnit(Territory.UNASSIGNEDLAND,1)
+                        .build());
 
+        // when
+        List<TerritoryDTO> territoryDTOList = gameService.getTerritoryInformationForActiveGame(PLAYER_ID, GAME_ID);
+
+        // then
         assertThat(territoryDTOList.size()).isEqualTo(2);
         assertThat(territoryDTOList.get(0).getLandName()).isEqualTo(Territory.SWEDEN.toString());
         assertThat(territoryDTOList.get(1).getLandName()).isEqualTo(Territory.UNASSIGNEDLAND.toString());
@@ -164,8 +174,14 @@ public class GameServiceTest {
     @Test
     public void testThatGetTerritoryInformationBelongsToPlayer() throws Exception {
         when(gamePlayerDaoMock.getGamePlayerByGameIdAndPlayerId(10L, 12L)).thenReturn(gamePlayerMock);
-        List<GamePlayer> gamePlayers = new ArrayList<GamePlayer>();
-        setupUnitsForGamePlayerDefaultMock();
+        List<GamePlayer> gamePlayers = new ArrayList<>();
+
+        when(gamePlayerMock.getUnits())
+                .thenReturn(new UnitBuilder()
+                        .addUnit(Territory.SWEDEN, 1)
+                        .addUnit(Territory.UNASSIGNEDLAND, 1)
+                        .build());
+
         gamePlayers.add(gamePlayerMock);
         GamePlayer counterPartGamePlayer = mock(GamePlayer.class);
         gamePlayers.add(counterPartGamePlayer);
@@ -179,21 +195,26 @@ public class GameServiceTest {
 
     @Test
     public void testThatGetTerritoryInformationCanReturnUnitsNotBeloningToPlayer() throws Exception {
-        when(gamePlayerDaoMock.getGamePlayerByGameIdAndPlayerId(10L, 12L)).thenReturn(gamePlayerMock);
+        when(gamePlayerDaoMock.getGamePlayerByGameIdAndPlayerId(PLAYER_ID, GAME_ID)).thenReturn(gamePlayerMock);
         List<GamePlayer> gamePlayers = new ArrayList<GamePlayer>();
-        setupUnitsForGamePlayerDefaultMock();
+
+        when(gamePlayerMock.getUnits())
+                .thenReturn(new UnitBuilder()
+                        .addUnit(Territory.SWEDEN,1)
+                        .addUnit(Territory.UNASSIGNEDLAND,1)
+                        .build());
+
         gamePlayers.add(gamePlayerMock);
         GamePlayer counterPartGamePlayer = mock(GamePlayer.class);
-        when(counterPartGamePlayer.getGamePlayerId()).thenReturn(45L);
-        Unit unit = new Unit();
-        unit.setTerritory(Territory.FINLAND);
-        List<Unit> units = new ArrayList<Unit>();
-        units.add(unit);
-        when(counterPartGamePlayer.getUnits()).thenReturn(units);
+        when(counterPartGamePlayer.getGamePlayerId()).thenReturn(DEFENDING_GAMEPLAYER_ID);
+        when(counterPartGamePlayer.getUnits()).thenReturn(getUnitsList(Territory.FINLAND, 1));
         gamePlayers.add(counterPartGamePlayer);
-        when(gamePlayerDaoMock.getGamePlayersByGameId(12L)).thenReturn(gamePlayers);
+        when(gamePlayerDaoMock.getGamePlayersByGameId(GAME_ID)).thenReturn(gamePlayers);
 
-        List<TerritoryDTO> territoryDTOList = gameService.getTerritoryInformationForActiveGame(10L,12L);
+        // when
+        List<TerritoryDTO> territoryDTOList = gameService.getTerritoryInformationForActiveGame(PLAYER_ID, GAME_ID);
+
+        // then
         assertThat(territoryDTOList.get(2).isOwnedByPlayer()).isFalse();
     }
 
@@ -287,7 +308,13 @@ public class GameServiceTest {
         // Given
         PlaceUnitUpdate placeUnitUpdate = new PlaceUnitUpdate(3, "SWEDEN", 1L, 1L);
         setupGetGamesForPlayerDefaultMockSettings();
-        setupUnitsForGamePlayerDefaultMock();
+
+        when(gamePlayerMock.getUnits())
+                .thenReturn(new UnitBuilder()
+                        .addUnit(Territory.SWEDEN,5)
+                        .addUnit(Territory.UNASSIGNEDLAND,1)
+                        .build());
+
         Unit unitMock = mock(Unit.class);
         when(unitMock.getStrength()).thenReturn(3);
         when(gamePlayerDaoMock.getUnassignedLand(anyLong())).thenReturn(unitMock);
@@ -319,7 +346,13 @@ public class GameServiceTest {
         // Given
         PlaceUnitUpdate placeUnitUpdate = new PlaceUnitUpdate(3, "SWEDEN", 1L, 1L);
         setupGetGamesForPlayerDefaultMockSettings();
-        setupUnitsForGamePlayerDefaultMock();
+
+        when(gamePlayerMock.getUnits())
+                .thenReturn(new UnitBuilder()
+                        .addUnit(Territory.SWEDEN,1)
+                        .addUnit(Territory.UNASSIGNEDLAND,1)
+                        .build());
+
         Unit unitMock = mock(Unit.class);
         when(unitMock.getStrength()).thenReturn(3);
         when(gamePlayerDaoMock.getUnassignedLand(anyLong())).thenReturn(unitMock);
@@ -491,6 +524,13 @@ public class GameServiceTest {
         return units;
     }
 
+    private void addUnitToUnitsList(List<Unit> units, Territory territory, int strength) {
+        Unit u = new Unit();
+        u.setTerritory(territory);
+        u.setStrength(strength);
+        units.add(u);
+    }
+
     private void setupValidNumberOfPlayersInMock() {
         List<GamePlayer> gamePlayers = new ArrayList<>();
         when(gamePlayerMock.getGamePlayerStatus()).thenReturn(GamePlayerStatus.ACCEPTED);
@@ -510,21 +550,24 @@ public class GameServiceTest {
         when(gameMock.getGameStatus()).thenReturn(GameStatus.CREATED);
     }
 
-    private void setupUnitsForGamePlayerDefaultMock() {
-        setupUnitsForGamePlayerMock(5, 3);
-    }
+    
+    public static class UnitBuilder {
+        private List<Unit> units;
 
-    private void setupUnitsForGamePlayerMock(int unitsForLandArea, int unassignedUnits) {
-        List<Unit> unitsForGamePlayer = new ArrayList<Unit>();
-        Unit unit = new Unit();
-        unit.setTerritory(Territory.SWEDEN);
-        unit.setStrength(unitsForLandArea);
-        unitsForGamePlayer.add(unit);
+        public UnitBuilder() {
+            units = new ArrayList<>();
+        }
 
-        Unit unitUnassigned = new Unit();
-        unitUnassigned.setTerritory(Territory.UNASSIGNEDLAND);
-        unitUnassigned.setStrength(unassignedUnits);
-        unitsForGamePlayer.add(unitUnassigned);
-        when(gamePlayerMock.getUnits()).thenReturn(unitsForGamePlayer);
+        public UnitBuilder addUnit(Territory territory, int strength) {
+            Unit u = new Unit();
+            u.setTerritory(territory);
+            u.setStrength(strength);
+            units.add(u);
+            return this;
+        }
+
+        public List<Unit> build() {
+            return units;
+        }
     }
 }
