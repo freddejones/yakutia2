@@ -77,7 +77,7 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public List<TerritoryDTO> getTerritoryInformationForActiveGame(Long playerId, Long gameId) {
-        List<TerritoryDTO> territoryDTOs = new ArrayList<TerritoryDTO>();
+        List<TerritoryDTO> territoryDTOs = new ArrayList<>();
         GamePlayer gp = gamePlayerDao.getGamePlayerByGameIdAndPlayerId(playerId, gameId);
         List<GamePlayer> gamePlayers = gamePlayerDao.getGamePlayersByGameId(gameId);
         for (GamePlayer gamePlayer : gamePlayers) {

@@ -44,7 +44,7 @@ public class GameServiceTest {
     public static final long PLAYER_ID = 1L;
     public static final long GAME_PLAYER_ID = 12L;
     public static final long DEFENDING_GAME_PLAYER_ID = 48L;
-    public static final long DEFENDING_GAMEPLAYER_ID = 45L;
+
     @Mock private GamePlayerDao gamePlayerDaoMock;
     @Mock private UnitDao unitDaoMock;
     @Mock private GameDao gameDaoMock;
@@ -195,27 +195,29 @@ public class GameServiceTest {
 
     @Test
     public void testThatGetTerritoryInformationCanReturnUnitsNotBeloningToPlayer() throws Exception {
+        // game playing player
         when(gamePlayerDaoMock.getGamePlayerByGameIdAndPlayerId(PLAYER_ID, GAME_ID)).thenReturn(gamePlayerMock);
-        List<GamePlayer> gamePlayers = new ArrayList<GamePlayer>();
-
         when(gamePlayerMock.getUnits())
                 .thenReturn(new UnitBuilder()
                         .addUnit(Territory.SWEDEN,1)
                         .addUnit(Territory.UNASSIGNEDLAND,1)
                         .build());
 
-        gamePlayers.add(gamePlayerMock);
-        GamePlayer counterPartGamePlayer = mock(GamePlayer.class);
-        when(counterPartGamePlayer.getGamePlayerId()).thenReturn(DEFENDING_GAMEPLAYER_ID);
-        when(counterPartGamePlayer.getUnits()).thenReturn(getUnitsList(Territory.FINLAND, 1));
-        gamePlayers.add(counterPartGamePlayer);
-        when(gamePlayerDaoMock.getGamePlayersByGameId(GAME_ID)).thenReturn(gamePlayers);
+        // opponent player
+        List<GamePlayer> gps = new GamePlayerBuilder()
+                .addGamePlayer(new GamePlayerMockBuilder()
+                        .setGamePlayerId(DEFENDING_GAME_PLAYER_ID)
+                        .setUnits(new UnitBuilder().addUnit(Territory.FINLAND, 5).build())
+                        .build())
+                .addGamePlayer(gamePlayerMock)
+                .build();
+        when(gamePlayerDaoMock.getGamePlayersByGameId(GAME_ID)).thenReturn(gps);
 
         // when
         List<TerritoryDTO> territoryDTOList = gameService.getTerritoryInformationForActiveGame(PLAYER_ID, GAME_ID);
 
         // then
-        assertThat(territoryDTOList.get(2).isOwnedByPlayer()).isFalse();
+        assertThat(atLeastOneNotOwnedByPlayer(territoryDTOList)).isTrue();
     }
 
     @Test(expected = NotEnoughPlayersException.class)
@@ -381,13 +383,17 @@ public class GameServiceTest {
         when(gamePlayerDaoMock.getGamePlayerByGameIdAndPlayerId(GAME_ID, PLAYER_ID)).thenReturn(gamePlayerMock);
         when(gamePlayerMock.getGamePlayerId()).thenReturn(GAME_PLAYER_ID);
         when(gameDaoMock.getGameByGameId(GAME_ID)).thenReturn(gameMock);
-        when(gamePlayerMock.getUnits()).thenReturn(getUnitsList(Territory.SWEDEN, attackingTerritoryStrength));
+        when(gamePlayerMock.getUnits()).thenReturn(new UnitBuilder().
+                addUnit(Territory.SWEDEN, attackingTerritoryStrength)
+                .build());
         when(gamePlayerMock.getGamePlayerId()).thenReturn(GAME_PLAYER_ID);
 
         // defending part
         GamePlayer defendingGamePlayerMock = mock(GamePlayer.class);
         when(gamePlayerDaoMock.getGamePlayerByGameIdAndTerritory(GAME_ID, Territory.NORWAY)).thenReturn(defendingGamePlayerMock);
-        when(defendingGamePlayerMock.getUnits()).thenReturn(getUnitsList(Territory.NORWAY, 1));
+        when(defendingGamePlayerMock.getUnits()).thenReturn(new UnitBuilder().
+                addUnit(Territory.NORWAY, 1)
+                .build());
 
         // battle calc
         BattleCalculator battleCalculator = mock(BattleCalculator.class);
@@ -416,13 +422,18 @@ public class GameServiceTest {
         when(gamePlayerDaoMock.getGamePlayerByGameIdAndPlayerId(GAME_ID, PLAYER_ID)).thenReturn(gamePlayerMock);
         when(gamePlayerMock.getGamePlayerId()).thenReturn(GAME_PLAYER_ID);
         when(gameDaoMock.getGameByGameId(GAME_ID)).thenReturn(gameMock);
-        when(gamePlayerMock.getUnits()).thenReturn(getUnitsList(Territory.SWEDEN, attackingTerritoryStrength));
+        when(gamePlayerMock.getUnits()).thenReturn(new UnitBuilder().
+                addUnit(Territory.SWEDEN, attackingTerritoryStrength)
+                .build()
+        );
         when(gamePlayerMock.getGamePlayerId()).thenReturn(GAME_PLAYER_ID);
 
         // defending part
         GamePlayer defendingGamePlayerMock = mock(GamePlayer.class);
         when(gamePlayerDaoMock.getGamePlayerByGameIdAndTerritory(GAME_ID, Territory.NORWAY)).thenReturn(defendingGamePlayerMock);
-        when(defendingGamePlayerMock.getUnits()).thenReturn(getUnitsList(Territory.NORWAY, 2));
+        when(defendingGamePlayerMock.getUnits()).thenReturn(new UnitBuilder().
+                addUnit(Territory.NORWAY, 2)
+                .build());
         when(defendingGamePlayerMock.getGamePlayerId()).thenReturn(DEFENDING_GAME_PLAYER_ID);
 
         // battle calc
@@ -453,13 +464,18 @@ public class GameServiceTest {
         when(gamePlayerDaoMock.getGamePlayerByGameIdAndPlayerId(GAME_ID, PLAYER_ID)).thenReturn(gamePlayerMock);
         when(gamePlayerMock.getGamePlayerId()).thenReturn(GAME_PLAYER_ID);
         when(gameDaoMock.getGameByGameId(GAME_ID)).thenReturn(gameMock);
-        when(gamePlayerMock.getUnits()).thenReturn(getUnitsList(Territory.SWEDEN, attackingTerritoryStrength));
+        when(gamePlayerMock.getUnits()).thenReturn(new UnitBuilder().
+                addUnit(Territory.SWEDEN, attackingTerritoryStrength)
+                .build());
         when(gamePlayerMock.getGamePlayerId()).thenReturn(GAME_PLAYER_ID);
 
         // defending part
         GamePlayer defendingGamePlayerMock = mock(GamePlayer.class);
         when(gamePlayerDaoMock.getGamePlayerByGameIdAndTerritory(GAME_ID, Territory.NORWAY)).thenReturn(defendingGamePlayerMock);
-        when(defendingGamePlayerMock.getUnits()).thenReturn(getUnitsList(Territory.NORWAY, 1));
+        when(defendingGamePlayerMock.getUnits()).thenReturn(new UnitBuilder().
+                addUnit(Territory.NORWAY, 2)
+                .build()
+        );
 
         // battle calc
         BattleCalculator battleCalculator = mock(BattleCalculator.class);
@@ -490,13 +506,17 @@ public class GameServiceTest {
         when(gamePlayerDaoMock.getGamePlayerByGameIdAndPlayerId(GAME_ID, PLAYER_ID)).thenReturn(gamePlayerMock);
         when(gamePlayerMock.getGamePlayerId()).thenReturn(GAME_PLAYER_ID);
         when(gameDaoMock.getGameByGameId(GAME_ID)).thenReturn(gameMock);
-        when(gamePlayerMock.getUnits()).thenReturn(getUnitsList(Territory.SWEDEN, attackingTerritoryStrength));
+        when(gamePlayerMock.getUnits()).thenReturn(new UnitBuilder().
+                addUnit(Territory.SWEDEN, attackingTerritoryStrength)
+                .build());
         when(gamePlayerMock.getGamePlayerId()).thenReturn(GAME_PLAYER_ID);
 
         // defending part
         GamePlayer defendingGamePlayerMock = mock(GamePlayer.class);
         when(gamePlayerDaoMock.getGamePlayerByGameIdAndTerritory(GAME_ID, Territory.NORWAY)).thenReturn(defendingGamePlayerMock);
-        when(defendingGamePlayerMock.getUnits()).thenReturn(getUnitsList(Territory.NORWAY, 2));
+        when(defendingGamePlayerMock.getUnits()).thenReturn(new UnitBuilder().
+                addUnit(Territory.NORWAY, 2)
+                .build());
         when(defendingGamePlayerMock.getGamePlayerId()).thenReturn(DEFENDING_GAME_PLAYER_ID);
 
         // battle calc
@@ -515,22 +535,6 @@ public class GameServiceTest {
         verify(gamePlayerDaoMock, times(1)).setUnitsToGamePlayer(eq(DEFENDING_GAME_PLAYER_ID), any(Unit.class));
     }
 
-    private List<Unit> getUnitsList(Territory territory, int strength) {
-        List<Unit> units = new ArrayList<>();
-        Unit u = new Unit();
-        u.setTerritory(territory);
-        u.setStrength(strength);
-        units.add(u);
-        return units;
-    }
-
-    private void addUnitToUnitsList(List<Unit> units, Territory territory, int strength) {
-        Unit u = new Unit();
-        u.setTerritory(territory);
-        u.setStrength(strength);
-        units.add(u);
-    }
-
     private void setupValidNumberOfPlayersInMock() {
         List<GamePlayer> gamePlayers = new ArrayList<>();
         when(gamePlayerMock.getGamePlayerStatus()).thenReturn(GamePlayerStatus.ACCEPTED);
@@ -540,9 +544,10 @@ public class GameServiceTest {
     }
 
     private void setupGetGamesForPlayerDefaultMockSettings() {
-        List<GamePlayer> gamePlayers = new ArrayList<GamePlayer>();
-        gamePlayers.add(gamePlayerMock);
-        when(gamePlayerDaoMock.getGamePlayersByPlayerId(anyLong())).thenReturn(gamePlayers);
+//        List<GamePlayer> gamePlayers = new ArrayList<GamePlayer>();
+//        gamePlayers.add(gamePlayerMock);
+        when(gamePlayerDaoMock.getGamePlayersByPlayerId(anyLong())).thenReturn(
+                new GamePlayerBuilder().addGamePlayer(gamePlayerMock).build());
         when(gamePlayerDaoMock.getGamePlayerByGameIdAndPlayerId(anyLong(), anyLong())).thenReturn(gamePlayerMock);
         when(gamePlayerMock.getGameId()).thenReturn(666L);
         when(gameDaoMock.getGameByGameId(666L)).thenReturn(gameMock);
@@ -550,7 +555,16 @@ public class GameServiceTest {
         when(gameMock.getGameStatus()).thenReturn(GameStatus.CREATED);
     }
 
-    
+    private boolean atLeastOneNotOwnedByPlayer(List<TerritoryDTO> list) {
+        for(TerritoryDTO territoryDTO : list) {
+            if (!territoryDTO.isOwnedByPlayer()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
     public static class UnitBuilder {
         private List<Unit> units;
 
@@ -568,6 +582,45 @@ public class GameServiceTest {
 
         public List<Unit> build() {
             return units;
+        }
+    }
+
+    public static class GamePlayerBuilder {
+        private List<GamePlayer> gamePlayers;
+
+        public GamePlayerBuilder() {
+            gamePlayers = new ArrayList<>();
+        }
+
+        public GamePlayerBuilder addGamePlayer(GamePlayer gp) {
+            gamePlayers.add(gp);
+            return this;
+        }
+
+        public List<GamePlayer> build() {
+            return gamePlayers;
+        }
+    }
+
+    public static class GamePlayerMockBuilder {
+        private GamePlayer gamePlayerMock;
+
+        public GamePlayerMockBuilder() {
+            gamePlayerMock = mock(GamePlayer.class);
+        }
+
+        public GamePlayerMockBuilder setGamePlayerId(Long id) {
+            when(gamePlayerMock.getGamePlayerId()).thenReturn(id);
+            return this;
+        }
+
+        public GamePlayerMockBuilder setUnits(List<Unit> units) {
+            when(gamePlayerMock.getUnits()).thenReturn(units);
+            return this;
+        }
+
+        public GamePlayer build() {
+            return gamePlayerMock;
         }
     }
 }
