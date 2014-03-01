@@ -263,8 +263,8 @@ public class GameServiceTest {
 
     @Test(expected = ToManyPlayersException.class)
     public void testToManyPlayersToStartGame() throws Exception {
-        // Given: To many players added to gameplayers
-        List<GamePlayer> gamePlayers = new ArrayList<GamePlayer>();
+        // Given: To many players added to game players
+        List<GamePlayer> gamePlayers = new ArrayList<>();
         when(gamePlayerMock.getGamePlayerStatus()).thenReturn(GamePlayerStatus.ACCEPTED);
         for (int i=0; i<10; i++) {
             gamePlayers.add(gamePlayerMock);
