@@ -5,10 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import se.freddejones.game.yakutia.exception.NoGameFoundException;
 import se.freddejones.game.yakutia.model.TerritoryDTO;
-import se.freddejones.game.yakutia.model.dto.CreateGameDTO;
-import se.freddejones.game.yakutia.model.dto.GameDTO;
-import se.freddejones.game.yakutia.model.dto.GameStateModelDTO;
-import se.freddejones.game.yakutia.model.dto.PlaceUnitUpdate;
+import se.freddejones.game.yakutia.model.dto.*;
 import se.freddejones.game.yakutia.service.GameService;
 
 import java.util.List;
@@ -75,8 +72,18 @@ public class GameController {
             headers = {"content-type=application/json"},
             consumes = "application/json")
     @ResponseBody
-    public TerritoryDTO updateGameStateModel(@RequestBody final PlaceUnitUpdate placeUnitUpdate) {
+    public TerritoryDTO placeUnitOperation(@RequestBody final PlaceUnitUpdate placeUnitUpdate) {
         log.info(placeUnitUpdate.toString());
         return gameService.placeUnitAction(placeUnitUpdate);
+    }
+
+    @RequestMapping(value = "/state/perform/attack/territory",
+            method = RequestMethod.POST,
+            headers = {"content-type=application/json"},
+            consumes = "application/json")
+    @ResponseBody
+    public TerritoryDTO attackTerritoryOperation(@RequestBody final AttackActionUpdate attackActionUpdate) {
+        log.info(attackActionUpdate.toString());
+        return gameService.attackTerritoryAction(attackActionUpdate);
     }
 }

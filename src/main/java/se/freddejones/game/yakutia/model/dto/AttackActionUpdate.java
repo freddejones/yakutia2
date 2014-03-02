@@ -4,11 +4,13 @@ public class AttackActionUpdate {
 
     private String territoryAttackSrc;
     private String territoryAttackDest;
-    private int attackingNumberOfUnits;
+    private Integer attackingNumberOfUnits;
     private Long gameId;
     private Long playerId;
 
-    public AttackActionUpdate(String territoryAttackSrc, String territoryAttackDest, int attackingNumberOfUnits, Long gameId, Long playerId) {
+    public AttackActionUpdate() {}
+
+    public AttackActionUpdate(String territoryAttackSrc, String territoryAttackDest, Integer attackingNumberOfUnits, Long gameId, Long playerId) {
         this.territoryAttackSrc = territoryAttackSrc;
         this.territoryAttackDest = territoryAttackDest;
         this.attackingNumberOfUnits = attackingNumberOfUnits;
@@ -32,11 +34,11 @@ public class AttackActionUpdate {
         this.territoryAttackDest = territoryAttackDest;
     }
 
-    public int getAttackingNumberOfUnits() {
+    public Integer getAttackingNumberOfUnits() {
         return attackingNumberOfUnits;
     }
 
-    public void setAttackingNumberOfUnits(int attackingNumberOfUnits) {
+    public void setAttackingNumberOfUnits(Integer attackingNumberOfUnits) {
         this.attackingNumberOfUnits = attackingNumberOfUnits;
     }
 
@@ -54,5 +56,16 @@ public class AttackActionUpdate {
 
     public void setPlayerId(Long playerId) {
         this.playerId = playerId;
+    }
+
+    @Override
+    public String toString() {
+        return "AttackActionUpdate{" +
+                "territoryAttackSrc='" + territoryAttackSrc + '\'' +
+                ", territoryAttackDest='" + territoryAttackDest + '\'' +
+                ", attackingNumberOfUnits=" + attackingNumberOfUnits +
+                ", gameId=" + gameId +
+                ", playerId=" + playerId +
+                '}';
     }
 }

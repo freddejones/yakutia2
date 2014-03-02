@@ -1,6 +1,5 @@
 package se.freddejones.game.yakutia.controller;
 
-import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.MediaType;
@@ -8,6 +7,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import se.freddejones.game.yakutia.exception.NotEnoughUnitsException;
 import se.freddejones.game.yakutia.model.TerritoryDTO;
+import se.freddejones.game.yakutia.model.dto.AttackActionUpdate;
 import se.freddejones.game.yakutia.model.dto.PlaceUnitUpdate;
 import se.freddejones.game.yakutia.service.GameService;
 
@@ -17,7 +17,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -81,11 +80,21 @@ public class GameControllerTest {
 
     }
 
-
+    @Test
+    public void testAttackTerritoryOK() throws Exception {
+        TerritoryDTO territoryDTO = new TerritoryDTO("TOMTE", 1, true);
+        when(gameService.attackTerritoryAction(any(AttackActionUpdate.class))).thenReturn(territoryDTO);
+        assertThat(mockMvc.perform(post("/game/state/perform/attack/territory")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"territoryAttackDest\":\"NORWAY\", \"territoryAttackSrc\":\"SWEDEN\", \"gameId\":\"1\", \"playerId\":\"1\", \"attackingNumberOfUnits\":\"5\"}"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString(), is("{\"landName\":\"TOMTE\",\"units\":1,\"ownedByPlayer\":true}"));
+    }
 
     private ArrayList<TerritoryDTO> getYakutiaModels() {
         final TerritoryDTO testLand = new TerritoryDTO("testLand", 6, true);
-        final ArrayList<TerritoryDTO> territoryDTOs = new ArrayList<TerritoryDTO>();
+        final ArrayList<TerritoryDTO> territoryDTOs = new ArrayList<>();
         territoryDTOs.add(testLand);
         return territoryDTOs;
     }
