@@ -1,6 +1,6 @@
 // Set the require.js configuration for your application.
 require.config({
-
+    waitSeconds: 200,
     shim: {
         'underscore': {
             exports: '_'
