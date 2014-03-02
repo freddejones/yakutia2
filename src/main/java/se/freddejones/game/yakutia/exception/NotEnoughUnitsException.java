@@ -1,10 +1,10 @@
 package se.freddejones.game.yakutia.exception;
 
-/**
- * User: Fredde
- * Date: 12/31/13 1:45 PM
- */
-public class NotEnoughUnitsException extends Exception {
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+@ResponseStatus(value= HttpStatus.FORBIDDEN, reason="No such Order")
+public class NotEnoughUnitsException extends RuntimeException {
 
     public NotEnoughUnitsException(String message) {
         super(message);

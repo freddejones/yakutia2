@@ -1,8 +1,6 @@
 package se.freddejones.game.yakutia.service;
 
-import junit.framework.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -151,16 +149,21 @@ public class GameServiceTest {
     public void testGetTerritoryInformationReturnsUnitsOnAGamePlayer() throws Exception {
         // given
         when(gamePlayerDaoMock.getGamePlayerByGameIdAndPlayerId(PLAYER_ID, GAME_ID)).thenReturn(gamePlayerMock);
-        List<GamePlayer> gamePlayers = new ArrayList<>();
-        gamePlayers.add(gamePlayerMock);
-        gamePlayers.add(counterGamePlayerMock);
-        when(gamePlayerDaoMock.getGamePlayersByGameId(GAME_ID)).thenReturn(gamePlayers);
 
+        // current game player
         when(gamePlayerMock.getUnits())
                 .thenReturn(new UnitBuilder()
                         .addUnit(Territory.SWEDEN,1)
                         .addUnit(Territory.UNASSIGNEDLAND,1)
                         .build());
+
+        List<GamePlayer> gamePlayers = new GamePlayersListBuilder()
+                .addGamePlayer(new GamePlayerMockBuilder()
+                        .setGamePlayerId(DEFENDING_GAME_PLAYER_ID)
+                        .build())
+                .addGamePlayer(gamePlayerMock)
+                .build();
+        when(gamePlayerDaoMock.getGamePlayersByGameId(GAME_ID)).thenReturn(gamePlayers);
 
         // when
         List<TerritoryDTO> territoryDTOList = gameService.getTerritoryInformationForActiveGame(PLAYER_ID, GAME_ID);
@@ -173,21 +176,23 @@ public class GameServiceTest {
 
     @Test
     public void testThatGetTerritoryInformationBelongsToPlayer() throws Exception {
-        when(gamePlayerDaoMock.getGamePlayerByGameIdAndPlayerId(10L, 12L)).thenReturn(gamePlayerMock);
-        List<GamePlayer> gamePlayers = new ArrayList<>();
-
+        when(gamePlayerDaoMock.getGamePlayerByGameIdAndPlayerId(PLAYER_ID, GAME_ID)).thenReturn(gamePlayerMock);
         when(gamePlayerMock.getUnits())
                 .thenReturn(new UnitBuilder()
                         .addUnit(Territory.SWEDEN, 1)
                         .addUnit(Territory.UNASSIGNEDLAND, 1)
                         .build());
 
-        gamePlayers.add(gamePlayerMock);
-        GamePlayer counterPartGamePlayer = mock(GamePlayer.class);
-        gamePlayers.add(counterPartGamePlayer);
-        when(gamePlayerDaoMock.getGamePlayersByGameId(12L)).thenReturn(gamePlayers);
+        List<GamePlayer> gamePlayers = new GamePlayersListBuilder()
+                .addGamePlayer(new GamePlayerMockBuilder()
+                        .setGamePlayerId(DEFENDING_GAME_PLAYER_ID)
+                        .build())
+                .addGamePlayer(gamePlayerMock)
+                .build();
 
-        List<TerritoryDTO> territoryDTOList = gameService.getTerritoryInformationForActiveGame(10L,12L);
+        when(gamePlayerDaoMock.getGamePlayersByGameId(GAME_ID)).thenReturn(gamePlayers);
+
+        List<TerritoryDTO> territoryDTOList = gameService.getTerritoryInformationForActiveGame(PLAYER_ID,GAME_ID);
 
         assertThat(territoryDTOList.get(0).isOwnedByPlayer()).isTrue();
         assertThat(territoryDTOList.get(1).isOwnedByPlayer()).isTrue();
@@ -204,7 +209,7 @@ public class GameServiceTest {
                         .build());
 
         // opponent player
-        List<GamePlayer> gps = new GamePlayerBuilder()
+        List<GamePlayer> gps = new GamePlayersListBuilder()
                 .addGamePlayer(new GamePlayerMockBuilder()
                         .setGamePlayerId(DEFENDING_GAME_PLAYER_ID)
                         .setUnits(new UnitBuilder().addUnit(Territory.FINLAND, 5).build())
@@ -234,29 +239,34 @@ public class GameServiceTest {
     @Test(expected = NotEnoughPlayersException.class)
     public void testNotEnoughPlayerToStartGameWhenOnlyOnePlayerExists() throws Exception {
         // Given: No players received from gamePlayerDao
-        List<GamePlayer> gamePlayers = new ArrayList<GamePlayer>();
+        List<GamePlayer> gamePlayers = new ArrayList<>();
         gamePlayers.add(gamePlayerMock);
-        when(gamePlayerDaoMock.getGamePlayersByGameId(1L)).thenReturn(gamePlayers);
+        when(gamePlayerDaoMock.getGamePlayersByGameId(GAME_ID)).thenReturn(gamePlayers);
 
         // When: setting game to started
-        gameService.setGameToStarted(1L);
+        gameService.setGameToStarted(GAME_ID);
 
         // Then: exception is thrown
     }
 
     @Test(expected = NotEnoughPlayersException.class)
     public void testNotEnoughPlayersAcceptedInvite() throws Exception {
-        List<GamePlayer> gamePlayers = new ArrayList<GamePlayer>();
-        gamePlayers.add(gamePlayerMock);
-        when(gamePlayerMock.getGamePlayerStatus()).thenReturn(GamePlayerStatus.ACCEPTED);
-        GamePlayer gamePlayerMockNotAccepted = mock(GamePlayer.class);
-        when(gamePlayerMockNotAccepted.getGamePlayerStatus()).thenReturn(GamePlayerStatus.INVITED);
-        gamePlayers.add(gamePlayerMockNotAccepted);
 
-        when(gamePlayerDaoMock.getGamePlayersByGameId(1L)).thenReturn(gamePlayers);
+        // game playing player
+        when(gamePlayerMock.getGamePlayerStatus()).thenReturn(GamePlayerStatus.ACCEPTED);
+
+        // opponent
+        List<GamePlayer> gamePlayers = new GamePlayersListBuilder()
+                .addGamePlayer(new GamePlayerMockBuilder()
+                        .setGamePlayerId(DEFENDING_GAME_PLAYER_ID)
+                        .setGamePlayerStatus(GamePlayerStatus.INVITED)
+                        .build())
+                .addGamePlayer(gamePlayerMock)
+                .build();
+        when(gamePlayerDaoMock.getGamePlayersByGameId(GAME_ID)).thenReturn(gamePlayers);
 
         // When: setting game to started
-        gameService.setGameToStarted(1L);
+        gameService.setGameToStarted(GAME_ID);
 
         // Then: exception is thrown
     }
@@ -308,7 +318,7 @@ public class GameServiceTest {
     public void testPlaceUnitUpdateValid() throws Exception {
 
         // Given
-        PlaceUnitUpdate placeUnitUpdate = new PlaceUnitUpdate(3, "SWEDEN", 1L, 1L);
+        PlaceUnitUpdate placeUnitUpdate = getPlaceUnitUpdate();
         setupGetGamesForPlayerDefaultMockSettings();
 
         when(gamePlayerMock.getUnits())
@@ -330,10 +340,20 @@ public class GameServiceTest {
         assertThat(returnObj.getUnits()).isEqualTo(8);
     }
 
+    private PlaceUnitUpdate getPlaceUnitUpdate() {
+        PlaceUnitUpdate placeUnitUpdate = new PlaceUnitUpdate();
+        placeUnitUpdate.setGameId(GAME_ID);
+        placeUnitUpdate.setNumberOfUnits(3);
+        placeUnitUpdate.setPlayerId(PLAYER_ID);
+        placeUnitUpdate.setTerritory("SWEDEN");
+        return placeUnitUpdate;
+    }
+
     @Test(expected = NotEnoughUnitsException.class)
     public void testPlaceUnitWhenInsufficientFunds() throws Exception {
         // Given
-        PlaceUnitUpdate placeUnitUpdate = new PlaceUnitUpdate(1, "SWEDEN", 1L, 1L);
+        PlaceUnitUpdate placeUnitUpdate = getPlaceUnitUpdate();
+        placeUnitUpdate.setNumberOfUnits(1);
         setupGetGamesForPlayerDefaultMockSettings();
         Unit unitMock = mock(Unit.class);
         when(unitMock.getStrength()).thenReturn(0);
@@ -346,7 +366,7 @@ public class GameServiceTest {
     @Test
     public void testPlaceUnitUpdateValidPokesGamePlayerDao() throws Exception {
         // Given
-        PlaceUnitUpdate placeUnitUpdate = new PlaceUnitUpdate(3, "SWEDEN", 1L, 1L);
+        PlaceUnitUpdate placeUnitUpdate = getPlaceUnitUpdate();
         setupGetGamesForPlayerDefaultMockSettings();
 
         when(gamePlayerMock.getUnits())
@@ -544,10 +564,8 @@ public class GameServiceTest {
     }
 
     private void setupGetGamesForPlayerDefaultMockSettings() {
-//        List<GamePlayer> gamePlayers = new ArrayList<GamePlayer>();
-//        gamePlayers.add(gamePlayerMock);
         when(gamePlayerDaoMock.getGamePlayersByPlayerId(anyLong())).thenReturn(
-                new GamePlayerBuilder().addGamePlayer(gamePlayerMock).build());
+                new GamePlayersListBuilder().addGamePlayer(gamePlayerMock).build());
         when(gamePlayerDaoMock.getGamePlayerByGameIdAndPlayerId(anyLong(), anyLong())).thenReturn(gamePlayerMock);
         when(gamePlayerMock.getGameId()).thenReturn(666L);
         when(gameDaoMock.getGameByGameId(666L)).thenReturn(gameMock);
@@ -585,14 +603,14 @@ public class GameServiceTest {
         }
     }
 
-    public static class GamePlayerBuilder {
+    public static class GamePlayersListBuilder {
         private List<GamePlayer> gamePlayers;
 
-        public GamePlayerBuilder() {
+        public GamePlayersListBuilder() {
             gamePlayers = new ArrayList<>();
         }
 
-        public GamePlayerBuilder addGamePlayer(GamePlayer gp) {
+        public GamePlayersListBuilder addGamePlayer(GamePlayer gp) {
             gamePlayers.add(gp);
             return this;
         }
@@ -616,6 +634,11 @@ public class GameServiceTest {
 
         public GamePlayerMockBuilder setUnits(List<Unit> units) {
             when(gamePlayerMock.getUnits()).thenReturn(units);
+            return this;
+        }
+
+        public GamePlayerMockBuilder setGamePlayerStatus(GamePlayerStatus gamePlayerStatus) {
+            when(gamePlayerMock.getGamePlayerStatus()).thenReturn(gamePlayerStatus);
             return this;
         }
 

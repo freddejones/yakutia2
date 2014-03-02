@@ -5,6 +5,13 @@ define(['backbone',
     'models/TerritoryModel'],
 function(Backbone, _, Kinetic, MapDefinitions, TerritoryModel) {
 
+    var PlaceUnitModel = Backbone.Model.extend({
+        urlRoot: '/game/state/perform/place/unit',
+        defaults: {
+
+        }
+    });
+
     var LandAreaView = Backbone.View.extend({
 
         initialize: function() {
@@ -39,9 +46,24 @@ function(Backbone, _, Kinetic, MapDefinitions, TerritoryModel) {
 
                 this.territory.on('click', function() {
                     if (self.currentStateModel.get('state') === 'PLACE_UNITS') {
-                      self.currentStateModel.set('placeUnitUpdate', {numberOfUnits: 1, landArea: self.model.get('id')});
-                      self.currentStateModel.save({}, {
-                          url: '/game/state/update/',
+                        var placeUnitModel = new PlaceUnitModel();
+//                        placeUnitModel.set('gameId', self.currentStateModel.get('gameId'));
+//                        placeUnitModel.set('playerId', self.currentStateModel.get('playerId'));
+//                        placeUnitModel.set('territory', self.model.get('id'));
+//                        placeUnitModel.set('numberOfUnits', 1);
+//                      self.currentStateModel.set('placeUnitUpdate', {numberOfUnits: 1, landArea: self.model.get('id')});
+                        console.log(JSON.stringify({
+                            gameId: self.currentStateModel.get('gameId'),
+                            playerId: self.currentStateModel.get('playerId'),
+                            territory: self.model.get('id'),
+                            numberOfUnits: 1
+                        }));
+                        placeUnitModel.save({
+                            gameId: self.currentStateModel.get('gameId'),
+                            playerId: self.currentStateModel.get('playerId'),
+                            territory: self.model.get('id'),
+                            numberOfUnits: 1
+                            },{
                           success: function() {
                               console.log('unit placed');
                               self.model.set('units', self.model.get('units')+1);
@@ -50,7 +72,7 @@ function(Backbone, _, Kinetic, MapDefinitions, TerritoryModel) {
                               self.model.get('layer').add(self.tooltip);
                               self.model.get('layer').draw();
                           }
-                      });
+                        });
                     } else if (self.currentStateModel.get('state') === 'ATTACK') {
                         self.currentStateModel.set('attackActionUpdate', {territoryAttackSrc: self.model.get('id'),
                             attackingNumberOfUnits: self.model.get('units')});

@@ -8,13 +8,13 @@ function(Backbone, _, CreateGameTemplate, FriendsCollection) {
             createdByPlayerId: null,
             gameName: '',
             invites: {}
-        },
+        }
     });
 
     var InvitedPlayerModel = Backbone.Model.extend({});
     var FriendModel = Backbone.Model.extend({});
     var GamePlayersCollection = Backbone.Collection.extend({
-        model: InvitedPlayerModel,
+        model: InvitedPlayerModel
     });
 
     var CreateGameView = Backbone.View.extend({

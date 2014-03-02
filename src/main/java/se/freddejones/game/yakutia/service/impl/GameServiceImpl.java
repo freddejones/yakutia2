@@ -117,6 +117,7 @@ public class GameServiceImpl implements GameService {
 
     private boolean isAtLeastTwoAcceptedGamePlayers(List<GamePlayer> gamePlayers) {
 
+        // TODO remove this properly
         if ("dev".equals(System.getProperty("ENVIRONMENT"))) { return true; }
 
         int count = 0;
@@ -140,13 +141,13 @@ public class GameServiceImpl implements GameService {
 
         int strength = 0;
         for (Unit unit : gamePlayer.getUnits()) {
-            if (unit.getTerritory().equals(Territory.translateLandArea(placeUnitUpdate.getLandArea()))) {
+            if (unit.getTerritory().equals(Territory.translateLandArea(placeUnitUpdate.getTerritory()))) {
                 strength = unit.getStrength() + placeUnitUpdate.getNumberOfUnits();
                 unit.setStrength(strength);
                 gamePlayerDao.setUnitsToGamePlayer(gamePlayer.getGamePlayerId(), unit);
             }
         }
-        return new TerritoryDTO(placeUnitUpdate.getLandArea(), strength, true);
+        return new TerritoryDTO(placeUnitUpdate.getTerritory(), strength, true);
     }
 
     @Override

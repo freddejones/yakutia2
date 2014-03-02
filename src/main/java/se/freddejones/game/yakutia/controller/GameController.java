@@ -4,8 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import se.freddejones.game.yakutia.exception.NoGameFoundException;
-import se.freddejones.game.yakutia.exception.NotEnoughUnitsException;
-import se.freddejones.game.yakutia.exception.TerritoryNotConnectedException;
 import se.freddejones.game.yakutia.model.TerritoryDTO;
 import se.freddejones.game.yakutia.model.dto.CreateGameDTO;
 import se.freddejones.game.yakutia.model.dto.GameDTO;
@@ -72,11 +70,13 @@ public class GameController {
         return gameService.getGameStateModel(gameId, playerId);
     }
 
-
-
-    @RequestMapping(value = "/state/perform/place/unit", method = RequestMethod.POST)
+    @RequestMapping(value = "/state/perform/place/unit",
+            method = RequestMethod.POST,
+            headers = {"content-type=application/json"},
+            consumes = "application/json")
     @ResponseBody
-    public TerritoryDTO updateGameStateModel(@RequestBody PlaceUnitUpdate placeUnitUpdate) throws NotEnoughUnitsException {
+    public TerritoryDTO updateGameStateModel(@RequestBody final PlaceUnitUpdate placeUnitUpdate) {
+        log.info(placeUnitUpdate.toString());
         return gameService.placeUnitAction(placeUnitUpdate);
     }
 }
