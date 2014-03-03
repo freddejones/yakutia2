@@ -55,7 +55,7 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public List<GameDTO> getGamesForPlayerById(Long playerid) {
-        List<GameDTO> gamesForPlayer = new ArrayList<GameDTO>();
+        List<GameDTO> gamesForPlayer = new ArrayList<>();
         List<GamePlayer> gamePlayersList = gamePlayerDao.getGamePlayersByPlayerId(playerid);
         for(GamePlayer gamePlayer : gamePlayersList) {
             Game game = gameDao.getGameByGameId(gamePlayer.getGameId());
@@ -130,11 +130,13 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
+    @Transactional(readOnly = false)
     public TerritoryDTO placeUnitAction(PlaceUnitUpdate placeUnitUpdate) throws NotEnoughUnitsException {
         GamePlayer gamePlayer = gamePlayerDao.
                 getGamePlayerByGameIdAndPlayerId(placeUnitUpdate.getPlayerId(), placeUnitUpdate.getGameId());
 
-        if (gamePlayerDao.getUnassignedLand(gamePlayer.getGamePlayerId()).getStrength()
+        Unit unassignedLandUnit = gamePlayerDao.getUnassignedLand(gamePlayer.getGamePlayerId());
+        if (unassignedLandUnit.getStrength()
                 < placeUnitUpdate.getNumberOfUnits()) {
             throw new NotEnoughUnitsException("Insufficient funds");
         }
@@ -144,13 +146,16 @@ public class GameServiceImpl implements GameService {
             if (unit.getTerritory().equals(Territory.translateLandArea(placeUnitUpdate.getTerritory()))) {
                 strength = unit.getStrength() + placeUnitUpdate.getNumberOfUnits();
                 unit.setStrength(strength);
+                unassignedLandUnit.setStrength(unassignedLandUnit.getStrength()-placeUnitUpdate.getNumberOfUnits());
                 gamePlayerDao.setUnitsToGamePlayer(gamePlayer.getGamePlayerId(), unit);
+                gamePlayerDao.setUnitsToGamePlayer(gamePlayer.getGamePlayerId(), unassignedLandUnit);
             }
         }
         return new TerritoryDTO(placeUnitUpdate.getTerritory(), strength, true);
     }
 
     @Override
+    @Transactional(readOnly = false)
     public TerritoryDTO attackTerritoryAction(AttackActionUpdate attackActionUpdate) throws TerritoryNotConnectedException {
         Long playerId = attackActionUpdate.getPlayerId();
         Long gameId = attackActionUpdate.getGameId();

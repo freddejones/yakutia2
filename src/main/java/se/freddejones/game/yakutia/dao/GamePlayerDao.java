@@ -1,5 +1,7 @@
 package se.freddejones.game.yakutia.dao;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import se.freddejones.game.yakutia.entity.GamePlayer;
 import se.freddejones.game.yakutia.entity.Unit;
 import se.freddejones.game.yakutia.model.Territory;
@@ -21,5 +23,6 @@ public interface GamePlayerDao {
     void setUnitsToGamePlayer(Long gamePlayerId, Unit unit);
     Unit getUnassignedLand(Long gamePlayerId);
     void setActionStatus(Long gamePlayerId, ActionStatus actionStatus);
+    Session getSession();
 
 }

@@ -50,12 +50,11 @@ public class GameServiceTest {
     @InjectMocks private GameServiceImpl gameService;
 
     private GamePlayer gamePlayerMock;
-    private GamePlayer counterGamePlayerMock;
     private Game gameMock;
+
     @Before
     public void setup() {
         gamePlayerMock = mock(GamePlayer.class);
-        counterGamePlayerMock = mock(GamePlayer.class);
         gameMock = mock(Game.class);
     }
 
@@ -381,7 +380,9 @@ public class GameServiceTest {
 
         // When: placing units
         gameService.placeUnitAction(placeUnitUpdate);
-        verify(gamePlayerDaoMock, times(1)).setUnitsToGamePlayer(anyLong(), any(Unit.class));
+
+        // then
+        verify(gamePlayerDaoMock, times(2)).setUnitsToGamePlayer(eq(GAME_PLAYER_ID), any(Unit.class));
     }
 
     @Test(expected = TerritoryNotConnectedException.class)
@@ -567,8 +568,9 @@ public class GameServiceTest {
         when(gamePlayerDaoMock.getGamePlayersByPlayerId(anyLong())).thenReturn(
                 new GamePlayersListBuilder().addGamePlayer(gamePlayerMock).build());
         when(gamePlayerDaoMock.getGamePlayerByGameIdAndPlayerId(anyLong(), anyLong())).thenReturn(gamePlayerMock);
-        when(gamePlayerMock.getGameId()).thenReturn(666L);
-        when(gameDaoMock.getGameByGameId(666L)).thenReturn(gameMock);
+        when(gamePlayerMock.getGameId()).thenReturn(GAME_ID);
+        when(gamePlayerMock.getGamePlayerId()).thenReturn(GAME_PLAYER_ID);
+        when(gameDaoMock.getGameByGameId(GAME_ID)).thenReturn(gameMock);
         when(gameMock.getCreationTime()).thenReturn(new Date());
         when(gameMock.getGameStatus()).thenReturn(GameStatus.CREATED);
     }

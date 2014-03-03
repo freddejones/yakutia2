@@ -1,6 +1,7 @@
 package se.freddejones.game.yakutia.dao.impl;
 
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Repository;
 import se.freddejones.game.yakutia.dao.GamePlayerDao;
 import se.freddejones.game.yakutia.entity.GamePlayer;
@@ -12,6 +13,11 @@ import java.util.List;
 
 @Repository
 public class GamePlayerDaoImpl extends AbstractDaoImpl implements GamePlayerDao {
+
+    @Override
+    public Session getSession() {
+        return getCurrentSession();
+    }
 
     @Override
     public List<GamePlayer> getGamePlayersByPlayerId(Long playerId) {
@@ -52,7 +58,6 @@ public class GamePlayerDaoImpl extends AbstractDaoImpl implements GamePlayerDao 
         }
         return null;
     }
-
 
     @Override
     public void setUnitsToGamePlayer(Long gamePlayerId, Unit unit) {

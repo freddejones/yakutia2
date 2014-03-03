@@ -16,4 +16,7 @@ public abstract class AbstractDaoImpl {
         return sessionFactory.getCurrentSession();
     }
 
+    public SessionFactory getSessionFactory() {
+        return sessionFactory;
+    }
 }

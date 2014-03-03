@@ -38,7 +38,7 @@ public class GameDaoImpl extends AbstractDaoImpl implements GameDao {
     }
 
     private List<GamePlayer> setupGamePlayers(CreateGameDTO createGameDTO, Game game) {
-        List<GamePlayer> gamePlayers = new ArrayList<GamePlayer>();
+        List<GamePlayer> gamePlayers = new ArrayList<>();
         gamePlayers.add(setupGamePlayer(createGameDTO.getCreatedByPlayerId(), game, GamePlayerStatus.ACCEPTED));
 
         for (InvitedPlayer invitedPlayer : createGameDTO.getInvites()) {

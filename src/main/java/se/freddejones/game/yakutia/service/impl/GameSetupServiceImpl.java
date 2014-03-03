@@ -27,7 +27,7 @@ public class GameSetupServiceImpl implements GameSetupService {
     @Override
     @Transactional(readOnly = false)
     public void initializeNewGame(List<GamePlayer> gamePlayers) throws CouldNotCreateGameException {
-        ArrayList<GameSetup> gamePlayerSetups = new ArrayList<GameSetup>();
+        ArrayList<GameSetup> gamePlayerSetups = new ArrayList<>();
 
         for (GamePlayer gamePlayer : gamePlayers) {
             GameSetup gameSetup = new GameSetup();
