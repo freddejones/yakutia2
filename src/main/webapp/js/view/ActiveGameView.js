@@ -52,7 +52,6 @@ function(Backbone, _, Kinetic, GameMapTemplate, MapDefinitions, TerritoryModel, 
                 url: '/game/state/'+window.gameId+'/'+window.playerId
             });
             this.collection = new GameStateCollection();
-            //this.collection.listenTo(this.collection, "change reset add remove", this.tomteStuff());
             var self = this;
             this.collection.fetch({
                 url: '/game/get/'+window.playerId+'/game/'+window.gameId,

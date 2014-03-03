@@ -151,6 +151,11 @@ public class GameServiceImpl implements GameService {
                 gamePlayerDao.setUnitsToGamePlayer(gamePlayer.getGamePlayerId(), unassignedLandUnit);
             }
         }
+
+        if (unassignedLandUnit.getStrength() == 0) {
+            gamePlayerDao.setActionStatus(gamePlayer.getGamePlayerId(), ActionStatus.ATTACK);
+        }
+
         return new TerritoryDTO(placeUnitUpdate.getTerritory(), strength, true);
     }
 
@@ -207,6 +212,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
+    @Transactional(readOnly = false)
     public GameStateModelDTO getGameStateModel(Long gameId, Long playerId) {
         GamePlayer gamePlayer = gamePlayerDao.getGamePlayerByGameIdAndPlayerId(playerId, gameId);
 
@@ -214,8 +220,12 @@ public class GameServiceImpl implements GameService {
         gameStateModelDTO.setGameId(gameId);
         gameStateModelDTO.setPlayerId(playerId);
 
-        if (gamePlayer.getActionStatus() == null ||
-                gamePlayer.getActionStatus() == ActionStatus.PLACE_UNITS) {
+        if (gamePlayer.getActionStatus() == null) {
+            gamePlayerDao.setActionStatus(gamePlayer.getGamePlayerId(), ActionStatus.PLACE_UNITS);
+            gameStateModelDTO.setState(ActionStatus.PLACE_UNITS.toString());
+        }
+
+        if (gamePlayer.getActionStatus() == ActionStatus.PLACE_UNITS) {
             gameStateModelDTO.setState(ActionStatus.PLACE_UNITS.toString());
         } else if (gamePlayer.getActionStatus() == ActionStatus.ATTACK) {
             gameStateModelDTO.setState(ActionStatus.ATTACK.toString());
@@ -225,22 +235,6 @@ public class GameServiceImpl implements GameService {
 
         return gameStateModelDTO;
     }
-
-//    @Override
-//    @Transactional(readOnly = false)
-//    public GameStateModelDTO updateStateModel(GameStateModelDTO gameStateModelDTO)
-//            throws NotEnoughUnitsException, TerritoryNotConnectedException {
-//        GamePlayer gamePlayer = gamePlayerDao.getGamePlayerByGameIdAndPlayerId(
-//                gameStateModelDTO.getPlayerId(), gameStateModelDTO.getGameId());
-//
-//        if (ActionStatus.PLACE_UNITS.toString().equals(gameStateModelDTO.getState())) {
-//            placeUnitUpdate(gameStateModelDTO, gamePlayer);
-//        } else if (ActionStatus.ATTACK.toString().equals(gameStateModelDTO.getState())) {
-//            attackTerritory(gameStateModelDTO, gamePlayer);
-//        }
-//
-//        return gameStateModelDTO;
-//    }
 
 //    private void attackTerritory(GameStateModelDTO gameStateModelDTO, GamePlayer gamePlayer) throws TerritoryNotConnectedException {
 //        gameStateModelDTO.getAttackActionUpdate();

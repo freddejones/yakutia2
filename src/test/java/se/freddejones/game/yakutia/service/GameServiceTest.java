@@ -59,21 +59,39 @@ public class GameServiceTest {
     }
 
     @Test
+    public void testInitialSetupOfGameStart() throws Exception {
+        // Given gameplayer object with place unit status
+        setupGetGamesForPlayerDefaultMockSettings();
+        when(gamePlayerDaoMock.getGamePlayerByGameIdAndPlayerId(PLAYER_ID, GAME_ID)).thenReturn(gamePlayerMock);
+        when(gamePlayerMock.getActionStatus()).thenReturn(null);
+
+        // When: get the state model
+        GameStateModelDTO gameStateModelDTO = gameService.getGameStateModel(GAME_ID, PLAYER_ID);
+
+        // Then: correct action status i returned
+        assertThat(gameStateModelDTO.getState()).isEqualTo(ActionStatus.PLACE_UNITS.toString());
+        verify(gamePlayerDaoMock).setActionStatus(GAME_PLAYER_ID, ActionStatus.PLACE_UNITS);
+    }
+
+    @Test
     public void testPlaceUnitStatusIsReturnedInDTO() throws Exception {
         // Given gameplayer object with place unit status
+        setupGetGamesForPlayerDefaultMockSettings();
         when(gamePlayerDaoMock.getGamePlayerByGameIdAndPlayerId(anyLong(), anyLong())).thenReturn(gamePlayerMock);
         when(gamePlayerMock.getActionStatus()).thenReturn(ActionStatus.PLACE_UNITS);
 
         // When: get the state model
-        GameStateModelDTO gameStateModelDTO = gameService.getGameStateModel(1L,1L);
+        GameStateModelDTO gameStateModelDTO = gameService.getGameStateModel(GAME_ID, PLAYER_ID);
 
         // Then: correct action status i returned
         assertThat(gameStateModelDTO.getState()).isEqualTo(ActionStatus.PLACE_UNITS.toString());
+        verify(gamePlayerDaoMock, never()).setActionStatus(anyLong(), any(ActionStatus.class));
     }
 
     @Test
     public void testAttackStatusIsReturnedInDTO() throws Exception {
         // Given gameplayer object with attack status
+        setupGetGamesForPlayerDefaultMockSettings();
         when(gamePlayerDaoMock.getGamePlayerByGameIdAndPlayerId(anyLong(), anyLong())).thenReturn(gamePlayerMock);
         when(gamePlayerMock.getActionStatus()).thenReturn(ActionStatus.ATTACK);
 
@@ -82,11 +100,13 @@ public class GameServiceTest {
 
         // Then: correct action status i returned
         assertThat(gameStateModelDTO.getState()).isEqualTo(ActionStatus.ATTACK.toString());
+        verify(gamePlayerDaoMock, never()).setActionStatus(anyLong(), any(ActionStatus.class));
     }
 
     @Test
     public void testMoveUnitsStatusIsReturnedInDTO() throws Exception {
         // Given gameplayer object with move unit status
+        setupGetGamesForPlayerDefaultMockSettings();
         when(gamePlayerDaoMock.getGamePlayerByGameIdAndPlayerId(anyLong(), anyLong())).thenReturn(gamePlayerMock);
         when(gamePlayerMock.getActionStatus()).thenReturn(ActionStatus.MOVE);
 
@@ -95,7 +115,7 @@ public class GameServiceTest {
 
         // Then: correct action status i returned
         assertThat(gameStateModelDTO.getState()).isEqualTo(ActionStatus.MOVE.toString());
-
+        verify(gamePlayerDaoMock, never()).setActionStatus(anyLong(), any(ActionStatus.class));
     }
 
     @Test
@@ -311,6 +331,11 @@ public class GameServiceTest {
             verifyZeroInteractions(gameDaoMock);
         }
 
+    }
+
+    @Test
+    public void testPlaceUnitTransitionToAttackState() throws Exception {
+        fail("not implmented test yet");
     }
 
     @Test
