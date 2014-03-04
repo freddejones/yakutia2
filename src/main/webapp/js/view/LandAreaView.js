@@ -19,7 +19,6 @@ function(Backbone, _, Kinetic, MapDefinitions, TerritoryModel) {
 
     var LandAreaView = Backbone.View.extend({
         initialize: function() {
-            _.bind(this, 'clickEvent');
             var self = this;
             var isOwnedByPlayer = this.model.get('ownedByPlayer');
             var color = isOwnedByPlayer ? 'green' : 'red';
@@ -30,7 +29,7 @@ function(Backbone, _, Kinetic, MapDefinitions, TerritoryModel) {
             this.model.get('layer').add(this.tooltip);
 
             this.currentStateModel = this.model.get('stateModel');
-            this.attackModel = new AttackModel();
+            this.currentStateModel.attackModel = new AttackModel();
 
             if (isOwnedByPlayer) {
                 this.territory.on('mouseover', function() {
@@ -64,10 +63,16 @@ function(Backbone, _, Kinetic, MapDefinitions, TerritoryModel) {
                           }
                         });
                     } else if (self.currentStateModel.get('state') === 'ATTACK') {
-                        self.attackModel.set('territoryAttackSrc', self.model.get('id'));
-                        self.attackModel.set('attackingNumberOfUnits', self.model.get('units'));
-                        self.attackModel.set('gameId', window.gameId);
-                        self.attackModel.set('playerId', window.playerId);
+//                        self.attackModel.set('territoryAttackSrc', self.model.get('id'));
+//                        self.attackModel.set('attackingNumberOfUnits', self.model.get('units'));
+//                        self.attackModel.set('gameId', window.gameId);
+//                        self.attackModel.set('playerId', window.playerId);
+                        self.currentStateModel.attackModel = new AttackModel({
+                            territoryAttackSrc: self.model.get('id'),
+                            attackingNumberOfUnits: self.model.get('units'),
+                            gameId: window.gameId,
+                            playerId: window.playerId
+                        });
                     } else {
                         console.log(self.currentStateModel.get('state'));
                     }
@@ -75,22 +80,16 @@ function(Backbone, _, Kinetic, MapDefinitions, TerritoryModel) {
             } else {
                 this.territory.on('click', function() {
                     if (self.currentStateModel.get('state') === 'ATTACK') {
-                        _.extend(self.attackModel, {territoryAttackDest: self.model.get('id')});
-//                        self.attackModel.set('territoryAttackDest', self.model.get('id'));
-                        self.attackModel.save({}, {
-                            success: function() {console.log("tomtefräsattacken")}
+//                        self.currentStateModel.attackModel = _.extend(self.currentStateModel.attackModel, {territoryAttackDest: self.model.get('id')});
+                        self.currentStateModel.attackModel.set('territoryAttackDest', self.model.get('id'));
+                        self.currentStateModel.attackModel.save({}, {
+                            success: function() {
+                                console.log("tomtefräsattacken")
+                                // TODO add refresh of state +
+                                // trigger event to other destination territory
+                            }
                         });
-//                        _.extend(self.currentStateModel.get('attackActionUpdate'), {territoryAttackDest: self.model.get('id')});
-//                        self.currentStateModel.save({}, {
-//                              url: '/game/state/update/',
-//                              success: function(stuff) {
-//                                  console.log('attack was made');
-//                                  self.rebuild = true;
-//                                  self.tooltip.destroy();
-//                                  self.territory.destroy();
-//                              }
-//                          });
-                        }
+                    }
                   });
             }
             this.render();
