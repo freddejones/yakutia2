@@ -11,28 +11,26 @@ function(Backbone, _, Kinetic, MapDefinitions, TerritoryModel) {
         }
     });
 
-    var LandAreaView = Backbone.View.extend({
+    var AttackModel = Backbone.Model.extend({
+        urlRoot: '/game/state/perform/attack/territory',
+        defaults: {
+        }
+    });
 
+    var LandAreaView = Backbone.View.extend({
         initialize: function() {
             _.bind(this, 'clickEvent');
             var self = this;
             var isOwnedByPlayer = this.model.get('ownedByPlayer');
             var color = isOwnedByPlayer ? 'green' : 'red';
-            this.territory = new Kinetic.Rect({
-                width: 80,
-                height: 50,
-                x: this.model.get('drawData').x,
-                y: this.model.get('drawData').y,
-                //data: this.model.get('drawData').path,
-                fill: color
-                //scale: {x:1, y:1}
-            });
+            this.territory = this.getTerritoryObject(color);
 
             this.model.get('layer').add(this.territory);
             this.tooltip = this.getTooltip(this.model);
             this.model.get('layer').add(this.tooltip);
 
             this.currentStateModel = this.model.get('stateModel');
+            this.attackModel = new AttackModel();
 
             if (isOwnedByPlayer) {
                 this.territory.on('mouseover', function() {
@@ -66,8 +64,10 @@ function(Backbone, _, Kinetic, MapDefinitions, TerritoryModel) {
                           }
                         });
                     } else if (self.currentStateModel.get('state') === 'ATTACK') {
-                        self.currentStateModel.set('attackActionUpdate', {territoryAttackSrc: self.model.get('id'),
-                            attackingNumberOfUnits: self.model.get('units')});
+                        self.attackModel.set('territoryAttackSrc', self.model.get('id'));
+                        self.attackModel.set('attackingNumberOfUnits', self.model.get('units'));
+                        self.attackModel.set('gameId', window.gameId);
+                        self.attackModel.set('playerId', window.playerId);
                     } else {
                         console.log(self.currentStateModel.get('state'));
                     }
@@ -75,27 +75,37 @@ function(Backbone, _, Kinetic, MapDefinitions, TerritoryModel) {
             } else {
                 this.territory.on('click', function() {
                     if (self.currentStateModel.get('state') === 'ATTACK') {
-                        _.extend(self.currentStateModel.get('attackActionUpdate'), {territoryAttackDest: self.model.get('id')});
-                        self.currentStateModel.save({}, {
-                              url: '/game/state/update/',
-                              success: function(stuff) {
-                                  console.log('attack was made');
-//                                  self.model.set('units', self.model.get('units')+1);
-//                                  self.territory.fill('yellow');
-                                  self.rebuild = true;
-                                  self.tooltip.destroy();
-                                  self.territory.destroy();
-//                                  self.tooltip = self.getTooltip(self.model);
-//                                  self.model.get('layer').add(self.tooltip);
-//                                  self.model.get('layer').draw();
-                              }
-                          });
+                        _.extend(self.attackModel, {territoryAttackDest: self.model.get('id')});
+//                        self.attackModel.set('territoryAttackDest', self.model.get('id'));
+                        self.attackModel.save({}, {
+                            success: function() {console.log("tomtefräsattacken")}
+                        });
+//                        _.extend(self.currentStateModel.get('attackActionUpdate'), {territoryAttackDest: self.model.get('id')});
+//                        self.currentStateModel.save({}, {
+//                              url: '/game/state/update/',
+//                              success: function(stuff) {
+//                                  console.log('attack was made');
+//                                  self.rebuild = true;
+//                                  self.tooltip.destroy();
+//                                  self.territory.destroy();
+//                              }
+//                          });
                         }
                   });
             }
             this.render();
         },
-
+        getTerritoryObject: function (color) {
+            return new Kinetic.Rect({
+                width: 80,
+                height: 50,
+                x: this.model.get('drawData').x,
+                y: this.model.get('drawData').y,
+                //data: this.model.get('drawData').path,
+                fill: color
+                //scale: {x:1, y:1}
+            });
+        },
         render: function() {
             this.model.get('layer').draw();
             return this;
