@@ -17,6 +17,9 @@ function(Backbone, _, Kinetic, MapDefinitions, TerritoryModel) {
         }
     });
 
+    var TerritoryModel = Backbone.Model.extend({
+    })
+
     var LandAreaView = Backbone.View.extend({
         initialize: function() {
             var self = this;
@@ -50,7 +53,7 @@ function(Backbone, _, Kinetic, MapDefinitions, TerritoryModel) {
                             territory: self.model.get('id'),
                             numberOfUnits: 1
                             },{ success: function() {
-                            self.reRender();
+                                self.reRender();
                           }
                         });
                     } else if (self.currentStateModel.get('state') === 'ATTACK') {
@@ -78,6 +81,7 @@ function(Backbone, _, Kinetic, MapDefinitions, TerritoryModel) {
                                 console.log("tomtefräsattacken")
                                 // TODO add refresh of state +
                                 // trigger event to other destination territory
+                                self.reRender();
                             }
                         });
                     }
@@ -101,15 +105,28 @@ function(Backbone, _, Kinetic, MapDefinitions, TerritoryModel) {
             return this;
         },
         reRender: function() {
-//            self.model.set('units', self.model.get('units')+1);
-//            console.log('unit placed');
             this.currentStateModel.fetch({
                 url: '/game/state/'+window.gameId+'/'+window.playerId
             });
-            this.tooltip.destroy();
-            this.tooltip = this.getTooltip(this.model);
-            this.model.get('layer').add(this.tooltip);
-            this.model.get('layer').draw();
+
+            var self = this;
+            var url = '/game/state/territory/'+window.gameId+'/'+window.playerId+'/'+this.model.get('id');
+            var territoryModel = new TerritoryModel();
+            territoryModel.fetch({
+                url: url,
+                success: function(model) {
+                    self.tooltip.destroy();
+                    self.model.set('units', model.get('units'));
+                    self.tooltip = self.getTooltip(self.model);
+                    self.model.get('layer').add(self.tooltip);
+                    self.model.get('layer').draw();
+                }
+            });
+//            this.tooltip.destroy();
+//            this.model.set('units', this.model.get('units') + 1);
+//            this.tooltip = this.getTooltip(this.model);
+//            this.model.get('layer').add(this.tooltip);
+//            this.model.get('layer').draw();
         },
         getTooltip: function(model) {
 
