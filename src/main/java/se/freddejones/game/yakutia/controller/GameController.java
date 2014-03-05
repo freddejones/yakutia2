@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import se.freddejones.game.yakutia.exception.NoGameFoundException;
+import se.freddejones.game.yakutia.model.Territory;
 import se.freddejones.game.yakutia.model.TerritoryDTO;
 import se.freddejones.game.yakutia.model.dto.*;
 import se.freddejones.game.yakutia.service.GameService;
@@ -65,6 +66,15 @@ public class GameController {
          @PathVariable("playerId") Long playerId) throws Exception {
         log.info("Fetching game state for playerId: " + playerId + " and gameid: "+ gameId);
         return gameService.getGameStateModel(gameId, playerId);
+    }
+
+    @RequestMapping(value = "/state/territory/{gameId}/{playerId}/{territory}",
+            method = RequestMethod.GET)
+    @ResponseBody
+    public TerritoryDTO getCurrentTerritoryState(@PathVariable("gameId") Long gameId,
+                                                 @PathVariable("playerId") Long playerId,
+                                                 @PathVariable("territory") String territory) {
+        return gameService.getTerritoryInformationForTerritory(Territory.translateLandArea(territory), gameId, playerId);
     }
 
     @RequestMapping(value = "/state/perform/place/unit",

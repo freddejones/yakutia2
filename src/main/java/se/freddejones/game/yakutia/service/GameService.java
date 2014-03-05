@@ -2,6 +2,7 @@ package se.freddejones.game.yakutia.service;
 
 import se.freddejones.game.yakutia.exception.NotEnoughUnitsException;
 import se.freddejones.game.yakutia.exception.TerritoryNotConnectedException;
+import se.freddejones.game.yakutia.model.Territory;
 import se.freddejones.game.yakutia.model.TerritoryDTO;
 import se.freddejones.game.yakutia.model.dto.*;
 
@@ -23,4 +24,5 @@ public interface GameService {
     public TerritoryDTO moveUnitsAction(PlaceUnitUpdate placeUnitUpdate);
     public GameStateModelDTO getGameStateModel(Long gameId, Long playerId);
 
+    public TerritoryDTO getTerritoryInformationForTerritory(Territory territory, Long gameId, Long playerId);
 }

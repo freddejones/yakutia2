@@ -236,6 +236,19 @@ public class GameServiceImpl implements GameService {
         return gameStateModelDTO;
     }
 
+    @Override
+    public TerritoryDTO getTerritoryInformationForTerritory(Territory territory, Long gameId, Long playerId) {
+        GamePlayer reqGp = gamePlayerDao.getGamePlayerByGameIdAndPlayerId(playerId, gameId);
+        GamePlayer gp = gamePlayerDao.getGamePlayerByGameIdAndTerritory(gameId, territory);
+
+        TerritoryDTO territoryDTO = new TerritoryDTO(
+                territory.toString(),
+                gp.getUnitByTerritory(territory).getStrength(),
+                reqGp.getGamePlayerId() == gp.getGamePlayerId());
+        return territoryDTO;
+    }
+
+
 //    private void attackTerritory(GameStateModelDTO gameStateModelDTO, GamePlayer gamePlayer) throws TerritoryNotConnectedException {
 //        gameStateModelDTO.getAttackActionUpdate();
 //        Territory attackingTerritory = Territory.translateLandArea(gameStateModelDTO.getAttackActionUpdate().getTerritoryAttackSrc());

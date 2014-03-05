@@ -49,17 +49,8 @@ function(Backbone, _, Kinetic, MapDefinitions, TerritoryModel) {
                             playerId: self.currentStateModel.get('playerId'),
                             territory: self.model.get('id'),
                             numberOfUnits: 1
-                            },{
-                          success: function() {
-                              console.log('unit placed');
-                              self.model.set('units', self.model.get('units')+1);
-                              self.tooltip.destroy();
-                              self.tooltip = self.getTooltip(self.model);
-                              self.model.get('layer').add(self.tooltip);
-                              self.model.get('layer').draw();
-                              self.currentStateModel.fetch({
-                                  url: '/game/state/'+window.gameId+'/'+window.playerId
-                              });
+                            },{ success: function() {
+                            self.reRender();
                           }
                         });
                     } else if (self.currentStateModel.get('state') === 'ATTACK') {
@@ -108,6 +99,17 @@ function(Backbone, _, Kinetic, MapDefinitions, TerritoryModel) {
         render: function() {
             this.model.get('layer').draw();
             return this;
+        },
+        reRender: function() {
+//            self.model.set('units', self.model.get('units')+1);
+//            console.log('unit placed');
+            this.currentStateModel.fetch({
+                url: '/game/state/'+window.gameId+'/'+window.playerId
+            });
+            this.tooltip.destroy();
+            this.tooltip = this.getTooltip(this.model);
+            this.model.get('layer').add(this.tooltip);
+            this.model.get('layer').draw();
         },
         getTooltip: function(model) {
 

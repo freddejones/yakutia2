@@ -1,5 +1,6 @@
 package se.freddejones.game.yakutia.entity;
 
+import se.freddejones.game.yakutia.model.Territory;
 import se.freddejones.game.yakutia.model.statuses.ActionStatus;
 import se.freddejones.game.yakutia.model.statuses.GamePlayerStatus;
 
@@ -138,5 +139,14 @@ public class GamePlayer implements Serializable {
 
     public void setActionStatus(ActionStatus actionStatus) {
         this.actionStatus = actionStatus;
+    }
+
+    public Unit getUnitByTerritory(Territory territory) {
+        for (Unit u : getUnits()) {
+            if (u.getTerritory() == territory) {
+                return u;
+            }
+        }
+        return null;
     }
 }

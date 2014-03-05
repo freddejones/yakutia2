@@ -6,17 +6,19 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import se.freddejones.game.yakutia.exception.NotEnoughUnitsException;
+import se.freddejones.game.yakutia.model.Territory;
 import se.freddejones.game.yakutia.model.TerritoryDTO;
 import se.freddejones.game.yakutia.model.dto.AttackActionUpdate;
 import se.freddejones.game.yakutia.model.dto.PlaceUnitUpdate;
 import se.freddejones.game.yakutia.service.GameService;
 
 import java.util.ArrayList;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.StringContains.containsString;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.contains;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -77,7 +79,6 @@ public class GameControllerTest {
                 .content("{\"territory\":\"test\", \"gameId\":\"1\", \"playerId\":\"1\", \"numberOfUnits\":\"5\"}"))
                 .andDo(print())
                 .andExpect(status().isForbidden());
-
     }
 
     @Test
@@ -90,6 +91,18 @@ public class GameControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString(), is("{\"landName\":\"TOMTE\",\"units\":1,\"ownedByPlayer\":true}"));
+    }
+
+    @Test
+    public void testGetTerritoryStateInformation() throws Exception {
+        TerritoryDTO territoryDTO = new TerritoryDTO("SWEDEN", 1, true);
+        when(gameService.getTerritoryInformationForTerritory(Territory.SWEDEN, 1L, 1L)).thenReturn(territoryDTO);
+        String response = mockMvc.perform(get("/game/state/territory/1/1/sweden")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+        assertThat(response, containsString("{\"landName\":\"SWEDEN\",\"units\":1,\"ownedByPlayer\":true}"));
     }
 
     private ArrayList<TerritoryDTO> getYakutiaModels() {
