@@ -22,29 +22,40 @@ function(Backbone, _, Kinetic, MapDefinitions, TerritoryModel) {
 
     var LandAreaView = Backbone.View.extend({
         initialize: function() {
-            var self = this;
-            var isOwnedByPlayer = this.model.get('ownedByPlayer');
-            var color = isOwnedByPlayer ? 'green' : 'red';
-            this.territory = this.getTerritoryObject(color);
-
+            this.territory = this.getTerritoryObject(this.model.get('ownedByPlayer'));
             this.model.get('layer').add(this.territory);
             this.tooltip = this.getTooltip(this.model);
             this.model.get('layer').add(this.tooltip);
 
             this.currentStateModel = this.model.get('stateModel');
             this.currentStateModel.attackModel = new AttackModel();
+            this.render();
+        },
+        getTerritoryObject: function (isOwnedByPlayer) {
+            var self = this;
+            var color = isOwnedByPlayer ? 'green' : 'red';
+
+            var territoryDrawObject = new Kinetic.Rect({
+                width: 80,
+                height: 50,
+                x: this.model.get('drawData').x,
+                y: this.model.get('drawData').y,
+                //data: this.model.get('drawData').path,
+                fill: color
+                //scale: {x:1, y:1}
+            });
 
             if (isOwnedByPlayer) {
-                this.territory.on('mouseover', function() {
+                territoryDrawObject.on('mouseover', function() {
                     this.setFill('blue');
                     self.model.get('layer').draw();
                 });
-                this.territory.on('mouseout', function() {
+                territoryDrawObject.on('mouseout', function() {
                     this.setFill(color);
                     self.model.get('layer').draw();
                 });
 
-                this.territory.on('click', function() {
+                territoryDrawObject.on('click', function() {
                     if (self.currentStateModel.get('state') === 'PLACE_UNITS') {
                         var placeUnitModel = new PlaceUnitModel();
                         placeUnitModel.save({
@@ -52,15 +63,15 @@ function(Backbone, _, Kinetic, MapDefinitions, TerritoryModel) {
                             playerId: self.currentStateModel.get('playerId'),
                             territory: self.model.get('id'),
                             numberOfUnits: 1
-                            },{ success: function() {
-                                self.reRender();
-                          }
+                        },{ success: function() {
+                            self.reRenderTooltip();
+                        }
                         });
                     } else if (self.currentStateModel.get('state') === 'ATTACK') {
-//                        self.attackModel.set('territoryAttackSrc', self.model.get('id'));
-//                        self.attackModel.set('attackingNumberOfUnits', self.model.get('units'));
-//                        self.attackModel.set('gameId', window.gameId);
-//                        self.attackModel.set('playerId', window.playerId);
+    //                        self.attackModel.set('territoryAttackSrc', self.model.get('id'));
+    //                        self.attackModel.set('attackingNumberOfUnits', self.model.get('units'));
+    //                        self.attackModel.set('gameId', window.gameId);
+    //                        self.attackModel.set('playerId', window.playerId);
                         self.currentStateModel.attackModel = new AttackModel({
                             territoryAttackSrc: self.model.get('id'),
                             attackingNumberOfUnits: self.model.get('units'),
@@ -72,7 +83,15 @@ function(Backbone, _, Kinetic, MapDefinitions, TerritoryModel) {
                     }
                 });
             } else {
-                this.territory.on('click', function() {
+                territoryDrawObject.on('mouseover', function() {
+                    this.setFill('yellow');
+                    self.model.get('layer').draw();
+                });
+                territoryDrawObject.on('mouseout', function() {
+                    this.setFill(color);
+                    self.model.get('layer').draw();
+                });
+                territoryDrawObject.on('click', function() {
                     if (self.currentStateModel.get('state') === 'ATTACK') {
 //                        self.currentStateModel.attackModel = _.extend(self.currentStateModel.attackModel, {territoryAttackDest: self.model.get('id')});
                         self.currentStateModel.attackModel.set('territoryAttackDest', self.model.get('id'));
@@ -81,30 +100,22 @@ function(Backbone, _, Kinetic, MapDefinitions, TerritoryModel) {
                                 console.log("tomtefräsattacken")
                                 // TODO add refresh of state +
                                 // trigger event to other destination territory
-                                self.reRender();
+                                self.reRenderTooltip();
                             }
                         });
                     }
-                  });
+                });
             }
-            this.render();
-        },
-        getTerritoryObject: function (color) {
-            return new Kinetic.Rect({
-                width: 80,
-                height: 50,
-                x: this.model.get('drawData').x,
-                y: this.model.get('drawData').y,
-                //data: this.model.get('drawData').path,
-                fill: color
-                //scale: {x:1, y:1}
-            });
+
+
+
+            return territoryDrawObject;
         },
         render: function() {
             this.model.get('layer').draw();
             return this;
         },
-        reRender: function() {
+        reRenderTooltip: function() {
             this.currentStateModel.fetch({
                 url: '/game/state/'+window.gameId+'/'+window.playerId
             });
@@ -122,11 +133,6 @@ function(Backbone, _, Kinetic, MapDefinitions, TerritoryModel) {
                     self.model.get('layer').draw();
                 }
             });
-//            this.tooltip.destroy();
-//            this.model.set('units', this.model.get('units') + 1);
-//            this.tooltip = this.getTooltip(this.model);
-//            this.model.get('layer').add(this.tooltip);
-//            this.model.get('layer').draw();
         },
         getTooltip: function(model) {
 

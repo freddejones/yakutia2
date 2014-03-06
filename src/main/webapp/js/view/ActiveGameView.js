@@ -26,7 +26,6 @@ function(Backbone, _, Kinetic, GameMapTemplate, MapDefinitions, TerritoryModel, 
         parse: function(response){
 
             for (var i=0; i< response.length; i++) {
-                console.log(response[i].landName);
                 var landName = response[i].landName.toLowerCase();
                 this.push(new TerritoryModel({
                     drawData: MapDefinition.territories[landName],
