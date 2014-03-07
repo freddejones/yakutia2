@@ -17,7 +17,7 @@ function(Backbone, _, Kinetic, MapDefinitions, TerritoryModel) {
         }
     });
 
-    var TerritoryModel = Backbone.Model.extend({
+    var TerritoryData = Backbone.Model.extend({
     })
 
     var LandAreaView = Backbone.View.extend({
@@ -26,6 +26,8 @@ function(Backbone, _, Kinetic, MapDefinitions, TerritoryModel) {
             this.model.get('layer').add(this.territory);
             this.tooltip = this.getTooltip(this.model);
             this.model.get('layer').add(this.tooltip);
+
+            window.App.vent.on('Territory::attackUpdate', this.updateStateModel, this);
 
             this.currentStateModel = this.model.get('stateModel');
             this.currentStateModel.attackModel = new AttackModel();
@@ -64,14 +66,10 @@ function(Backbone, _, Kinetic, MapDefinitions, TerritoryModel) {
                             territory: self.model.get('id'),
                             numberOfUnits: 1
                         },{ success: function() {
-                            self.reRenderTooltip();
+                            self.updateStateModel();
                         }
                         });
                     } else if (self.currentStateModel.get('state') === 'ATTACK') {
-    //                        self.attackModel.set('territoryAttackSrc', self.model.get('id'));
-    //                        self.attackModel.set('attackingNumberOfUnits', self.model.get('units'));
-    //                        self.attackModel.set('gameId', window.gameId);
-    //                        self.attackModel.set('playerId', window.playerId);
                         self.currentStateModel.attackModel = new AttackModel({
                             territoryAttackSrc: self.model.get('id'),
                             attackingNumberOfUnits: self.model.get('units'),
@@ -93,14 +91,14 @@ function(Backbone, _, Kinetic, MapDefinitions, TerritoryModel) {
                 });
                 territoryDrawObject.on('click', function() {
                     if (self.currentStateModel.get('state') === 'ATTACK') {
-//                        self.currentStateModel.attackModel = _.extend(self.currentStateModel.attackModel, {territoryAttackDest: self.model.get('id')});
                         self.currentStateModel.attackModel.set('territoryAttackDest', self.model.get('id'));
                         self.currentStateModel.attackModel.save({}, {
                             success: function() {
                                 console.log("tomtefräsattacken")
                                 // TODO add refresh of state +
                                 // trigger event to other destination territory
-                                self.reRenderTooltip();
+                                window.App.vent.trigger('Territory::attackUpdate');
+                                self.updateStateModel();
                             }
                         });
                     }
@@ -115,15 +113,21 @@ function(Backbone, _, Kinetic, MapDefinitions, TerritoryModel) {
             this.model.get('layer').draw();
             return this;
         },
-        reRenderTooltip: function() {
+        reRenderTerritoryOjbect: function() {
+            this.territory.destroy();
+            this.territory = this.getTerritoryObject(this.model.get('ownedByPlayer'));
+            this.model.get('layer').add(this.territory);
+            this.model.get('layer').draw();
+        },
+        updateStateModel: function() {
             this.currentStateModel.fetch({
                 url: '/game/state/'+window.gameId+'/'+window.playerId
             });
 
             var self = this;
             var url = '/game/state/territory/'+window.gameId+'/'+window.playerId+'/'+this.model.get('id');
-            var territoryModel = new TerritoryModel();
-            territoryModel.fetch({
+            var territoryData = new TerritoryData();
+            territoryData.fetch({
                 url: url,
                 success: function(model) {
                     self.tooltip.destroy();
