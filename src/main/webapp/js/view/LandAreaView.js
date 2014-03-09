@@ -27,7 +27,7 @@ function(Backbone, _, Kinetic, MapDefinitions, TerritoryModel) {
             this.tooltip = this.getTooltip(this.model);
             this.model.get('layer').add(this.tooltip);
 
-            window.App.vent.on('Territory::attackUpdate', this.updateStateModel, this);
+            window.App.vent.on('Territory::attackUpdate:'+this.model.get('id'), this.reRenderTerritoryOjbect, this);
 
             this.currentStateModel = this.model.get('stateModel');
             this.currentStateModel.attackModel = new AttackModel();
@@ -97,16 +97,14 @@ function(Backbone, _, Kinetic, MapDefinitions, TerritoryModel) {
                                 console.log("tomtefräsattacken")
                                 // TODO add refresh of state +
                                 // trigger event to other destination territory
-                                window.App.vent.trigger('Territory::attackUpdate');
-                                self.updateStateModel();
+//                                window.App.vent.trigger('Territory::attackUpdate:'+self.currentStateModel.attackModel.get('territoryAttackSrc'));
+//                                window.App.vent.trigger('Territory::attackUpdate:'+self.currentStateModel.attackModel.get('territoryAttackDest'));
+                                self.updateStateModel(self.currentStateModel.attackModel.get('territoryAttackDest'));
                             }
                         });
                     }
                 });
             }
-
-
-
             return territoryDrawObject;
         },
         render: function() {
@@ -119,17 +117,18 @@ function(Backbone, _, Kinetic, MapDefinitions, TerritoryModel) {
             this.model.get('layer').add(this.territory);
             this.model.get('layer').draw();
         },
-        updateStateModel: function() {
+        updateStateModel: function(territory) {
             this.currentStateModel.fetch({
                 url: '/game/state/'+window.gameId+'/'+window.playerId
             });
 
             var self = this;
-            var url = '/game/state/territory/'+window.gameId+'/'+window.playerId+'/'+this.model.get('id');
+            var url = '/game/state/territory/'+window.gameId+'/'+window.playerId+'/'+territory;
             var territoryData = new TerritoryData();
             territoryData.fetch({
                 url: url,
                 success: function(model) {
+                    window.App.vent.trigger('Territory::attackUpdate:'+territory);
                     self.tooltip.destroy();
                     self.model.set('units', model.get('units'));
                     self.tooltip = self.getTooltip(self.model);
