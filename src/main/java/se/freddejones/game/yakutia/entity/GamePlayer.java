@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.util.List;
 
 @Entity
-@Table(name = "GAMES_PLAYER_CON")
+@Table(name = "GAME_PLAYERS_CON")
 @NamedQueries({
         @NamedQuery(
                 name = "GamePlayer.getGamePlayersFromPlayerId",
@@ -25,7 +25,6 @@ import java.util.List;
         )
 })
 public class GamePlayer implements Serializable {
-
 
     @Id
     @GeneratedValue

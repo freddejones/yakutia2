@@ -42,9 +42,7 @@ function(Backbone, _, Kinetic, MapDefinitions, TerritoryModel) {
                 height: 50,
                 x: this.model.get('drawData').x,
                 y: this.model.get('drawData').y,
-                //data: this.model.get('drawData').path,
                 fill: color
-                //scale: {x:1, y:1}
             });
 
             if (isOwnedByPlayer) {
@@ -96,9 +94,10 @@ function(Backbone, _, Kinetic, MapDefinitions, TerritoryModel) {
                             success: function(model) {
                                 console.log("tomtefräsattacken")
                                 console.log(JSON.stringify(model));
-                                self.model.set('units', model.get('units'));
-                                self.model.set('ownedByPlayer', model.get('ownedByPlayer'));
-                                self.reRenderTerritoryObject();
+                                self.refreshStuff();
+//                                self.model.set('units', model.get('units'));
+//                                self.model.set('ownedByPlayer', model.get('ownedByPlayer'));
+//                                self.reRenderTerritoryObject();
                                 // TODO add refresh of state +
                                 // trigger event to other destination territory
                                 window.App.vent.trigger('Territory::attackUpdate:'+self.currentStateModel.attackModel.get('territoryAttackSrc'));
@@ -119,6 +118,10 @@ function(Backbone, _, Kinetic, MapDefinitions, TerritoryModel) {
             this.territory.destroy();
             this.territory = this.getTerritoryObject(this.model.get('ownedByPlayer'));
             this.model.get('layer').add(this.territory);
+            this.tooltip.destroy();
+            this.model.set('units', this.model.get('units'));
+            this.tooltip = this.getTooltip(this.model);
+            this.model.get('layer').add(this.tooltip);
             this.model.get('layer').draw();
         },
         refreshStuff: function() {
@@ -179,22 +182,10 @@ function(Backbone, _, Kinetic, MapDefinitions, TerritoryModel) {
                 fontFamily: 'Calibri',
                 fontSize: 12,
                 padding: 3,
-                fill: 'white',
+                fill: 'white'
             }));
 
             return tooltip;
-        },
-        clickEvent: function(landId) {
-            var stateModel = this.model.get('stateModel');
-            if (stateModel.get('state') === 'PLACE_UNITS') {
-                stateModel.set('placeUnitUpdate', {numberOfUnits: 1, landArea: landId});
-                stateModel.save({}, {
-                    url: '/game/state/update/',
-                    success: function() {
-                        console.log('unit placed');
-                    }
-                });
-            }
         },
         close: function() {
             this.remove();

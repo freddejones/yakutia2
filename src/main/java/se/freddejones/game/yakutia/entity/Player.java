@@ -8,26 +8,6 @@ import java.util.Set;
 @Entity
 @Table(name = "PLAYER")
 @NamedQueries({
-//        @NamedQuery(
-//                name = "Player.findPlayerById",
-//                query = "SELECT p FROM Player p WHERE playerId=:pId"
-//        ),
-//        @NamedQuery(
-//                name = "Player.findPlayerByName",
-//                query = "SELECT p FROM Player p WHERE name=:pName"
-//        ),
-//        @NamedQuery(
-//                name = "Player.findPlayerByEmail",
-//                query = "SELECT p FROM Player p WHERE email=:pEmail"
-//        ),
-//        @NamedQuery(
-//                name = "Player.findPlayerBySearchName",
-//                query = "SELECT p FROM Player p WHERE p.name LIKE :pName"
-//        ),
-//        @NamedQuery(
-//                name = "Player.findPlayerBySearchEmail",
-//                query = "SELECT p FROM Player p WHERE p.email LIKE :pEmail"
-//        ),
         @NamedQuery(
                 name = "Player.getAllPlayers",
                 query = "SELECT p FROM Player p"
