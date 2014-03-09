@@ -537,7 +537,7 @@ public class GameServiceTest {
         // Then:
         assertThat(returnObj.getUnits()).isEqualTo(1);
         assertThat(returnObj.getLandName()).isEqualTo(Territory.SWEDEN.toString());
-        assertThat(returnObj.isOwnedByPlayer()).isTrue();
+        assertThat(returnObj.isOwnedByPlayer()).isFalse();
         verify(gamePlayerDaoMock).setUnitsToGamePlayer(eq(GAME_PLAYER_ID), any(Unit.class));
         verify(gamePlayerDaoMock, times(2)).setUnitsToGamePlayer(anyLong(), any(Unit.class));
     }

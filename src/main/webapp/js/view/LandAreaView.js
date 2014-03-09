@@ -27,7 +27,7 @@ function(Backbone, _, Kinetic, MapDefinitions, TerritoryModel) {
             this.tooltip = this.getTooltip(this.model);
             this.model.get('layer').add(this.tooltip);
 
-            window.App.vent.on('Territory::attackUpdate:'+this.model.get('id'), this.reRenderTerritoryOjbect, this);
+            window.App.vent.on('Territory::attackUpdate:'+this.model.get('id'), this.refreshStuff, this);
 
             this.currentStateModel = this.model.get('stateModel');
             this.currentStateModel.attackModel = new AttackModel();
@@ -93,13 +93,17 @@ function(Backbone, _, Kinetic, MapDefinitions, TerritoryModel) {
                     if (self.currentStateModel.get('state') === 'ATTACK') {
                         self.currentStateModel.attackModel.set('territoryAttackDest', self.model.get('id'));
                         self.currentStateModel.attackModel.save({}, {
-                            success: function() {
+                            success: function(model) {
                                 console.log("tomtefräsattacken")
+                                console.log(JSON.stringify(model));
+                                self.model.set('units', model.get('units'));
+                                self.model.set('ownedByPlayer', model.get('ownedByPlayer'));
+                                self.reRenderTerritoryObject();
                                 // TODO add refresh of state +
                                 // trigger event to other destination territory
-//                                window.App.vent.trigger('Territory::attackUpdate:'+self.currentStateModel.attackModel.get('territoryAttackSrc'));
+                                window.App.vent.trigger('Territory::attackUpdate:'+self.currentStateModel.attackModel.get('territoryAttackSrc'));
 //                                window.App.vent.trigger('Territory::attackUpdate:'+self.currentStateModel.attackModel.get('territoryAttackDest'));
-                                self.updateStateModel(self.currentStateModel.attackModel.get('territoryAttackDest'));
+//                                self.updateStateModel();
                             }
                         });
                     }
@@ -111,24 +115,36 @@ function(Backbone, _, Kinetic, MapDefinitions, TerritoryModel) {
             this.model.get('layer').draw();
             return this;
         },
-        reRenderTerritoryOjbect: function() {
+        reRenderTerritoryObject: function() {
             this.territory.destroy();
             this.territory = this.getTerritoryObject(this.model.get('ownedByPlayer'));
             this.model.get('layer').add(this.territory);
             this.model.get('layer').draw();
         },
-        updateStateModel: function(territory) {
+        refreshStuff: function() {
+            var self = this;
+            var url = '/game/state/territory/'+window.gameId+'/'+window.playerId+'/'+this.model.get('id');
+            var territoryData = new TerritoryData();
+            territoryData.fetch({
+                url: url,
+                success: function(model) {
+                    self.model.set('ownedByPlayer', model.get('ownedByPlayer'));
+                    self.model.set('units', model.get('units'));
+                    self.reRenderTerritoryObject();
+                }
+            });
+        },
+        updateStateModel: function() {
             this.currentStateModel.fetch({
                 url: '/game/state/'+window.gameId+'/'+window.playerId
             });
 
             var self = this;
-            var url = '/game/state/territory/'+window.gameId+'/'+window.playerId+'/'+territory;
+            var url = '/game/state/territory/'+window.gameId+'/'+window.playerId+'/'+this.model.get('id');
             var territoryData = new TerritoryData();
             territoryData.fetch({
                 url: url,
                 success: function(model) {
-                    window.App.vent.trigger('Territory::attackUpdate:'+territory);
                     self.tooltip.destroy();
                     self.model.set('units', model.get('units'));
                     self.tooltip = self.getTooltip(self.model);
