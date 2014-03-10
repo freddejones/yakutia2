@@ -25,4 +25,5 @@ public class UnitDaoImpl extends AbstractDaoImpl implements UnitDao {
 
         return -1L;
     }
+
 }

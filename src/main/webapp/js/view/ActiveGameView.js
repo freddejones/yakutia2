@@ -50,6 +50,7 @@ function(Backbone, _, Kinetic, GameMapTemplate, MapDefinitions, TerritoryModel, 
             this.model.fetch({
                 url: '/game/state/'+window.gameId+'/'+window.playerId
             });
+            window.App.vent.on('Statemodel::update', this.updateState, this);
             this.collection = new GameStateCollection();
             var self = this;
             this.collection.fetch({
@@ -76,7 +77,21 @@ function(Backbone, _, Kinetic, GameMapTemplate, MapDefinitions, TerritoryModel, 
                     model.set('stage', self.stage);
                     model.set('layer', self.layer);
                     model.set('stateModel', self.model);
-                    var territoryView = new LandAreaView({model: model});
+                    new LandAreaView({model: model});
+                }
+            });
+        },
+        updateState: function() {
+            var self = this;
+            this.model.fetch({
+                url: '/game/state/'+window.gameId+'/'+window.playerId,
+                success: function(model) {
+                    $("#currentState", self.el).text(model.get('state'));
+                    console.log("updated state?");
+                    console.log(JSON.stringify(model));
+                    if (model.get('state') === 'ATTACK') {
+                        $("#nextActionButton", self.el).removeClass("disabled");
+                    }
                 }
             });
         },
@@ -89,25 +104,9 @@ function(Backbone, _, Kinetic, GameMapTemplate, MapDefinitions, TerritoryModel, 
             });
 
             this.layer = new Kinetic.Layer();
-            var layerHUD;
-            var layerMap;
-
-
-
-            //var tooltip = this.getTooltip(this.tomte);
-
-            var group = new Kinetic.Group({
-                x: 100,
-                y: 50,
-            });
-
-            //group.add(pathExample);
-            //group.add(tooltip);
-
-            //layer.add(group);
             this.stage.add(this.layer);
 
-            console.log("Done rendering active game view");
+            this.updateState();
             return this;
         },
         close: function() {

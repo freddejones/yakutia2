@@ -17,4 +17,6 @@ public interface GameDao {
     public Game getGameByGameId(long gameId);
 
     public void startGame(long gameId);
+
+    public void endGame(long gameId);
 }

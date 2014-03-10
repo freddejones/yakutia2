@@ -64,7 +64,8 @@ function(Backbone, _, Kinetic, MapDefinitions, TerritoryModel) {
                             territory: self.model.get('id'),
                             numberOfUnits: 1
                         },{ success: function() {
-                            self.updateStateModel();
+                            window.App.vent.trigger('Statemodel::update');
+                            self.refreshStuff();
                         }
                         });
                     } else if (self.currentStateModel.get('state') === 'ATTACK') {
@@ -91,18 +92,9 @@ function(Backbone, _, Kinetic, MapDefinitions, TerritoryModel) {
                     if (self.currentStateModel.get('state') === 'ATTACK') {
                         self.currentStateModel.attackModel.set('territoryAttackDest', self.model.get('id'));
                         self.currentStateModel.attackModel.save({}, {
-                            success: function(model) {
-                                console.log("tomtefräsattacken")
-                                console.log(JSON.stringify(model));
+                            success: function() {
                                 self.refreshStuff();
-//                                self.model.set('units', model.get('units'));
-//                                self.model.set('ownedByPlayer', model.get('ownedByPlayer'));
-//                                self.reRenderTerritoryObject();
-                                // TODO add refresh of state +
-                                // trigger event to other destination territory
                                 window.App.vent.trigger('Territory::attackUpdate:'+self.currentStateModel.attackModel.get('territoryAttackSrc'));
-//                                window.App.vent.trigger('Territory::attackUpdate:'+self.currentStateModel.attackModel.get('territoryAttackDest'));
-//                                self.updateStateModel();
                             }
                         });
                     }
@@ -137,25 +129,25 @@ function(Backbone, _, Kinetic, MapDefinitions, TerritoryModel) {
                 }
             });
         },
-        updateStateModel: function() {
-            this.currentStateModel.fetch({
-                url: '/game/state/'+window.gameId+'/'+window.playerId
-            });
-
-            var self = this;
-            var url = '/game/state/territory/'+window.gameId+'/'+window.playerId+'/'+this.model.get('id');
-            var territoryData = new TerritoryData();
-            territoryData.fetch({
-                url: url,
-                success: function(model) {
-                    self.tooltip.destroy();
-                    self.model.set('units', model.get('units'));
-                    self.tooltip = self.getTooltip(self.model);
-                    self.model.get('layer').add(self.tooltip);
-                    self.model.get('layer').draw();
-                }
-            });
-        },
+//        updateStateModel: function() {
+////            this.currentStateModel.fetch({
+////                url: '/game/state/'+window.gameId+'/'+window.playerId
+////            });
+//
+//            var self = this;
+//            var url = '/game/state/territory/'+window.gameId+'/'+window.playerId+'/'+this.model.get('id');
+//            var territoryData = new TerritoryData();
+//            territoryData.fetch({
+//                url: url,
+//                success: function(model) {
+//                    self.tooltip.destroy();
+//                    self.model.set('units', model.get('units'));
+//                    self.tooltip = self.getTooltip(self.model);
+//                    self.model.get('layer').add(self.tooltip);
+//                    self.model.get('layer').draw();
+//                }
+//            });
+//        },
         getTooltip: function(model) {
 
             var tooltip = new Kinetic.Label({

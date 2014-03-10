@@ -81,4 +81,13 @@ public class GameDaoImpl extends AbstractDaoImpl implements GameDao {
         realGame.setStartedTime(new Date());
         session.saveOrUpdate(realGame);
     }
+
+    @Override
+    public void endGame(long gameId) {
+        Session session = getCurrentSession();
+        Game game = (Game) session.get(Game.class, gameId);
+        game.setGameStatus(GameStatus.FINISHED);
+        game.setFinshedTime(new Date());
+        session.saveOrUpdate(game);
+    }
 }

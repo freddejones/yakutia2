@@ -115,6 +115,11 @@ public class GameServiceImpl implements GameService {
         gameDao.startGame(gameId);
     }
 
+    @Override
+    public void setGameToFinished(Long gameId) {
+        gameDao.endGame(gameId);
+    }
+
     private boolean isAtLeastTwoAcceptedGamePlayers(List<GamePlayer> gamePlayers) {
 
         // TODO remove this properly
@@ -183,17 +188,42 @@ public class GameServiceImpl implements GameService {
         attackingUnit.setStrength(attackingUnit.getStrength()-battleResult.getAttackingTerritoryLosses());
         defendingUnit.setStrength(defendingUnit.getStrength()-battleResult.getDefendingTerritoryLosses());
 
-        gamePlayerDao.setUnitsToGamePlayer(attackingGamePlayer.getGamePlayerId(), attackingUnit);
+
 
         if (battleResult.isTakenOver()) {
+            defendingUnit.setStrength(attackingUnit.getStrength()-1);
+            attackingUnit.setStrength(1);
+            gamePlayerDao.setUnitsToGamePlayer(attackingGamePlayer.getGamePlayerId(), attackingUnit);
             gamePlayerDao.setUnitsToGamePlayer(attackingGamePlayer.getGamePlayerId(), defendingUnit);
+            isGameOver(attackingGamePlayer);
         } else {
             gamePlayerDao.setUnitsToGamePlayer(defendingGamePlayer.getGamePlayerId(), defendingUnit);
+            gamePlayerDao.setUnitsToGamePlayer(attackingGamePlayer.getGamePlayerId(), attackingUnit);
         }
 
         TerritoryDTO territoryDTO = new TerritoryDTO(
                 attackActionUpdate.getTerritoryAttackSrc(), attackingUnit.getStrength(), true);
         return territoryDTO;
+    }
+
+    private void isGameOver(GamePlayer gamePlayer) {
+        // refresh gamePlayer
+        List<GamePlayer> gamePlayersList = gamePlayerDao.getGamePlayersByGameId(gamePlayer.getGameId());
+
+        boolean isGameOver = false;
+        for(GamePlayer gp : gamePlayersList) {
+            if (gp.getUnits().size() == 1 && gp.getGamePlayerId() != gamePlayer.getGamePlayerId()) {
+                isGameOver = true;
+            } else {
+                isGameOver = false;
+                break;
+            }
+        }
+
+        if (isGameOver) {
+            setGameToFinished(gamePlayer.getGameId());
+        }
+
     }
 
     private Unit getUnitByTerritory(String territory, List<Unit> defendingGamePlayerUnits) {

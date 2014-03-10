@@ -18,6 +18,7 @@ public interface GameService {
     public List<GameDTO> getGamesForPlayerById(Long playerid);
     public List<TerritoryDTO> getTerritoryInformationForActiveGame(Long playerId, Long gameId);
     public void setGameToStarted(Long gameId) throws Exception;
+    public void setGameToFinished(Long gameId);
 
     public TerritoryDTO placeUnitAction(PlaceUnitUpdate placeUnitUpdate) throws NotEnoughUnitsException;
     public TerritoryDTO attackTerritoryAction(AttackActionUpdate attackActionUpdate) throws TerritoryNotConnectedException;

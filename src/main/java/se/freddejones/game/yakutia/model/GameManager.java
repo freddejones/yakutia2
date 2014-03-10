@@ -44,6 +44,23 @@ public class GameManager {
                         || dst == Territory.TYSKLAND) {
                     return true;
                 } break;
+            case TYSKLAND:
+                if (dst == Territory.NORWAY || dst == Territory.ICELAND
+                        || dst == Territory.UKRAINA || dst == Territory.TOMTEBODA) {
+                    return true;
+                } break;
+            case UKRAINA:
+                if (dst == Territory.FINLAND || dst == Territory.TYSKLAND) {
+                    return true;
+                } break;
+            case SKAUNE:
+                if (dst == Territory.ICELAND || dst == Territory.TOMTEBODA) {
+                    return true;
+                } break;
+            case TOMTEBODA:
+                if (dst == Territory.SKAUNE || dst == Territory.TYSKLAND) {
+                    return true;
+                } break;
         }
 
         return false;
