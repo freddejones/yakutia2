@@ -93,6 +93,7 @@ function(Backbone, _, Kinetic, MapDefinitions, TerritoryModel) {
                         self.currentStateModel.attackModel.set('territoryAttackDest', self.model.get('id'));
                         self.currentStateModel.attackModel.save({}, {
                             success: function() {
+                                window.App.vent.trigger('Statemodel::update');
                                 self.refreshStuff();
                                 window.App.vent.trigger('Territory::attackUpdate:'+self.currentStateModel.attackModel.get('territoryAttackSrc'));
                             }

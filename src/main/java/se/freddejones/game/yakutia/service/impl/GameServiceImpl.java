@@ -116,6 +116,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
+    @Transactional(readOnly = false)
     public void setGameToFinished(Long gameId) {
         gameDao.endGame(gameId);
     }
@@ -195,7 +196,6 @@ public class GameServiceImpl implements GameService {
             attackingUnit.setStrength(1);
             gamePlayerDao.setUnitsToGamePlayer(attackingGamePlayer.getGamePlayerId(), attackingUnit);
             gamePlayerDao.setUnitsToGamePlayer(attackingGamePlayer.getGamePlayerId(), defendingUnit);
-            isGameOver(attackingGamePlayer);
         } else {
             gamePlayerDao.setUnitsToGamePlayer(defendingGamePlayer.getGamePlayerId(), defendingUnit);
             gamePlayerDao.setUnitsToGamePlayer(attackingGamePlayer.getGamePlayerId(), attackingUnit);
@@ -214,8 +214,6 @@ public class GameServiceImpl implements GameService {
         for(GamePlayer gp : gamePlayersList) {
             if (gp.getUnits().size() == 1 && gp.getGamePlayerId() != gamePlayer.getGamePlayerId()) {
                 isGameOver = true;
-            } else {
-                isGameOver = false;
                 break;
             }
         }
@@ -262,6 +260,8 @@ public class GameServiceImpl implements GameService {
         } else if (gamePlayer.getActionStatus() == ActionStatus.MOVE) {
             gameStateModelDTO.setState(ActionStatus.MOVE.toString());
         }
+
+        isGameOver(gamePlayer);
 
         return gameStateModelDTO;
     }
