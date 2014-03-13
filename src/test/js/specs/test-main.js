@@ -12,21 +12,19 @@ requirejs.config({
     baseUrl: '/base/main/webapp/js/',
 
     paths: {
-        jquery: 'lib/jquery',
-        underscore: 'lib/underscore',
-        'underscore-string': 'lib/underscore-string',
-        backbone: 'lib/backbone',
-        text: 'lib/text',
-        i18n: 'lib/i18n',
-        kinetic: 'lib/kinetic',
-        'bootstrap': 'lib/bootstrap',
-        'handlebars-orig': 'lib/handlebars',
-        async: 'lib/async',
-        keymaster: 'lib/keymaster',
-        template: '../template',
-        json2: 'lib/json2',
-        router: 'router',
-        sinon: 'lib/sinon-1.9.0'
+        jquery: '../lib/jquery',
+        underscore: '../lib/underscore',
+        'underscore-string': '../lib/underscore-string',
+        backbone: '../lib/backbone',
+        text: '../lib/text',
+        i18n: '../lib/i18n',
+        kinetic: '../lib/kinetic',
+        'bootstrap': '../lib/bootstrap',
+        'handlebars-orig': '../lib/handlebars',
+        async: '../lib/async',
+        keymaster: '../lib/keymaster',
+        json2: '../lib/json2',
+        sinon: '../lib/sinon-1.9.0'
     },
 
     shim: {

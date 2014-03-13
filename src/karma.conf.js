@@ -12,9 +12,9 @@ module.exports = function(config) {
         // list of files / patterns to load in the browser
         files: [
             {pattern: 'main/webapp/js/**/*.js', included: false},
+            {pattern: 'main/webapp/lib/**/*.js', included: false},
             {pattern: 'main/webapp/js/**/*.html', watched: true, included: false, served: true},
             {pattern: 'test/**/*Spec.js', included: false},
-            {pattern: 'test/js/lib/*.js', included: false},
             'test/js/specs/test-main.js'
         ],
 
@@ -24,11 +24,15 @@ module.exports = function(config) {
             'main/webapp/js/main.js'
         ],
 
-        preprocessors: { "**/*.html": [] },
+        preprocessors: {
+            "**/*.html": [],
+            'main/webapp/js/**/*.js': 'coverage'
+
+        },
 
         // test results reporter to use
         // possible values: 'dots', 'progress', 'junit', 'growl', 'coverage'
-        reporters: ['progress'],
+        reporters: ['progress', 'coverage'],
 
 
         // web server port

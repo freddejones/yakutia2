@@ -1,13 +1,17 @@
-define(['backbone', 'underscore'],
-function(Backbone, _) {
+define(
+    ['backbone'], function(Backbone) {
 
     var YakutiaModel = Backbone.Model.extend({
         defaults: {
             drawData: '',
             id: '',
             units: -1,
-            ownedByPlayer: -1,
+            ownedByPlayer: false,
             stage: ''
+        },
+
+        getTerritoryName: function () {
+            return this.get('id');
         }
     });
 

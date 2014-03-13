@@ -12,5 +12,5 @@ function(YakutiaRouter, Bootstrap, YakutiaManager, Backbone) {
     window.gameId = 1;
     window.router = new YakutiaRouter();
     Backbone.history.start();
-//    new YakutiaManager().init();
+
 });

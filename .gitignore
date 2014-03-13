@@ -9,3 +9,4 @@ target/
 .idea
 **/consoledb.properties
 **/consoledb.script
+src/coverage/*
