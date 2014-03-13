@@ -1,6 +1,6 @@
 define(['backbone'], function (Backbone) {
 
-    var YakutiaGameStateModel = Backbone.Model.extend({
+    var GameStateModel = Backbone.Model.extend({
         url: undefined,
 
         defaults: {
@@ -12,5 +12,5 @@ define(['backbone'], function (Backbone) {
         }
     });
 
-    return YakutiaGameStateModel;
+    return GameStateModel;
 });

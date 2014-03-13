@@ -3,31 +3,16 @@ define(['backbone',
     'kinetic',
     'text!templates/ActiveGameView.html',
     'assets/MapDefinitions',
-    'models/TerritoryModel',
     'view/LandAreaView',
+    'collections/TerritoryModelCollection',
     'models/GameStateModel'],
-function(Backbone, _, Kinetic, GameMapTemplate, MapDefinitions, TerritoryModel, LandAreaView, GameStateModel) {
-
-    // TODO: refactor
-    // Extract to collection own js file
-    //
-    var GameStateCollection = Backbone.Collection.extend({
-        model: TerritoryModel,
-        parse: function(response){
-
-            for (var i=0; i< response.length; i++) {
-                var landName = response[i].landName.toLowerCase();
-                this.push(new TerritoryModel({
-                    drawData: MapDefinition.territories[landName],
-                    className: landName,
-                    id: landName,
-                    units: response[i].units,
-                    ownedByPlayer: response[i].ownedByPlayer,
-                }));
-            }
-            return this.models;
-        }
-    });
+function(Backbone, _,
+         Kinetic,
+         GameMapTemplate,
+         MapDefinitions,
+         LandAreaView,
+         TerritoryModelCollection,
+         GameStateModel) {
 
     var ActiveGameView = Backbone.View.extend({
 
@@ -35,7 +20,6 @@ function(Backbone, _, Kinetic, GameMapTemplate, MapDefinitions, TerritoryModel, 
 
         initialize: function() {
             _.bindAll(this, 'renderSubModel');
-            this.template = _.template(GameMapTemplate);
 
             this.model = new GameStateModel({
                 playerId: window.playerId,
@@ -45,7 +29,7 @@ function(Backbone, _, Kinetic, GameMapTemplate, MapDefinitions, TerritoryModel, 
             this.model.fetch({});
 
             window.App.vent.on('Statemodel::update', this.updateState, this);
-            this.collection = new GameStateCollection();
+            this.collection = new TerritoryModelCollection();
             var self = this;
             this.collection.fetch({
                 url: '/game/get/'+window.playerId+'/game/'+window.gameId,
@@ -53,15 +37,6 @@ function(Backbone, _, Kinetic, GameMapTemplate, MapDefinitions, TerritoryModel, 
                     self.renderSubModel();
                 }
             });
-            this.listenTo(this.collection, 'change', function() {
-                this.collection.fetch({
-                    url: '/game/get/'+window.playerId+'/game/'+window.gameId,
-                    success: function(models, response) {
-
-                    }
-                });
-            });
-
         },
         renderSubModel: function() {
             var self = this;
@@ -74,9 +49,6 @@ function(Backbone, _, Kinetic, GameMapTemplate, MapDefinitions, TerritoryModel, 
                     new LandAreaView({model: model});
                 }
             });
-        },
-        testForUnitStuff: function() {
-            this.model.set('test', 'apa');
         },
         updateState: function() {
             var self = this;
@@ -93,6 +65,7 @@ function(Backbone, _, Kinetic, GameMapTemplate, MapDefinitions, TerritoryModel, 
             });
         },
         render: function() {
+            this.template = _.template(GameMapTemplate);
             this.$el.html(this.template(this.model));
             this.stage = new Kinetic.Stage({
                 container: 'gamemap',
