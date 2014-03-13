@@ -4,19 +4,9 @@ define(['backbone',
     'text!templates/ActiveGameView.html',
     'assets/MapDefinitions',
     'models/TerritoryModel',
-    'view/LandAreaView'],
-function(Backbone, _, Kinetic, GameMapTemplate, MapDefinitions, TerritoryModel, LandAreaView) {
-
-    //TODO: refactor this:
-    // extract model
-    // remove window binding stuff when login is fixed
-    var YakutiaGameStateModel = Backbone.Model.extend({
-        defaults: {
-            state: 'NONE',
-            playerId: window.playerId,
-            gameId: window.gameId
-        }
-    });
+    'view/LandAreaView',
+    'models/GameStateModel'],
+function(Backbone, _, Kinetic, GameMapTemplate, MapDefinitions, TerritoryModel, LandAreaView, GameStateModel) {
 
     // TODO: refactor
     // Extract to collection own js file
@@ -46,10 +36,14 @@ function(Backbone, _, Kinetic, GameMapTemplate, MapDefinitions, TerritoryModel, 
         initialize: function() {
             _.bindAll(this, 'renderSubModel');
             this.template = _.template(GameMapTemplate);
-            this.model = new YakutiaGameStateModel();
-            this.model.fetch({
-                url: '/game/state/'+window.gameId+'/'+window.playerId
+
+            this.model = new GameStateModel({
+                playerId: window.playerId,
+                gameId: window.gameId
             });
+            this.model.updateUrl();
+            this.model.fetch({});
+
             window.App.vent.on('Statemodel::update', this.updateState, this);
             this.collection = new GameStateCollection();
             var self = this;
