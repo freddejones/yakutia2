@@ -14,6 +14,7 @@ module.exports = function(config) {
             {pattern: 'main/webapp/js/**/*.js', included: false},
             {pattern: 'main/webapp/js/**/*.html', watched: true, included: false, served: true},
             {pattern: 'test/**/*Spec.js', included: false},
+            {pattern: 'test/js/lib/*.js', included: false},
             'test/js/specs/test-main.js'
         ],
 
@@ -21,10 +22,7 @@ module.exports = function(config) {
         // list of files to exclude
         exclude: [
             'main/webapp/js/main.js'
-//            'main/webapp/js/lib/**/*.js'
-//            'main/webapp/js/templates/*.html'
         ],
-
 
         preprocessors: { "**/*.html": [] },
 

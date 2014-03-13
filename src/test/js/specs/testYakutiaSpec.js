@@ -1,10 +1,11 @@
-define(['view/ActiveGameView'], function(ActiveGameView) {
+define(
+    ['view/ActiveGameView',
+        'sinon'
+    ], function(ActiveGameView, sinon) {
 
     describe('just checking', function() {
 
         it('works for app', function() {
-            var view = new ActiveGameView();
-            view.render();
         });
 
     });

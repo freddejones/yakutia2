@@ -81,6 +81,9 @@ function(Backbone, _, Kinetic, GameMapTemplate, MapDefinitions, TerritoryModel, 
                 }
             });
         },
+        testForUnitStuff: function() {
+            this.model.set('test', 'apa');
+        },
         updateState: function() {
             var self = this;
             this.model.fetch({
