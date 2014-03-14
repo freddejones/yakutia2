@@ -57,6 +57,9 @@ requirejs.config({
         },
         'async': {
             exports: 'async'
+        },
+        "sinon": {
+            "exports": "sinon"
         }
     },
 

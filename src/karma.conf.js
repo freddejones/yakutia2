@@ -15,6 +15,7 @@ module.exports = function(config) {
             {pattern: 'main/webapp/lib/**/*.js', included: false},
             {pattern: 'main/webapp/js/**/*.html', watched: true, included: false, served: true},
             {pattern: 'test/**/*Spec.js', included: false},
+            {pattern: 'test/js/lib/*.js', included: false},
             'test/js/specs/test-main.js'
         ],
 
@@ -32,7 +33,7 @@ module.exports = function(config) {
 
         // test results reporter to use
         // possible values: 'dots', 'progress', 'junit', 'growl', 'coverage'
-        reporters: ['progress', 'coverage'],
+        reporters: ['dots','progress', 'coverage'],
 
 
         // web server port
