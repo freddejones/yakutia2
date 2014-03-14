@@ -93,5 +93,5 @@ var TerritoryData = {
 }
 
 var MapDefinition = {
-    territories: TerritoryData,
+    territories: TerritoryData
 }

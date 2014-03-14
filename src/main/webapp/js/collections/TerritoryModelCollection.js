@@ -11,7 +11,7 @@ define([
             for (var i=0; i< response.length; i++) {
                 var landName = response[i].landName.toLowerCase();
                 this.push(new TerritoryModel({
-                    drawData: MapDefinitions.territories[landName],
+                    drawData: MapDefinition.territories[landName],
                     className: landName,
                     id: landName,
                     units: response[i].units,
