@@ -18,27 +18,16 @@ define([
 
                 // given
                 var tmc = new TerritoryModelCollection();
-                console.log(tmc);
+
+                // when
                 tmc.fetch({
                     url: '/game/get/1/game/1'
                 });
 
                 server.respond();
 
-                console.log(tmc.models[0]);
-//                waitsFor(function () {
-//                    return server.queue.length === 0;
-//                }, "Wait for queue to empty", 5000);
-//
-//                runs(function () {
-//                    // when
-//                    console.log(tmc);
-//                });
-
-
-//                expect(false).toBe(true);
-                // then
-
+                // given
+                expect(tmc.models.length).toBe(1);
             });
 
         });
