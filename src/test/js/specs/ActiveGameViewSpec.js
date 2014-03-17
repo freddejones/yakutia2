@@ -41,6 +41,10 @@ define([
             expect(spyRender.calledOnce).toBe(true);
         });
 
+        it('should render game state', function() {
+
+        });
+
         it('should now draw any map if it is not current players turn', function() {
             expect("not implemented yet").toBe(true);
         });

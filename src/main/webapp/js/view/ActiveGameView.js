@@ -26,37 +26,24 @@ function(Backbone, _,
                 gameId: window.gameId
             });
             this.model.updateUrl();
-            this.model.fetch({});
+            this.updateState();
 
             window.App.vent.on('Statemodel::update', this.updateState, this);
             this.collection = new TerritoryModelCollection();
-            var self = this;
-            this.collection.fetch({
-                url: '/game/get/'+window.playerId+'/game/'+window.gameId,
-                success: function(models, response) {   //TODO remove response?
-                    self.renderSubModel();
-                }
-            });
         },
-        renderSubModel: function() {
-            var self = this;
-
-            _.each(this.collection.models, function(model) {
-                if (!(model.id.toLowerCase() === 'unassignedland')) {
-                    model.set('stage', self.stage);
-                    model.set('layer', self.layer);
-                    model.set('stateModel', self.model);
-                    new LandAreaView({model: model});
-                }
-            });
+        renderSubModel: function(model) {
+            if (!(model.id.toLowerCase() === 'unassignedland')) {
+                model.set('stage', this.stage);
+                model.set('layer', this.layer);
+                model.set('stateModel', this.model);
+                new LandAreaView({model: model});
+            }
         },
         updateState: function() {
             var self = this;
             this.model.fetch({
-                url: '/game/state/'+window.gameId+'/'+window.playerId,
                 success: function(model) {
                     $("#currentState", self.el).text(model.get('state'));
-                    console.log("updated state?");
                     console.log(JSON.stringify(model));
                     if (model.get('state') === 'ATTACK') {
                         $("#nextActionButton", self.el).removeClass("disabled");
@@ -65,6 +52,7 @@ function(Backbone, _,
             });
         },
         render: function() {
+            var self = this;
             this.template = _.template(GameMapTemplate);
             this.$el.html(this.template(this.model));
             this.stage = new Kinetic.Stage({
@@ -76,7 +64,15 @@ function(Backbone, _,
             this.layer = new Kinetic.Layer();
             this.stage.add(this.layer);
 
-            this.updateState();
+            this.collection.fetch({
+                url: '/game/get/'+window.playerId+'/game/'+window.gameId,
+                success: function(models) {
+                    _.each(models.models, function(model) {
+                        self.renderSubModel(model);
+                    });
+                }
+            });
+
             return this;
         },
         close: function() {
