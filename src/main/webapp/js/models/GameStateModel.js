@@ -1,14 +1,12 @@
 define(['backbone'], function (Backbone) {
 
     var GameStateModel = Backbone.Model.extend({
-        url: undefined,
+        url: function () {
+            return '/game/state/'+this.get('gameId')+'/'+this.get('playerId');
+        },
 
         defaults: {
             state: 'NONE'
-        },
-
-        updateUrl: function () {
-            this.url = '/game/state/'+this.get('gameId')+'/'+this.get('playerId');
         }
     });
 

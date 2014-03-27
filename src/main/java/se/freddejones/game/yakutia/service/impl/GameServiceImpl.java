@@ -118,6 +118,7 @@ public class GameServiceImpl implements GameService {
     @Override
     @Transactional(readOnly = false)
     public void setGameToFinished(Long gameId) {
+        log.info("setting game <"+gameId+"> to finished");
         gameDao.endGame(gameId);
     }
 
@@ -252,6 +253,8 @@ public class GameServiceImpl implements GameService {
             gamePlayerDao.setActionStatus(gamePlayer.getGamePlayerId(), ActionStatus.PLACE_UNITS);
             gameStateModelDTO.setState(ActionStatus.PLACE_UNITS.toString());
         }
+
+
 
         if (gamePlayer.getActionStatus() == ActionStatus.PLACE_UNITS) {
             gameStateModelDTO.setState(ActionStatus.PLACE_UNITS.toString());

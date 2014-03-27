@@ -4,22 +4,19 @@ define(
 
         describe('GameStateModel', function() {
 
-            it('should update url with playerid and gameid when calling updateUrl', function() {
-                // given
+            it('should update url with playerid and gameid', function() {
+                // given, when
                 var gameStateModel = new GameStateModel({
                     state: 'ATTACK',
                     playerId: 1,
                     gameId: 2
                 });
 
-                // when
-                gameStateModel.updateUrl();
-
                 // then
-                expect(gameStateModel.url).toBe("/game/state/2/1");
+                expect(gameStateModel.url()).toBe("/game/state/2/1");
             });
 
-            it('should set active state as "NONE"', function () {
+            it('should set default state as "NONE"', function () {
                 // when
                 var gameStateModel = new GameStateModel({});
 

@@ -25,7 +25,6 @@ function(Backbone, _,
                 playerId: window.playerId,
                 gameId: window.gameId
             });
-            this.model.updateUrl();
             this.updateState();
 
             window.App.vent.on('Statemodel::update', this.updateState, this);
@@ -43,18 +42,26 @@ function(Backbone, _,
             var self = this;
             this.model.fetch({
                 success: function(model) {
-                    $("#currentState", self.el).text(model.get('state'));
-                    console.log(JSON.stringify(model));
-                    if (model.get('state') === 'ATTACK') {
+                    var gameState = model.get('state');
+                    self.renderGameState(gameState);
+                    if (gameState === 'ATTACK') {
                         $("#nextActionButton", self.el).removeClass("disabled");
+                    } else if (gameState === 'NO_TURN') {
+
+                    } else if (gameState === 'GAME_FINISHED') {
+                        console.log("game was finished");
                     }
                 }
             });
+        },
+        renderGameState: function (state) {
+            $("#currentState", self.el).text(state);
         },
         render: function() {
             var self = this;
             this.template = _.template(GameMapTemplate);
             this.$el.html(this.template(this.model));
+
             this.stage = new Kinetic.Stage({
                 container: 'gamemap',
                 width: 800,
