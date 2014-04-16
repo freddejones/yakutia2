@@ -3,12 +3,12 @@ define([
 function(Backbone, _, CreatePlayerTemplate) {
 
     var CreatePlayerModel = Backbone.Model.extend({
-        url: '/player/create',
+        url: 'player/create',
 
         defaults: {
             playerName: null,
             email: null
-        },
+        }
     });
 
     var CreatePlayerView = Backbone.View.extend({

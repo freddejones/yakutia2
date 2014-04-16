@@ -41,8 +41,6 @@ public class GamePlayerDaoTest {
     @Autowired
     private SessionFactory sessionFactory;
 
-//    private Session session;
-
     private Long playerId;
     private Long gameId;
 

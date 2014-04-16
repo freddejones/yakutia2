@@ -4,15 +4,17 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <groupId>se.freddejones.yakutia</groupId>
-    <packaging>war</packaging>
-    <modelVersion>4.0.0</modelVersion>
     <artifactId>yakutia</artifactId>
     <version>1.0.0-1-SNAPSHOT</version>
+    <modelVersion>4.0.0</modelVersion>
+
     <name>Yakutia</name>
     <description>A totally awesome risk clone</description>
+    <packaging>war</packaging>
 
     <properties>
         <spring.version>3.2.3.RELEASE</spring.version>
+        <spring.sec.version>3.2.2.RELEASE</spring.sec.version>
         <mockito.version>1.9.5</mockito.version>
         <junit.version>4.11</junit.version>
         <jackson.version>2.1.1</jackson.version>
@@ -54,6 +56,28 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
             <version>${spring.version}</version>
+        </dependency>
+
+        <!--spring security dependecies-->
+        <dependency>
+            <groupId>org.springframework.security.oauth</groupId>
+            <artifactId>spring-security-oauth2</artifactId>
+            <version>1.0.5.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-web</artifactId>
+            <version>${spring.sec.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-core</artifactId>
+            <version>${spring.sec.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-config</artifactId>
+            <version>${spring.sec.version}</version>
         </dependency>
 
         <!-- Jackson dependency -->
@@ -137,7 +161,7 @@
                 <artifactId>tomcat7-maven-plugin</artifactId>
                 <version>2.1</version>
                 <configuration>
-                    <path>/</path>
+                    <path>/yakutia-core</path>
                 </configuration>
             </plugin>
             <plugin>
