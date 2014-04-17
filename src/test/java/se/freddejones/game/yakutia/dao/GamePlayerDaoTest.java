@@ -1,7 +1,6 @@
 package se.freddejones.game.yakutia.dao;
 
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
-import se.freddejones.game.yakutia.dao.impl.GamePlayerDaoImpl;
 import se.freddejones.game.yakutia.entity.Game;
 import se.freddejones.game.yakutia.entity.GamePlayer;
 import se.freddejones.game.yakutia.entity.Player;
@@ -27,8 +25,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath*:**/hibernateTestContext.xml",
-            "classpath*:**/applicationTestContext.xml"})
+@ContextConfiguration(locations = {"classpath*:**/hibernateTestContext.xml"
+        ,"classpath*:**/applicationTestContext.xml"
+})
 @Transactional(readOnly = false)
 public class GamePlayerDaoTest {
 
@@ -38,16 +37,12 @@ public class GamePlayerDaoTest {
     @Autowired
     private GamePlayerDao gamePlayerDao;
 
-    @Autowired
-    private SessionFactory sessionFactory;
-
     private Long playerId;
     private Long gameId;
 
     @Before
     public void setup() {
-        Session session = sessionFactory.getCurrentSession();
-        session = gamePlayerDao.getSession();
+        Session session = gamePlayerDao.getSession();
         Player p = new Player();
         p.setEmail(TEST_EMAIL);
         p.setName(PLAYER_NAME);

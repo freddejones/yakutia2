@@ -162,6 +162,7 @@
                 <version>2.1</version>
                 <configuration>
                     <path>/yakutia-core</path>
+                    <port>9090</port>
                 </configuration>
             </plugin>
             <plugin>
