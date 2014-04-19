@@ -6,9 +6,10 @@ define([
 'view/ListMyGamesView',
 'view/CreatePlayerView',
 'view/SearchFriendsView',
-'view/MyFriendsView'],
+'view/MyFriendsView',
+'login/LoginView'],
 function(Backbone, $, CreateGameView, ActiveGameView, ListMyGamesView,
-CreatePlayerView, SearchFriendsView, MyFriendsView) {
+CreatePlayerView, SearchFriendsView, MyFriendsView, LoginView) {
 
 //    var activeView = {};
 //    var topView = {};
@@ -38,7 +39,8 @@ CreatePlayerView, SearchFriendsView, MyFriendsView) {
         defaultRoute: function() {
             //TODO go to login and after that it is handled separately
             this.closeBodyViewIfExists();
-            this.attachNewBodyView(new CreatePlayerView());
+            this.attachNewBodyView(new LoginView());
+//            this.attachNewBodyView(new CreatePlayerView());
         },
         searchFriend: function() {
             this.closeBodyViewIfExists();
