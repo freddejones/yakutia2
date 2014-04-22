@@ -4,12 +4,18 @@ define(['backbone',
         'text!login/LoginView.html'],
     function(Backbone, $,  _, LoginViewTemplate) {
 
+        // mimic: curl -i -X POST -d j_username=user -d j_password=user -c cookies.txt http://localhost:9090/yakutia-core/j_spring_security_check -v
+
         var LoginView = Backbone.View.extend({
 
             el: "#modalPlaceHolder",
 
-            initialize: function() {
+            events: {
+                "click #login" : "handleLogin"
+            },
 
+            initialize: function() {
+                // TODO check if authentication is done and change button name to create account..
             },
 
             render: function() {
@@ -17,29 +23,29 @@ define(['backbone',
                 this.template = _.template(LoginViewTemplate);
                 this.$el.html(this.template(this));
                 $("#loginModal", this.$el) .modal();
-//                this.$el.show();
-//                this.$el.modal("show");
-//                $("#modalContent", this).modal("show");
-//                this.$el("#modalContent").modal("show");
-//                this.stage = new Kinetic.Stage({
-//                    container: 'gamemap',
-//                    width: 800,
-//                    height: 600
-//                });
-//
-//                this.layer = new Kinetic.Layer();
-//                this.stage.add(this.layer);
-//
-//                this.collection.fetch({
-//                    url: '/game/get/'+window.playerId+'/game/'+window.gameId,
-//                    success: function(models) {
-//                        _.each(models.models, function(model) {
-//                            self.renderSubModel(model);
-//                        });
-//                    }
-//                });
-
                 return this;
+            },
+
+            handleLogin: function () {
+                var self = this;
+                $.ajax({url: "http://localhost:8080/yakutia" + "/j_spring_security_check",
+                    type: "POST",
+                    data: {j_username: "user", j_password: "user"},
+                    success: function(data, status) {
+                        if (status === "success") {
+                            localStorage.setItem("username", "freddejones");
+                            $("#loginModal", self.$el).modal('hide');
+                            alert("delayed");
+                            App.router.navigate("listgames", {trigger: true});
+                        } else {
+                            alert("not logged in");
+                        }
+                    },
+                    error: function () {
+                        alert("error logging in");
+                    }
+
+                });
             },
 
             close: function() {
