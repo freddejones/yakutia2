@@ -28,14 +28,16 @@ define(['backbone',
 
             handleLogin: function () {
                 var self = this;
-                $.ajax({url: "http://localhost:8080/yakutia" + "/j_spring_security_check",
+                $.ajax({
+//                    url: "http://localhost:8080/yakutia" + "/j_spring_security_check",
+                    url: "http://localhost:8080/yakutia" + "/j_spring_openid_security_check",
                     type: "POST",
                     data: {j_username: "user", j_password: "user"},
                     success: function(data, status) {
                         if (status === "success") {
                             localStorage.setItem("username", "freddejones");
                             $("#loginModal", self.$el).modal('hide');
-                            alert("delayed");
+                            alert("delayed-:");
                             App.router.navigate("listgames", {trigger: true});
                         } else {
                             alert("not logged in");
