@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.logging.Logger;
 
 @Service("playerservice")
-@Transactional(readOnly = true)
 public class PlayerServiceImpl implements PlayerService {
 
     private Logger log = Logger.getLogger(PlayerServiceImpl.class.getName());
@@ -34,6 +33,30 @@ public class PlayerServiceImpl implements PlayerService {
     @Override
     public Player getPlayerById(Long playerId) {
         return playerDao.getPlayerById(playerId);
+    }
+
+
+    @Override
+    public boolean isPlayerFullyCreated(Long id) {
+        Player p = playerDao.getPlayerById(id);
+        if (p == null || p.getName() == null || p.getName().isEmpty()) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public Long updatePlayerName(Player p) {
+        Player playerToUpdate = playerDao.getPlayerById(p.getPlayerId());
+        playerToUpdate.setName(p.getName());
+        return playerDao.updatePlayerName(playerToUpdate);
+    }
+
+    @Override
+    public Player getPlayerByEmail(String email) {
+        Player p = playerDao.getPlayerByEmail(email);
+        return p;
     }
 
 

@@ -7,21 +7,22 @@ define([
 'view/CreatePlayerView',
 'view/SearchFriendsView',
 'view/MyFriendsView',
-'login/LoginView'],
+'view/UpdatePlayerNameView',
+'view/WelcomeView'],
 function(Backbone, $, CreateGameView, ActiveGameView, ListMyGamesView,
-CreatePlayerView, SearchFriendsView, MyFriendsView, LoginView) {
-
-//    var activeView = {};
-//    var topView = {};
+CreatePlayerView, SearchFriendsView, MyFriendsView, UpdatePlayerNameView,
+    WelcomeView) {
 
     var YakutiaRouter = Backbone.Router.extend({
 
         routes: {
             "listgames" : "listGames",
+            "updatePlayerName/:playerId" : "updatePlayerName",
             "createGames" : "createGames",
             "game/play/:gameId" : "playGame",
             "friends/search" : "searchFriend",
             "friends/my" : 'listMyFriends',
+            "welcomePage" : "defaultRoute",
             '*path':  'defaultRoute'
         },
         listGames: function() {
@@ -34,13 +35,16 @@ CreatePlayerView, SearchFriendsView, MyFriendsView, LoginView) {
         },
         playGame: function(gameId) {
             this.closeBodyViewIfExists();
+            //TODO add game id as options parameter
             this.attachNewBodyView(new ActiveGameView());
         },
-        defaultRoute: function() {
-            //TODO go to login and after that it is handled separately
+        updatePlayerName: function (playerId) {
             this.closeBodyViewIfExists();
-            this.attachNewBodyView(new LoginView());
-//            this.attachNewBodyView(new CreatePlayerView());
+            this.attachNewBodyView(new UpdatePlayerNameView({playerId: playerId}));
+        },
+        defaultRoute: function() {
+            this.closeBodyViewIfExists();
+            this.attachNewBodyView(new WelcomeView());
         },
         searchFriend: function() {
             this.closeBodyViewIfExists();

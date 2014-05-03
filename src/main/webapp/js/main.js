@@ -36,6 +36,7 @@ require.config({
 
     // Libraries
     paths: {
+        jqueryCookie: '../lib/jquery.cookie-1.4.1.min',
         jquery: '../lib/jquery',
         underscore: '../lib/underscore',
         'underscore-string': '../lib/underscore-string',

@@ -10,9 +10,9 @@ import java.util.List;
 public interface PlayerDao {
 
     public Long createPlayer(Player p) throws PlayerAlreadyExistsException;
-
     public List<Player> getAllPlayers();
-
     public Player getPlayerById(Long playerId);
+    public Player getPlayerByEmail(String email);
+    public Long updatePlayerName(Player p);
 
 }

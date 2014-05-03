@@ -8,6 +8,7 @@ public class PlayerDTO implements Serializable {
 
     private String playerName;
     private String email;
+    private Long playerId;
 
     public String getPlayerName() {
         return playerName;
@@ -25,18 +26,29 @@ public class PlayerDTO implements Serializable {
         this.email = email;
     }
 
+    public Long getPlayerId() {
+        return playerId;
+    }
+
+    public void setPlayerId(Long playerId) {
+        this.playerId = playerId;
+    }
+
     public static Player bind(PlayerDTO playerDTO) {
         Player p = new Player();
         p.setName(playerDTO.getPlayerName());
         p.setEmail(playerDTO.getEmail());
+        p.setPlayerId(playerDTO.getPlayerId());
         return p;
     }
+
 
     @Override
     public String toString() {
         return "PlayerDTO{" +
                 "playerName='" + playerName + '\'' +
                 ", email='" + email + '\'' +
+                ", playerId=" + playerId +
                 '}';
     }
 }

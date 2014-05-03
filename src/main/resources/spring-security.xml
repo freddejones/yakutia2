@@ -10,15 +10,16 @@
 
 
     <security:http auto-config="true" use-expressions="true" access-denied-page="/krams/auth/denied" >
-        <security:intercept-url pattern="/js/login" access="permitAll"/>
+        <security:intercept-url pattern="/js/auth/*" access="permitAll"/>
         <security:intercept-url pattern="/css/*" access="permitAll"/>
         <security:intercept-url pattern="/admin" access="hasRole('ROLE_ADMIN')"/>
         <security:intercept-url pattern="/*" access="hasRole('ROLE_USER')"/>
 
         <security:openid-login
-                login-page="/js/login/login.html"
-                authentication-failure-url="/krams/auth/login?error=true"
+                login-page="/js/auth/login.html"
+                authentication-failure-url="/js/auth/login?error=true"
                 default-target-url="/index.html"
+                authentication-success-handler-ref="feedSuccessHandler"
                 user-service-ref="yakutiaUserProvider">
 
             <security:attribute-exchange>
@@ -28,8 +29,14 @@
 
         <security:logout
                 invalidate-session="true"
-                logout-success-url="/krams/auth/login"
-                logout-url="/auth/logout"/>
+                logout-success-url="/js/auth/login.html"
+                logout-url="/auth/logout"
+                delete-cookies="true"/>
+
+        <security:session-management invalid-session-url="/" session-fixation-protection="none" session-authentication-error-url="/js/auth/access_denied">
+            <security:concurrency-control max-sessions="1" expired-url="/js/auth/login.html?session=expired" />
+        </security:session-management>
+
 
     </security:http>
 

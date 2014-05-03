@@ -36,18 +36,20 @@ public class YakutiaUserProvider implements UserDetailsService, AuthenticationUs
         OpenIDAuthenticationToken token = (OpenIDAuthenticationToken) authentication;
         List<OpenIDAttribute> attrs = token.getAttributes();
 
-        Player player = parseAuthData(attrs);
-
-        // TODO check if user exists, otherwise create it and return it
-        try {
-            playerService.createNewPlayer(player);
-        } catch (PlayerAlreadyExistsException e) {
-            throw new UsernameNotFoundException(e.getMessage());
+        Player parsedPlayer = parseAuthData(attrs);
+        Player player = playerService.getPlayerByEmail(parsedPlayer.getEmail());
+        if (player == null) {
+            player = new Player();
+            try {
+                player.setPlayerId(playerService.createNewPlayer(parsedPlayer));
+            } catch (PlayerAlreadyExistsException e) {
+                throw new UsernameNotFoundException(e.getMessage());
+            }
         }
 
         List<GrantedAuthority> auths = new ArrayList<>();
         auths.add(new SimpleGrantedAuthority("ROLE_USER"));
-        UserDetails userDetails = new User(player.getEmail(), "dsfsf", auths);
+        UserDetails userDetails = new User(Long.toString(player.getPlayerId()), parsedPlayer.getEmail(), auths);
         return userDetails;
     }
 

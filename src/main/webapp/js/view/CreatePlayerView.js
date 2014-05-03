@@ -1,5 +1,5 @@
 define([
-'backbone', 'underscore', 'text!templates/CreatePlayerTemplate.html'],
+'backbone', 'underscore', 'text!templates/WelcomeView.html'],
 function(Backbone, _, CreatePlayerTemplate) {
 
     var CreatePlayerModel = Backbone.Model.extend({

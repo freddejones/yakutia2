@@ -27,15 +27,6 @@
         <servlet-class>
             org.springframework.web.servlet.DispatcherServlet
         </servlet-class>
-        <!--<init-param>-->
-            <!--<param-name>contextConfigLocation</param-name>-->
-            <!--<param-value>-->
-                <!--/WEB-INF/mvc-dispatcher-servlet.xml,-->
-                <!--classpath:hibernateContext.xml-->
-                <!--&lt;!&ndash;,classpath:spring-security.xml&ndash;&gt;-->
-            <!--</param-value>-->
-        <!--</init-param>-->
-        <!--<load-on-startup>2</load-on-startup>-->
     </servlet>
 
     <servlet-mapping>

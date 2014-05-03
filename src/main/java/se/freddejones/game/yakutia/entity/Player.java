@@ -1,5 +1,7 @@
 package se.freddejones.game.yakutia.entity;
 
+import se.freddejones.game.yakutia.model.dto.PlayerDTO;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
@@ -11,6 +13,10 @@ import java.util.Set;
         @NamedQuery(
                 name = "Player.getAllPlayers",
                 query = "SELECT p FROM Player p"
+        ),
+        @NamedQuery(
+                name = "Player.getPlayerByEmail",
+                query = "SELECT p FROM Player p WHERE email LIKE :email"
         )
 })
 public class Player implements Serializable {
@@ -81,4 +87,11 @@ public class Player implements Serializable {
         this.friendsReqested = friendsReqested;
     }
 
+    public static PlayerDTO translate(Player p) {
+        PlayerDTO playerDTO = new PlayerDTO();
+        playerDTO.setEmail(p.getEmail());
+        playerDTO.setPlayerId(p.getPlayerId());
+        playerDTO.setPlayerName(p.getName());
+        return playerDTO;
+    }
 }
