@@ -5,11 +5,13 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
 
-    <changeSet author="fiddek" id="tomtefjesk">
-        <insert schemaName="public"
-                tableName="player">
-            <column name="PLAYER_NAME" type="varchar(255)" value="fjeks"/>
-        </insert>
+    <changeSet author="ninja-fidde" id="001">
+        <sqlFile encoding="utf8"
+                 endDelimiter=";"
+                 path="sql/init.sql"
+                 relativeToChangelogFile="true"
+                 splitStatements="true"
+                 stripComments="true"/>
     </changeSet>
 
 </databaseChangeLog>

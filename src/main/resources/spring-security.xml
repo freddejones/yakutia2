@@ -17,7 +17,7 @@
 
         <security:openid-login
                 login-page="/js/auth/login.html"
-                authentication-failure-url="/js/auth/login?error=true"
+                authentication-failure-url="/js/auth/login.html?error=true"
                 default-target-url="/index.html"
                 authentication-success-handler-ref="feedSuccessHandler"
                 user-service-ref="yakutiaUserProvider">

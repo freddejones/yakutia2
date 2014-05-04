@@ -1,6 +1,14 @@
 define([
-'backbone', 'underscore', 'text!templates/CreateGame.html', 'collections/FriendsCollection'],
-function(Backbone, _, CreateGameTemplate, FriendsCollection) {
+        'backbone',
+        'underscore',
+        'text!templates/CreateGame.html',
+        'collections/FriendsCollection',
+        'jqueryCookie'],
+function(Backbone,
+         _,
+         CreateGameTemplate,
+         FriendsCollection,
+         $Cookie) {
 
     var GameCreateModel = Backbone.Model.extend({
         url: '/game/create',
@@ -36,7 +44,6 @@ function(Backbone, _, CreateGameTemplate, FriendsCollection) {
             this.collection = new FriendsCollection();
             this.listenTo(this.collection, "add remove", this.render)
             this.listenTo(this.collection, "add remove", this.render)
-//            this.render();
             this.collection.fetch({ url: '/friend/get/all/'+window.playerId });
         },
         render: function() {
@@ -65,9 +72,10 @@ function(Backbone, _, CreateGameTemplate, FriendsCollection) {
         },
         createNewGame: function() {
             this.model.set('gameName', $('#gameName').val());
-            this.model.set('createdByPlayerId', window.playerId);   // TODO remove this playerId dependency
+            var playerId = $.cookie("yakutiaPlayerId");
+            this.model.set('createdByPlayerId', playerId);
             this.model.save({}, {success: function() {
-                window.router.navigate("#/listgames",{trigger:true});
+                window.App.router.navigate("#/listgames",{trigger:true});
             }});
         },
         renderPossibleGamePlayers: function(player) {

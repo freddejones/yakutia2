@@ -55,7 +55,7 @@ function(Backbone, _, ListMyGamesTmpl, options, router) {
         openGame: function(e) {
             var gameId = $(e.currentTarget).attr("value");
             window.gameId=gameId;
-            window.router.navigate("#/game/play/"+gameId,{trigger:true});
+            window.App.router.navigate("#/game/play/"+gameId,{trigger:true});
         },
         render: function() {
             this.$el.html(this.template);

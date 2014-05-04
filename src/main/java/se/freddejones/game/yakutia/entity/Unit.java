@@ -14,19 +14,19 @@ import java.io.Serializable;
 })
 public class Unit implements Serializable {
 
-	private int id;
+	private int unitId;
     private int strength;
     private Territory territory;
     private UnitType typeOfUnit;
     private GamePlayer gamePlayer;
 
     @Id @GeneratedValue
-    public int getId() {
-        return id;
+    public int getUnitId() {
+        return unitId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setUnitId(int id) {
+        this.unitId = id;
     }
 
     @Enumerated(EnumType.STRING)
