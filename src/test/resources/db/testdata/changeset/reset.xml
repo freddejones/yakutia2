@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+
+    <changeSet author="ninja-deleter" id="dropschema" runAlways="true">
+        <sql>
+            <!--ALTER TABLE APP.GAMEPLAYER DROP CONSTRAINT FK96A5719327073DBE;-->
+            <!--ALTER TABLE APP.GAME DROP CONSTRAINT SQL130609234915470;-->
+            <!--ALTER TABLE APP.GAMEPLAYER DROP CONSTRAINT FK96A571936B8D881C;-->
+            <!--ALTER TABLE APP.UNIT DROP CONSTRAINT FK284DA45E21E520;-->
+            <!--ALTER TABLE APP.GAMEPLAYER DROP CONSTRAINT SQL130609234915580;-->
+            <!--ALTER TABLE APP.PLAYERFRIEND DROP CONSTRAINT FKE47378FF6B8D881C;-->
+            <!--ALTER TABLE APP.PLAYERFRIEND DROP CONSTRAINT FKE47378FFA6B7FC99;-->
+            <!--ALTER TABLE APP.PLAYER DROP CONSTRAINT SQL130609234915600;-->
+            <!--ALTER TABLE APP.PLAYERFRIEND DROP CONSTRAINT SQL130712231658030;-->
+            <!--ALTER TABLE APP.UNIT DROP CONSTRAINT SQL130609234915610;-->
+            DROP TABLE GAME;
+            DROP TABLE GAMEPLAYER;
+            DROP TABLE PLAYER;
+            DROP TABLE PLAYERFRIEND;
+            DROP TABLE UNIT;
+            TRUNCATE TABLE 2DATABASECHANGELOG;
+        </sql>
+
+    </changeSet>
+
+</databaseChangeLog>
+
