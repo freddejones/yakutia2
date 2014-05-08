@@ -38,7 +38,10 @@ public class PlayerDTO implements Serializable {
         Player p = new Player();
         p.setName(playerDTO.getPlayerName());
         p.setEmail(playerDTO.getEmail());
-        p.setPlayerId(playerDTO.getPlayerId());
+        if (null != playerDTO.getPlayerId()) {
+            p.setPlayerId(playerDTO.getPlayerId());
+        }
+
         return p;
     }
 

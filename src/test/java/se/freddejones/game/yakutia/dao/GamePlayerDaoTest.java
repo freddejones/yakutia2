@@ -16,6 +16,7 @@ import se.freddejones.game.yakutia.model.Territory;
 import se.freddejones.game.yakutia.model.UnitType;
 import se.freddejones.game.yakutia.model.statuses.GamePlayerStatus;
 import se.freddejones.game.yakutia.model.statuses.GameStatus;
+import se.freddejones.game.yakutia.usecases.framework.TestdataHandler;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -34,6 +35,7 @@ public class GamePlayerDaoTest {
     public static final String GAME_NAME = "GAME_NAME";
     public static final String TEST_EMAIL = "test@email.com";
     public static final String PLAYER_NAME = "PLAYER_NAME";
+
     @Autowired
     private GamePlayerDao gamePlayerDao;
 
@@ -41,7 +43,8 @@ public class GamePlayerDaoTest {
     private Long gameId;
 
     @Before
-    public void setup() {
+    public void setup() throws Exception {
+        TestdataHandler.resetAndRebuild();
         Session session = gamePlayerDao.getSession();
         Player p = new Player();
         p.setEmail(TEST_EMAIL);
