@@ -1,5 +1,11 @@
-define(['backbone', 'underscore', 'text!templates/FriendSearch.html'],
-function(Backbone, _, FriendSearchTemplate) {
+define(['backbone',
+        'underscore',
+        'text!templates/FriendSearch.html',
+        'jqueryCookie'],
+function(Backbone,
+         _,
+         FriendSearchTemplate,
+         $Cookie) {
 
     var FriendModel = Backbone.Model.extend({});
     var FriendInviteModel = Backbone.Model.extend({});
@@ -31,7 +37,7 @@ function(Backbone, _, FriendSearchTemplate) {
             this.collection = new FriendsCollection();
             this.render();
             this.listenTo(this.collection, "change reset add remove", this.render)
-            this.collection.fetch({ url: '/friend/non/friends/'+window.playerId });
+            this.collection.fetch({ url: '/friend/non/friends/'+$.cookie("yakutiaPlayerId") });
         },
         render: function() {
             this.$el.html(this.template);
@@ -53,8 +59,10 @@ function(Backbone, _, FriendSearchTemplate) {
             var invite = new FriendInviteModel();
             console.log("Trying to save " + friendId);
             invite.save({
-                playerId: window.playerId,
-                friendId: friendId }, {url: '/friend/invite'})
+                    playerId: $.cookie("yakutiaPlayerId"),
+                    friendId: friendId
+                },
+                {   url: '/friend/invite'})
                 .complete(function() {
                     self.collection.remove(friendId)
                 });

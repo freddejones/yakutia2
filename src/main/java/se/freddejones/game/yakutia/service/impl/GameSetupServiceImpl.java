@@ -27,7 +27,7 @@ public class GameSetupServiceImpl implements GameSetupService {
     @Override
     @Transactional(readOnly = false)
     public void initializeNewGame(List<GamePlayer> gamePlayers) throws CouldNotCreateGameException {
-        ArrayList<GameSetup> gamePlayerSetups = new ArrayList<>();
+        List<GameSetup> gamePlayerSetups = new ArrayList<>();
 
         for (GamePlayer gamePlayer : gamePlayers) {
             GameSetup gameSetup = new GameSetup();
@@ -67,7 +67,7 @@ public class GameSetupServiceImpl implements GameSetupService {
         }
     }
 
-    private void addTerritoryAndUnitsToGamePlayer(List<GamePlayer> gamePlayers, ArrayList<GameSetup> gamePlayersSetup) {
+    private void addTerritoryAndUnitsToGamePlayer(List<GamePlayer> gamePlayers, List<GameSetup> gamePlayersSetup) {
         List<Territory> territories = getLandAreas();
         int gamePlayerCounter = 0;
         for(Territory territory : territories) {

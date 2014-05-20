@@ -27,7 +27,7 @@ import static se.freddejones.game.yakutia.model.GameManager.getLandAreas;
 @Transactional(readOnly = true)
 public class GameServiceImpl implements GameService {
 
-    private Logger log = Logger.getLogger(GameServiceImpl.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(GameServiceImpl.class.getName());
 
     @Autowired
     protected GameDao gameDao;
@@ -68,7 +68,7 @@ public class GameServiceImpl implements GameService {
     private GameDTO buildGameDTO(Long playerid, Game game) {
         GameDTO gameDto = new GameDTO();
         gameDto.setId(game.getGameId());
-        gameDto.setCanStartGame((playerid == game.getGameCreatorPlayerId()));
+        gameDto.setCanStartGame(playerid == game.getGameCreatorPlayerId());
         gameDto.setName(game.getName());
         gameDto.setDate(game.getCreationTime().toString());
         gameDto.setStatus(game.getGameStatus().toString());
@@ -100,7 +100,7 @@ public class GameServiceImpl implements GameService {
     @Override
     @Transactional(readOnly = false)
     public void setGameToStarted(Long gameId) throws NotEnoughPlayersException,
-            ToManyPlayersException, CouldNotCreateGameException {
+            TooManyPlayersException, CouldNotCreateGameException {
 
         List<GamePlayer> gamePlayers = gamePlayerDao.getGamePlayersByGameId(gameId);
 
@@ -108,7 +108,7 @@ public class GameServiceImpl implements GameService {
                 || !isAtLeastTwoAcceptedGamePlayers(gamePlayers)) {
             throw new NotEnoughPlayersException("Not enough players to start game");
         } else if (gamePlayers.size() > getLandAreas().size()) {
-            throw new ToManyPlayersException("To many players to start game");
+            throw new TooManyPlayersException("To many players to start game");
         }
 
         gameSetupService.initializeNewGame(gamePlayers);
@@ -118,7 +118,7 @@ public class GameServiceImpl implements GameService {
     @Override
     @Transactional(readOnly = false)
     public void setGameToFinished(Long gameId) {
-        log.info("setting game <"+gameId+"> to finished");
+        LOGGER.info("setting game <" + gameId + "> to finished");
         gameDao.endGame(gameId);
     }
 

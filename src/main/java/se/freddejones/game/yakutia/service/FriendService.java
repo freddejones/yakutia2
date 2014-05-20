@@ -11,5 +11,6 @@ public interface FriendService {
     List<Player> getFriendInvites(Long playerId);
     List<Player> getFriends(Long playerId);
     FriendDTO acceptFriendInvite(Long playerId, Long friendId);
-    void declineFriendInvite(Long playerId, Long friendId);
+    Boolean declineFriendInvite(Long playerId, Long friendId);
+    List<FriendDTO> getInvitedAndAcceptedFriends(Long playerId);
 }

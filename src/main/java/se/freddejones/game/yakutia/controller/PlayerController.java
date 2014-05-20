@@ -7,7 +7,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import se.freddejones.game.yakutia.entity.Player;
 import se.freddejones.game.yakutia.exception.PlayerAlreadyExistsException;
-import se.freddejones.game.yakutia.model.dto.FriendDTO;
 import se.freddejones.game.yakutia.model.dto.PlayerDTO;
 import se.freddejones.game.yakutia.service.PlayerService;
 
@@ -17,7 +16,7 @@ import java.util.logging.Logger;
 @RequestMapping(value = "/player")
 public class PlayerController {
 
-    private Logger log = Logger.getLogger(PlayerController.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(PlayerController.class.getName());
 
     @Autowired
     PlayerService playerService;
@@ -27,7 +26,7 @@ public class PlayerController {
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
     public Long createPlayer(@RequestBody final PlayerDTO playerDTO) throws PlayerAlreadyExistsException {
-        log.info("Receiving PlayerDTO with name: " + playerDTO.toString());
+        LOGGER.info("Receiving PlayerDTO with name: " + playerDTO.toString());
         Player p = PlayerDTO.bind(playerDTO);
         return playerService.createNewPlayer(p);
     }

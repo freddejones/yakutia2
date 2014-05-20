@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 @Service("playerservice")
 public class PlayerServiceImpl implements PlayerService {
 
-    private Logger log = Logger.getLogger(PlayerServiceImpl.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(PlayerServiceImpl.class.getName());
 
     @Autowired
     PlayerDao playerDao;

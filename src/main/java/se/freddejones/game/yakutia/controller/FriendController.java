@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.*;
 import se.freddejones.game.yakutia.entity.Player;
 import se.freddejones.game.yakutia.entity.PlayerFriend;
 import se.freddejones.game.yakutia.model.dto.FriendDTO;
-import se.freddejones.game.yakutia.model.dto.PlayerDTO;
 import se.freddejones.game.yakutia.model.statuses.FriendStatus;
 import se.freddejones.game.yakutia.service.FriendService;
 import se.freddejones.game.yakutia.service.PlayerService;
@@ -41,47 +40,27 @@ public class FriendController {
     @RequestMapping(value = "/decline", method = RequestMethod.POST)
     @ResponseBody
     public Boolean declineFriendInvite(@RequestBody final FriendDTO friendDTO) {
-        friendService.declineFriendInvite(friendDTO.getPlayerId(), friendDTO.getFriendId());
-        return true;
+        return friendService.declineFriendInvite(friendDTO.getPlayerId(), friendDTO.getFriendId());
     }
 
     @RequestMapping(value = "/get/all/{playerId}", method = RequestMethod.GET)
     @ResponseBody
     public List<FriendDTO> getAllFriends(@PathVariable("playerId") Long playerid) {
-        // TODO extract this to the service bean, pretty please
-        List<FriendDTO> friendDTOs = new ArrayList<FriendDTO>();
-        List<Player> invites = friendService.getFriendInvites(playerid);
-        List<Player> friends = friendService.getFriends(playerid);
-
-        mapFriendDto(friendDTOs, playerid, invites, FriendStatus.INVITED);
-        mapFriendDto(friendDTOs, playerid, friends, FriendStatus.ACCEPTED);
-        return friendDTOs;
-    }
-
-    private void mapFriendDto(List<FriendDTO> friendDTOs, Long playerid,
-                              List<Player> playersList, FriendStatus status) {
-        for (Player invitedPlayer : playersList) {
-            FriendDTO friendDTO = new FriendDTO();
-            friendDTO.setPlayerId(playerid);
-            friendDTO.setFriendId(invitedPlayer.getPlayerId());
-            friendDTO.setPlayerName(invitedPlayer.getName());
-            friendDTO.setFriendStatus(status);
-            friendDTOs.add(friendDTO);
-        }
+        return friendService.getInvitedAndAcceptedFriends(playerid);
     }
 
     @RequestMapping(value  = "/non/friends/{playerId}", method = RequestMethod.GET)
     @ResponseBody
     public List<FriendDTO> getNonFriends(@PathVariable("playerId") Long playerid) {
 
-        // Extract this to the service bean
+        // TODO Extract this to the service bean, pretty please
         List<Player> players = playerService.getAllPlayers();
         Player currentPlayer = playerService.getPlayerById(playerid);
 
-        List<FriendDTO> nonFriends = new ArrayList<FriendDTO>();
+        List<FriendDTO> nonFriends = new ArrayList<>();
         for (Player player : players) {
             if (!(currentPlayer.getPlayerId() == player.getPlayerId()) &&
-                    !isPlayerAFriend(currentPlayer.getFriends(), player)) {
+                    !isFriendOrInvited(currentPlayer, player)) {
                 FriendDTO friendDTO = new FriendDTO();
                 friendDTO.setPlayerId(player.getPlayerId());
                 friendDTO.setPlayerName(player.getName());
@@ -94,11 +73,26 @@ public class FriendController {
 
 
 
-    private boolean isPlayerAFriend(Set<PlayerFriend> friends, Player p) {
-        Iterator<PlayerFriend> iter = friends.iterator();
-        while(iter.hasNext()) {
-            PlayerFriend playerFriend = iter.next();
-            if (playerFriend.getFriend().getPlayerId() == p.getPlayerId()) {
+    private boolean isFriendOrInvited(Player currentPlayer, Player p) {
+        return friendCheckerIterator(currentPlayer.getFriends().iterator(), p.getPlayerId())
+                || friendInviteCheckerIterator(currentPlayer.getFriendsReqested().iterator(), p.getPlayerId());
+
+    }
+
+    private boolean friendCheckerIterator(Iterator<PlayerFriend> iterator, Long playerId) {
+        while(iterator.hasNext()) {
+            PlayerFriend playerFriend = iterator.next();
+            if (playerFriend.getFriend().getPlayerId() == playerId) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean friendInviteCheckerIterator(Iterator<PlayerFriend> iterator, Long playerId) {
+        while(iterator.hasNext()) {
+            PlayerFriend playerFriend = iterator.next();
+            if (playerFriend.getPlayer().getPlayerId() == playerId) {
                 return true;
             }
         }

@@ -291,7 +291,7 @@ public class GameServiceTest {
         // Then: exception is thrown
     }
 
-    @Test(expected = ToManyPlayersException.class)
+    @Test(expected = TooManyPlayersException.class)
     public void testToManyPlayersToStartGame() throws Exception {
         // Given: To many players added to game players
         List<GamePlayer> gamePlayers = new ArrayList<>();
@@ -326,7 +326,7 @@ public class GameServiceTest {
             gameService.setGameToStarted(1L);
         } catch (NotEnoughPlayersException e) {
             fail("Should not enter this exception");
-        } catch (ToManyPlayersException e) {
+        } catch (TooManyPlayersException e) {
             fail("Should not enter this exception");
         } catch (CouldNotCreateGameException e) {
             verifyZeroInteractions(gameDaoMock);

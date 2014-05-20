@@ -7,15 +7,22 @@ import se.freddejones.game.yakutia.entity.Player;
 import se.freddejones.game.yakutia.exception.PlayerAlreadyExistsException;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 @Repository
 public class PlayerDaoImpl extends AbstractDaoImpl implements PlayerDao {
+
+    private static final Logger LOGGER = Logger.getLogger(PlayerDaoImpl.class.getName());
+    public static final String QUERY_PLAYER_GET_ALL_PLAYERS = "Player.getAllPlayers";
+    public static final String QUERY_PLAYER_GET_PLAYER_BY_EMAIL = "Player.getPlayerByEmail";
+    public static final String EMAIL_PARAMETER = "email";
 
     @Override
     public Long createPlayer(Player p) throws PlayerAlreadyExistsException {
         try {
             getCurrentSession().saveOrUpdate(p);
         } catch (ConstraintViolationException cve) {
+            LOGGER.warning(cve.getMessage());
             throw new PlayerAlreadyExistsException("Player with email: " + p.getEmail() + " already exists");
         }
         getCurrentSession().refresh(p);
@@ -24,7 +31,7 @@ public class PlayerDaoImpl extends AbstractDaoImpl implements PlayerDao {
 
     @Override
     public List<Player> getAllPlayers() {
-        return (List<Player>) getCurrentSession().getNamedQuery("Player.getAllPlayers").list();
+        return (List<Player>) getCurrentSession().getNamedQuery(QUERY_PLAYER_GET_ALL_PLAYERS).list();
     }
 
     @Override
@@ -35,7 +42,7 @@ public class PlayerDaoImpl extends AbstractDaoImpl implements PlayerDao {
     @Override
     public Player getPlayerByEmail(String email) {
         getCurrentSession().flush();
-        Player p = (Player) getCurrentSession().getNamedQuery("Player.getPlayerByEmail").setParameter("email", email).uniqueResult();
+        Player p = (Player) getCurrentSession().getNamedQuery(QUERY_PLAYER_GET_PLAYER_BY_EMAIL).setParameter(EMAIL_PARAMETER, email).uniqueResult();
         return p;
     }
 

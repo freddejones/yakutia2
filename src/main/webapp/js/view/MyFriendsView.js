@@ -1,5 +1,9 @@
-define(['backbone', 'underscore', 'text!templates/MyFriends.html', 'collections/FriendsCollection'],
-function(Backbone, _, MyFriendsTemplate, FriendsCollection) {
+define(['backbone',
+        'underscore',
+        'text!templates/MyFriends.html',
+        'collections/FriendsCollection',
+        'jqueryCookie'],
+function(Backbone, _, MyFriendsTemplate, FriendsCollection, $Cookie) {
 
     var FriendModel = Backbone.Model.extend({});
 
@@ -16,11 +20,10 @@ function(Backbone, _, MyFriendsTemplate, FriendsCollection) {
             this.template = _.template(MyFriendsTemplate);
             this.collection = new FriendsCollection();
             this.render();
-            this.listenTo(this.collection, "change reset add remove", this.render)
-            this.collection.fetch({ url: '/friend/get/all/'+window.playerId });
+            this.listenTo(this.collection, "change reset add remove", this.render);
+            this.collection.fetch({ url: '/friend/get/all/'+ $.cookie("yakutiaPlayerId")});
         },
         render: function() {
-            console.log("rendering");
             this.$el.html(this.template);
             this.collection.each(function(friendObject) {
                 this.doStuff(friendObject);
@@ -46,7 +49,7 @@ function(Backbone, _, MyFriendsTemplate, FriendsCollection) {
             var self = this;
             var friendId = $(e.currentTarget).attr("value");
             var acceptModel = new FriendModel();
-            acceptModel.set('playerId', window.playerId);
+            acceptModel.set('playerId', $.cookie("yakutiaPlayerId"));
             acceptModel.set('friendId', friendId);
             acceptModel.save({},{url: '/friend/accept', success: function(model, response) {
                 console.log(JSON.stringify(response));
@@ -64,7 +67,7 @@ function(Backbone, _, MyFriendsTemplate, FriendsCollection) {
             var self = this;
             var friendId = $(e.currentTarget).attr("value");
             var model = new FriendModel();
-            model.set('playerId', window.playerId);
+            model.set('playerId', $.cookie("yakutiaPlayerId"));
             model.set('friendId', friendId)
             model.save({
                 playerId: window.playerId,

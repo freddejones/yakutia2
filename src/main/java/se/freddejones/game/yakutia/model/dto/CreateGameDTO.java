@@ -6,8 +6,7 @@ public class CreateGameDTO {
 
     private String gameName;
     private Long createdByPlayerId;
-    List<InvitedPlayer> invites;
-//    private List<String> invites;
+    private List<InvitedPlayer> invites;
 
     public String getGameName() {
         return gameName;
@@ -32,15 +31,6 @@ public class CreateGameDTO {
     public void setInvites(List<InvitedPlayer> invites) {
         this.invites = invites;
     }
-
-
-//    public List<String> getInvites() {
-//        return invites;
-//    }
-//
-//    public void setInvites(List<String> invites) {
-//        this.invites = invites;
-//    }
 
     @Override
     public String toString() {

@@ -1,61 +1,22 @@
 package se.freddejones.game.yakutia.usecases.player;
 
-import com.google.inject.Inject;
-import liquibase.exception.LiquibaseException;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
-import se.freddejones.game.yakutia.controller.PlayerController;
-import se.freddejones.game.yakutia.dao.PlayerDao;
 import se.freddejones.game.yakutia.model.dto.PlayerDTO;
-import se.freddejones.game.yakutia.usecases.framework.FullApplicationContextConfiguration;
 import se.freddejones.game.yakutia.usecases.framework.TestdataHandler;
+import se.freddejones.game.yakutia.usecases.framework.UseCaseTemplate;
 
-import javax.annotation.Resource;
-
-import java.sql.SQLException;
-
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static se.freddejones.game.yakutia.usecases.framework.UseCaseBoilerplate.convertDtoToByteArray;
 import static se.freddejones.game.yakutia.usecases.framework.UseCaseBoilerplate.createPlayerDTO;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@WebAppConfiguration
-//@ContextConfiguration(locations = {FullApplicationContextConfiguration.class})
-@ContextConfiguration(locations = {
-        "classpath:applicationTestContext.xml",
-        "classpath:hibernateTestContext.xml"})
-public class CreatePlayerUseCaseTest {
-
-    @Resource
-    private WebApplicationContext webApplicationContext;
-    private MockMvc mockMvc;
-
-    @Before
-    public void setUp() throws Exception {
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-        TestdataHandler.resetAndRebuild();
-    }
+public class CreatePlayerUseCaseTest extends UseCaseTemplate {
 
     @Test
-    public void UC_001_createPlayer() throws Exception {
+    public void UC_Player_01_createPlayer() throws Exception {
         // given
         final byte[] request = convertDtoToByteArray(createPlayerDTO());
 
@@ -69,7 +30,7 @@ public class CreatePlayerUseCaseTest {
     }
 
     @Test
-    public void UC_002_updatePlayerName() throws Exception {
+    public void UC_Player_02_updatePlayerName() throws Exception {
         // given
         TestdataHandler.loadDefaultTestdata();
         PlayerDTO playerDTO = new PlayerDTO();
@@ -87,7 +48,7 @@ public class CreatePlayerUseCaseTest {
     }
 
     @Test
-    public void UC_003_fetchPlayer() throws Exception {
+    public void UC_Player_03_fetchPlayer() throws Exception {
         TestdataHandler.loadDefaultTestdata();
         mockMvc.perform(get("/player/fetch/1"))
                 .andDo(print())
@@ -95,7 +56,7 @@ public class CreatePlayerUseCaseTest {
     }
 
     @Test
-    public void UC_004_createPlayerAndFetch() throws Exception {
+    public void UC_Player_04_createPlayerAndFetch() throws Exception {
         // given
         final byte[] request = convertDtoToByteArray(createPlayerDTO());
 
@@ -114,7 +75,7 @@ public class CreatePlayerUseCaseTest {
     }
 
     @Test
-    public void UC_005_updatePlayerNameAndFetchPlayer() throws Exception {
+    public void UC_Player_05_updatePlayerNameAndFetchPlayer() throws Exception {
         // given
         TestdataHandler.loadDefaultTestdata();
         PlayerDTO playerDTO = new PlayerDTO();

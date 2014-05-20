@@ -3,7 +3,7 @@ package se.freddejones.game.yakutia.model.dto;
 public class InvitedPlayer {
 
     private Long id;
-    private String name;
+    private String name;        // TODO remove? used for what?
 
     public Long getId() {
         return id;

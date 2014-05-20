@@ -5,27 +5,16 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
 
-    <changeSet author="ninja-fidde" id="td-001" runAlways="true">
+    <changeSet author="ninja-fidde" id="td-002" runAlways="true">
         <loadUpdateData encoding="UTF-8"
                         file="src/test/resources/db/testdata/csv/players.csv"
                         primaryKey="PLAYER_ID"
                         schemaName="public"
                         separator=","
-                        tableName="PLAYER">
+                        tableName="player">
             <column name="PLAYER_ID" type="NUMERIC"/>
             <column name="EMAIL" type="STRING"/>
             <column name="PLAYER_NAME" type="STRING"/>
-        </loadUpdateData>
-        <loadUpdateData encoding="UTF-8"
-                        file="src/test/resources/db/testdata/csv/player-friend.csv"
-                        primaryKey="playerFriendId"
-                        schemaName="public"
-                        separator=","
-                        tableName="PLAYER_FRIEND">
-            <column name="playerFriendId" type="NUMERIC"/>
-            <column name="friendStatus" type="STRING"/>
-            <column name="friendId" type="NUMERIC"/>
-            <column name="playerId" type="NUMERIC"/>
         </loadUpdateData>
     </changeSet>
 

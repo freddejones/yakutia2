@@ -65,4 +65,15 @@ public class TestdataHandler {
         liquibase.update(new Contexts("test"));
     }
 
+    public static void loadPlayersOnly() throws Exception {
+
+        if (database == null) {
+            setupConnection();
+        }
+
+        ResourceAccessor resourceAccessor = new FileSystemResourceAccessor();
+        liquibase = new Liquibase("src/test/resources/db/testdata/yakutia-testdata-02.xml",
+                resourceAccessor, database);
+        liquibase.update(new Contexts("test"));
+    }
 }

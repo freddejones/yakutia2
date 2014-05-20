@@ -1,6 +1,5 @@
 package se.freddejones.game.yakutia.dao.impl;
 
-import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 import se.freddejones.game.yakutia.dao.PlayerFriendDao;
 import se.freddejones.game.yakutia.entity.PlayerFriend;

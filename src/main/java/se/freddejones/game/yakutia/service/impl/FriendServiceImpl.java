@@ -40,7 +40,7 @@ public class FriendServiceImpl implements FriendService {
 
     @Override
     public List<Player> getFriendInvites(Long playerId) {
-        List<Player> invitedFriends = new ArrayList<Player>();
+        List<Player> invitedFriends = new ArrayList<>();
         Player p = playerDao.getPlayerById(playerId);
         final Set<PlayerFriend> friends = p.getFriendsReqested();
         Iterator<PlayerFriend> playerFriendIterator = friends.iterator();
@@ -90,9 +90,38 @@ public class FriendServiceImpl implements FriendService {
 
     @Override
     @Transactional(readOnly = false)
-    public void declineFriendInvite(Long playerId, Long friendId) {
-        PlayerFriend playerFriend = playerFriendDao.getPlayerFriend(playerId, friendId);
+    public Boolean declineFriendInvite(Long playerId, Long friendId) {
+        PlayerFriend playerFriend = playerFriendDao.getPlayerFriend(friendId, playerId);
         playerFriendDao.deletePlayerFriend(playerFriend);
+        return playerFriendDao.getPlayerFriend(friendId, playerId) == null;
+    }
+
+    @Override
+    public List<FriendDTO> getInvitedAndAcceptedFriends(Long playerId) {
+        List<FriendDTO> friendDTOs = new ArrayList<>();
+        List<Player> invites = getFriendInvites(playerId);
+        List<Player> friends = getFriends(playerId);
+
+        // TODO refactor this:
+        mapFriendDto(friendDTOs, playerId, invites, FriendStatus.INVITED);
+        mapFriendDto(friendDTOs, playerId, friends, FriendStatus.ACCEPTED);
+        return friendDTOs;
+    }
+
+    private void mapFriendDto(List<FriendDTO> friendDTOs, Long playerid,
+                              List<Player> playersList, FriendStatus status) {
+        for (Player invitedPlayer : playersList) {
+            if (invitedPlayer.getPlayerId() == playerid)
+            {
+                continue;
+            }
+            FriendDTO friendDTO = new FriendDTO();
+            friendDTO.setPlayerId(playerid);
+            friendDTO.setFriendId(invitedPlayer.getPlayerId());
+            friendDTO.setPlayerName(invitedPlayer.getName());
+            friendDTO.setFriendStatus(status);
+            friendDTOs.add(friendDTO);
+        }
     }
 
 
