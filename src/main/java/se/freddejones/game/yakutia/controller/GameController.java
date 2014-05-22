@@ -60,43 +60,4 @@ public class GameController {
         gameService.setGameToStarted(gameId);
     }
 
-
-
-    // TODO refactor this to GAmestateController instead
-    @RequestMapping(value = "/state/{gameId}/{playerId}", method = RequestMethod.GET)
-    @ResponseBody
-    public GameStateModelDTO getCurrentGameState(@PathVariable("gameId") Long gameId,
-         @PathVariable("playerId") Long playerId) throws Exception {
-        LOGGER.info("Fetching game state for playerId: " + playerId + " and gameid: " + gameId);
-        return gameService.getGameStateModel(gameId, playerId);
-    }
-
-    @RequestMapping(value = "/state/territory/{gameId}/{playerId}/{territory}",
-            method = RequestMethod.GET)
-    @ResponseBody
-    public TerritoryDTO getCurrentTerritoryState(@PathVariable("gameId") Long gameId,
-                                                 @PathVariable("playerId") Long playerId,
-                                                 @PathVariable("territory") String territory) {
-        return gameService.getTerritoryInformationForTerritory(Territory.translateLandArea(territory), gameId, playerId);
-    }
-
-    @RequestMapping(value = "/state/perform/place/unit",
-            method = RequestMethod.POST,
-            headers = {"content-type=application/json"},
-            consumes = "application/json")
-    @ResponseBody
-    public TerritoryDTO placeUnitOperation(@RequestBody final PlaceUnitUpdate placeUnitUpdate) {
-        LOGGER.info(placeUnitUpdate.toString());
-        return gameService.placeUnitAction(placeUnitUpdate);
-    }
-
-    @RequestMapping(value = "/state/perform/attack/territory",
-            method = RequestMethod.POST,
-            headers = {"content-type=application/json"},
-            consumes = "application/json")
-    @ResponseBody
-    public TerritoryDTO attackTerritoryOperation(@RequestBody final AttackActionUpdate attackActionUpdate) {
-        LOGGER.info(attackActionUpdate.toString());
-        return gameService.attackTerritoryAction(attackActionUpdate);
-    }
 }

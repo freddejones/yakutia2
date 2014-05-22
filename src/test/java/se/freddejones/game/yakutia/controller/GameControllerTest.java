@@ -59,51 +59,7 @@ public class GameControllerTest {
     }
 
 
-    @Test
-    public void testPlaceUnitUpdateAccepted() throws Exception {
-        TerritoryDTO territoryDTO = new TerritoryDTO("TOMTE", 1, true);
-        when(gameService.placeUnitAction(any(PlaceUnitUpdate.class))).thenReturn(territoryDTO);
-        assertThat(mockMvc.perform(post("/game/state/perform/place/unit")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"territory\":\"test\", \"gameId\":\"1\", \"playerId\":\"1\", \"numberOfUnits\":\"5\"}"))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString(), is("{\"landName\":\"TOMTE\",\"units\":1,\"ownedByPlayer\":true}"));
-    }
 
-    @Test
-    public void testPlaceUnitUpdateExceptionThrown() throws Exception {
-        when(gameService.placeUnitAction(any(PlaceUnitUpdate.class))).thenThrow(NotEnoughUnitsException.class);
-        mockMvc.perform(post("/game/state/perform/place/unit")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"territory\":\"test\", \"gameId\":\"1\", \"playerId\":\"1\", \"numberOfUnits\":\"5\"}"))
-                .andDo(print())
-                .andExpect(status().isForbidden());
-    }
-
-    @Test
-    public void testAttackTerritoryOK() throws Exception {
-        TerritoryDTO territoryDTO = new TerritoryDTO("TOMTE", 1, true);
-        when(gameService.attackTerritoryAction(any(AttackActionUpdate.class))).thenReturn(territoryDTO);
-        assertThat(mockMvc.perform(post("/game/state/perform/attack/territory")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"territoryAttackDest\":\"NORWAY\", \"territoryAttackSrc\":\"SWEDEN\", \"gameId\":\"1\", \"playerId\":\"1\", \"attackingNumberOfUnits\":\"5\"}"))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString(), is("{\"landName\":\"TOMTE\",\"units\":1,\"ownedByPlayer\":true}"));
-    }
-
-    @Test
-    public void testGetTerritoryStateInformation() throws Exception {
-        TerritoryDTO territoryDTO = new TerritoryDTO("SWEDEN", 1, true);
-        when(gameService.getTerritoryInformationForTerritory(Territory.SWEDEN, 1L, 1L)).thenReturn(territoryDTO);
-        String response = mockMvc.perform(get("/game/state/territory/1/1/sweden")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString();
-        assertThat(response, containsString("{\"landName\":\"SWEDEN\",\"units\":1,\"ownedByPlayer\":true}"));
-    }
 
     private ArrayList<TerritoryDTO> getYakutiaModels() {
         final TerritoryDTO testLand = new TerritoryDTO("testLand", 6, true);

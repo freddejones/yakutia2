@@ -68,7 +68,12 @@ public class CreateGamesUseCaseTest extends UseCaseTemplate {
     }
 
     @Test
-    public void UC_04_createGameAndStart() throws Exception {
+    public void UC_04_createGameAndStartGame() throws Exception {
+
+    }
+
+    @Test
+    public void UC_05_FetchStartedGameForAPlayer() throws Exception {
 
     }
 
