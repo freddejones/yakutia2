@@ -41,18 +41,6 @@ public class GameController {
         return list;
     }
 
-    @RequestMapping(value = "/get/{playerId}/game/{gameId}", method = RequestMethod.GET)
-    @ResponseBody
-    public List<TerritoryDTO> getGame(@PathVariable("playerId") Long playerId,
-                                       @PathVariable("gameId") Long gameId) {
-        LOGGER.info("Getting game information for gameId: " + gameId + " and playerId: " + playerId);
-        List<TerritoryDTO> territoryDTOs = gameService.getTerritoryInformationForActiveGame(playerId, gameId);
-        if (territoryDTOs.isEmpty()) {
-            throw new NoGameFoundException();
-        }
-        return territoryDTOs;
-    }
-
     @RequestMapping(value = "/start/{gameId}", method = RequestMethod.PUT)
     @ResponseBody
     public void startGame(@PathVariable("gameId") Long gameId) throws Exception {

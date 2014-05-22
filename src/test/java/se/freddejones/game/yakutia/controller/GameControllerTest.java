@@ -38,35 +38,4 @@ public class GameControllerTest {
         this.mockMvc = MockMvcBuilders.standaloneSetup(new GameController(gameService)).build();
     }
 
-    @Test
-    public void testGetGameForAPlayer() throws Exception {
-        final ArrayList<TerritoryDTO> territoryDTOs = getYakutiaModels();
-        when(gameService.getTerritoryInformationForActiveGame(anyLong(), anyLong())).thenReturn(territoryDTOs);
-        mockMvc.perform(get("/game/get/1/game/2"))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().string("[{\"landName\":\"testLand\",\"units\":6,\"ownedByPlayer\":true}]"));
-    }
-
-    @Test
-    public void testGetWrongGameIdForPlayerResponse() throws Exception {
-        final ArrayList<TerritoryDTO> territoryDTOs = getYakutiaModels();
-        when(gameService.getTerritoryInformationForActiveGame(1L, 2L)).thenReturn(territoryDTOs);
-        assertThat(mockMvc.perform(get("/game/get/1/game/3"))
-                .andDo(print())
-                .andExpect(status().isForbidden())
-                .andReturn().getResponse().getErrorMessage(), is("Not allowed to view this game"));
-    }
-
-
-
-
-    private ArrayList<TerritoryDTO> getYakutiaModels() {
-        final TerritoryDTO testLand = new TerritoryDTO("testLand", 6, true);
-        final ArrayList<TerritoryDTO> territoryDTOs = new ArrayList<>();
-        territoryDTOs.add(testLand);
-        return territoryDTOs;
-    }
-
-
 }

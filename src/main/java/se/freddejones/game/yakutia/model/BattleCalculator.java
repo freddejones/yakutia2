@@ -1,7 +1,9 @@
 package se.freddejones.game.yakutia.model;
 
+import org.springframework.stereotype.Component;
 import se.freddejones.game.yakutia.entity.Unit;
 
+@Component
 public class BattleCalculator {
 
     public BattleCalculator() {

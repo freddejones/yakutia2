@@ -8,6 +8,7 @@ import se.freddejones.game.yakutia.dao.GamePlayerDao;
 import se.freddejones.game.yakutia.dao.UnitDao;
 import se.freddejones.game.yakutia.entity.Game;
 import se.freddejones.game.yakutia.entity.GamePlayer;
+import se.freddejones.game.yakutia.entity.Player;
 import se.freddejones.game.yakutia.entity.Unit;
 import se.freddejones.game.yakutia.exception.*;
 import se.freddejones.game.yakutia.model.*;
@@ -37,15 +38,6 @@ public class GameServiceImpl implements GameService {
     protected GameSetupService gameSetupService;
     @Autowired
     protected UnitDao unitDao;
-    private BattleCalculator battleCalculator;
-
-    public GameServiceImpl() {
-        this.battleCalculator = new BattleCalculator();
-    }
-
-    public void setBattleCalculator(BattleCalculator battleCalculator) {
-        this.battleCalculator = battleCalculator;
-    }
 
     @Override
     @Transactional(readOnly = false)
@@ -76,28 +68,6 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public List<TerritoryDTO> getTerritoryInformationForActiveGame(Long playerId, Long gameId) {
-        List<TerritoryDTO> territoryDTOs = new ArrayList<>();
-        GamePlayer gp = gamePlayerDao.getGamePlayerByGameIdAndPlayerId(playerId, gameId);
-        List<GamePlayer> gamePlayers = gamePlayerDao.getGamePlayersByGameId(gameId);
-        for (GamePlayer gamePlayer : gamePlayers) {
-            if (gp.getGamePlayerId() == gamePlayer.getGamePlayerId()) {
-                for (Unit unit : gamePlayer.getUnits()) {
-                    territoryDTOs.add(new TerritoryDTO(unit.getTerritory().toString(), unit.getStrength(), true));
-                }
-            } else {
-                for (Unit unit : gamePlayer.getUnits()) {
-                    if (unit.getTerritory() != Territory.UNASSIGNEDLAND) {
-                        territoryDTOs.add(new TerritoryDTO(unit.getTerritory().toString(), unit.getStrength(), false));
-                    }
-                }
-            }
-        }
-
-        return territoryDTOs;
-    }
-
-    @Override
     @Transactional(readOnly = false)
     public void setGameToStarted(Long gameId) throws NotEnoughPlayersException,
             TooManyPlayersException, CouldNotCreateGameException {
@@ -122,6 +92,16 @@ public class GameServiceImpl implements GameService {
         gameDao.endGame(gameId);
     }
 
+    @Override
+    public void acceptGameInvite(Player accepting, Game g) {
+
+    }
+
+    @Override
+    public void declineGameInvite(Player declining, Game g) {
+
+    }
+
     private boolean isAtLeastTwoAcceptedGamePlayers(List<GamePlayer> gamePlayers) {
 
         // TODO remove this properly
@@ -134,150 +114,5 @@ public class GameServiceImpl implements GameService {
             }
         }
         return count >= 2;
-    }
-
-    @Override
-    @Transactional(readOnly = false)
-    public TerritoryDTO placeUnitAction(PlaceUnitUpdate placeUnitUpdate) throws NotEnoughUnitsException {
-        GamePlayer gamePlayer = gamePlayerDao.
-                getGamePlayerByGameIdAndPlayerId(placeUnitUpdate.getPlayerId(), placeUnitUpdate.getGameId());
-
-        Unit unassignedLandUnit = gamePlayerDao.getUnassignedLand(gamePlayer.getGamePlayerId());
-        if (unassignedLandUnit.getStrength()
-                < placeUnitUpdate.getNumberOfUnits()) {
-            throw new NotEnoughUnitsException("Insufficient funds");
-        }
-
-        int strength = 0;
-        for (Unit unit : gamePlayer.getUnits()) {
-            if (unit.getTerritory().equals(Territory.translateLandArea(placeUnitUpdate.getTerritory()))) {
-                strength = unit.getStrength() + placeUnitUpdate.getNumberOfUnits();
-                unit.setStrength(strength);
-                unassignedLandUnit.setStrength(unassignedLandUnit.getStrength()-placeUnitUpdate.getNumberOfUnits());
-                gamePlayerDao.setUnitsToGamePlayer(gamePlayer.getGamePlayerId(), unit);
-                gamePlayerDao.setUnitsToGamePlayer(gamePlayer.getGamePlayerId(), unassignedLandUnit);
-            }
-        }
-
-        if (unassignedLandUnit.getStrength() == 0) {
-            gamePlayerDao.setActionStatus(gamePlayer.getGamePlayerId(), ActionStatus.ATTACK);
-        }
-
-        return new TerritoryDTO(placeUnitUpdate.getTerritory(), strength, true);
-    }
-
-    @Override
-    @Transactional(readOnly = false)
-    public TerritoryDTO attackTerritoryAction(AttackActionUpdate attackActionUpdate) throws TerritoryNotConnectedException {
-        Long playerId = attackActionUpdate.getPlayerId();
-        Long gameId = attackActionUpdate.getGameId();
-        GamePlayer attackingGamePlayer = gamePlayerDao.getGamePlayerByGameIdAndPlayerId(playerId, gameId);
-
-        Territory destionationTerritory = Territory.translateLandArea(attackActionUpdate.getTerritoryAttackDest());
-        if (!GameManager.isTerritoriesConnected(
-                Territory.translateLandArea(attackActionUpdate.getTerritoryAttackSrc()),
-                destionationTerritory)) {
-            throw new TerritoryNotConnectedException("Territories are not connected");
-        }
-
-        GamePlayer defendingGamePlayer = gamePlayerDao.getGamePlayerByGameIdAndTerritory(gameId, destionationTerritory);
-
-        Unit defendingUnit = getUnitByTerritory(attackActionUpdate.getTerritoryAttackDest(), defendingGamePlayer.getUnits());
-        Unit attackingUnit = getUnitByTerritory(attackActionUpdate.getTerritoryAttackSrc(), attackingGamePlayer.getUnits());
-
-        BattleResult battleResult = battleCalculator.battle(attackingUnit, defendingUnit);
-
-        attackingUnit.setStrength(attackingUnit.getStrength()-battleResult.getAttackingTerritoryLosses());
-        defendingUnit.setStrength(defendingUnit.getStrength()-battleResult.getDefendingTerritoryLosses());
-
-
-
-        if (battleResult.isTakenOver()) {
-            defendingUnit.setStrength(attackingUnit.getStrength()-1);
-            attackingUnit.setStrength(1);
-            gamePlayerDao.setUnitsToGamePlayer(attackingGamePlayer.getGamePlayerId(), attackingUnit);
-            gamePlayerDao.setUnitsToGamePlayer(attackingGamePlayer.getGamePlayerId(), defendingUnit);
-        } else {
-            gamePlayerDao.setUnitsToGamePlayer(defendingGamePlayer.getGamePlayerId(), defendingUnit);
-            gamePlayerDao.setUnitsToGamePlayer(attackingGamePlayer.getGamePlayerId(), attackingUnit);
-        }
-
-        TerritoryDTO territoryDTO = new TerritoryDTO(
-                attackActionUpdate.getTerritoryAttackSrc(), attackingUnit.getStrength(), true);
-        return territoryDTO;
-    }
-
-    private void isGameOver(GamePlayer gamePlayer) {
-        // refresh gamePlayer
-        List<GamePlayer> gamePlayersList = gamePlayerDao.getGamePlayersByGameId(gamePlayer.getGameId());
-
-        boolean isGameOver = false;
-        for(GamePlayer gp : gamePlayersList) {
-            if (gp.getUnits().size() == 1 && gp.getGamePlayerId() != gamePlayer.getGamePlayerId()) {
-                isGameOver = true;
-                break;
-            }
-        }
-
-        if (isGameOver) {
-            setGameToFinished(gamePlayer.getGameId());
-        }
-
-    }
-
-    private Unit getUnitByTerritory(String territory, List<Unit> defendingGamePlayerUnits) {
-        for (Unit unit : defendingGamePlayerUnits) {
-            if (unit.getTerritory().equals(Territory.translateLandArea(territory))) {
-                return unit;
-            }
-        }
-        return null;
-    }
-
-
-    @Override
-    public TerritoryDTO moveUnitsAction(PlaceUnitUpdate placeUnitUpdate) {
-        return null;
-    }
-
-    @Override
-    @Transactional(readOnly = false)
-    public GameStateModelDTO getGameStateModel(Long gameId, Long playerId) {
-        GamePlayer gamePlayer = gamePlayerDao.getGamePlayerByGameIdAndPlayerId(playerId, gameId);
-
-        GameStateModelDTO gameStateModelDTO = new GameStateModelDTO();
-        gameStateModelDTO.setGameId(gameId);
-        gameStateModelDTO.setPlayerId(playerId);
-
-        if (gamePlayer.getActionStatus() == null) {
-            gamePlayerDao.setActionStatus(gamePlayer.getGamePlayerId(), ActionStatus.PLACE_UNITS);
-            gameStateModelDTO.setState(ActionStatus.PLACE_UNITS.toString());
-        }
-
-
-
-        if (gamePlayer.getActionStatus() == ActionStatus.PLACE_UNITS) {
-            gameStateModelDTO.setState(ActionStatus.PLACE_UNITS.toString());
-        } else if (gamePlayer.getActionStatus() == ActionStatus.ATTACK) {
-            gameStateModelDTO.setState(ActionStatus.ATTACK.toString());
-        } else if (gamePlayer.getActionStatus() == ActionStatus.MOVE) {
-            gameStateModelDTO.setState(ActionStatus.MOVE.toString());
-        }
-
-        isGameOver(gamePlayer);
-
-        return gameStateModelDTO;
-    }
-
-    @Override
-    public TerritoryDTO getTerritoryInformationForTerritory(Territory territory, Long gameId, Long playerId) {
-        GamePlayer reqGp = gamePlayerDao.getGamePlayerByGameIdAndPlayerId(playerId, gameId);
-        GamePlayer gp = gamePlayerDao.getGamePlayerByGameIdAndTerritory(gameId, territory);
-
-        TerritoryDTO territoryDTO = new TerritoryDTO(
-                territory.toString(),
-                gp.getUnitByTerritory(territory).getStrength(),
-                reqGp.getGamePlayerId() == gp.getGamePlayerId());
-        return territoryDTO;
     }
 }

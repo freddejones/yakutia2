@@ -1,5 +1,6 @@
 package se.freddejones.game.yakutia.usecases.game;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import se.freddejones.game.yakutia.model.dto.CreateGameDTO;
@@ -14,9 +15,11 @@ import static com.jayway.jsonassert.impl.matcher.IsCollectionWithSize.hasSize;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static se.freddejones.game.yakutia.usecases.framework.UseCaseBoilerplate.convertDtoToByteArray;
 
 public class CreateGamesUseCaseTest extends UseCaseTemplate {
@@ -38,7 +41,7 @@ public class CreateGamesUseCaseTest extends UseCaseTemplate {
     }
 
     @Test
-    public void UC_02_createGameAndFetchAllGamesForPlayer() throws Exception {
+    public void UC_02_createGameAndFetchAllGamesForPlayers() throws Exception {
         // given
         TestdataHandler.loadPlayersOnly();
         CreateGameDTO createGameDTO = createDefaultCreateGameDTO();
@@ -60,19 +63,56 @@ public class CreateGamesUseCaseTest extends UseCaseTemplate {
                 .andExpect(jsonPath("$[*].status", containsInAnyOrder("CREATED")))
                 .andExpect(jsonPath("$[*].canStartGame", containsInAnyOrder(true)));
 
+        // when
+        mockMvc.perform(get("/game/get/2"))
+                .andDo(print())
+                        // then
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[*].status", containsInAnyOrder("CREATED")))
+                .andExpect(jsonPath("$[*].canStartGame", containsInAnyOrder(false)));
+
+        // when
+        mockMvc.perform(get("/game/get/3"))
+                .andDo(print())
+                        // then
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[*].status", containsInAnyOrder("CREATED")))
+                .andExpect(jsonPath("$[*].canStartGame", containsInAnyOrder(false)));
     }
 
     @Test
-    public void UC_03_createGameAndFetchAllGamesForPlayer() throws Exception {
+    @Ignore
+    public void UC_04_createGameAndAcceptGameInvites() throws Exception {
+        // given
+        TestdataHandler.loadPlayersOnly();
+        CreateGameDTO createGameDTO = createDefaultCreateGameDTO();
+        byte[] request = convertDtoToByteArray(createGameDTO);
 
+        // when
+        mockMvc.perform(post("/game/create/")
+                .content(request)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                // then
+                .andExpect(content().string("1"));
+
+        // when
+        mockMvc.perform(put("/game/start/1"))
+                .andDo(print())
+                // then
+                .andExpect(status().isOk());
+
+        // when
+        mockMvc.perform(get("/game/get/1"))
+                .andDo(print())
+                // then
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[*].status", containsInAnyOrder("CREATED")))
+                .andExpect(jsonPath("$[*].canStartGame", containsInAnyOrder(true)));
     }
 
     @Test
-    public void UC_04_createGameAndStartGame() throws Exception {
-
-    }
-
-    @Test
+    @Ignore
     public void UC_05_FetchStartedGameForAPlayer() throws Exception {
 
     }
