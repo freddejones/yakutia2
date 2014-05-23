@@ -11,7 +11,6 @@ import se.freddejones.game.yakutia.entity.GamePlayer;
 import se.freddejones.game.yakutia.entity.Unit;
 import se.freddejones.game.yakutia.exception.NotEnoughUnitsException;
 import se.freddejones.game.yakutia.exception.TerritoryNotConnectedException;
-import se.freddejones.game.yakutia.model.BattleCalculator;
 import se.freddejones.game.yakutia.model.BattleResult;
 import se.freddejones.game.yakutia.model.Territory;
 import se.freddejones.game.yakutia.model.TerritoryDTO;
@@ -20,9 +19,7 @@ import se.freddejones.game.yakutia.model.dto.PlaceUnitUpdate;
 import se.freddejones.game.yakutia.model.statuses.GameStatus;
 import se.freddejones.game.yakutia.service.impl.GameActionServiceImpl;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import static junit.framework.Assert.fail;
 import static org.fest.assertions.Assertions.assertThat;

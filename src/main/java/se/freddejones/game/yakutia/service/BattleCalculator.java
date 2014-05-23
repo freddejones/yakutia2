@@ -1,13 +1,11 @@
-package se.freddejones.game.yakutia.model;
+package se.freddejones.game.yakutia.service;
 
 import org.springframework.stereotype.Component;
 import se.freddejones.game.yakutia.entity.Unit;
+import se.freddejones.game.yakutia.model.BattleResult;
 
 @Component
 public class BattleCalculator {
-
-    public BattleCalculator() {
-    }
 
     public BattleResult battle(Unit attackingUnit, Unit defendingUnit) {
         BattleResult battleResult = new BattleResult();

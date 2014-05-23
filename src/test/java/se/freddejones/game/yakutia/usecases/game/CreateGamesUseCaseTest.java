@@ -4,6 +4,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import se.freddejones.game.yakutia.model.dto.CreateGameDTO;
+import se.freddejones.game.yakutia.model.dto.GameInviteDTO;
 import se.freddejones.game.yakutia.model.dto.InvitedPlayer;
 import se.freddejones.game.yakutia.usecases.framework.TestdataHandler;
 import se.freddejones.game.yakutia.usecases.framework.UseCaseTemplate;
@@ -81,7 +82,6 @@ public class CreateGamesUseCaseTest extends UseCaseTemplate {
     }
 
     @Test
-    @Ignore
     public void UC_04_createGameAndAcceptGameInvites() throws Exception {
         // given
         TestdataHandler.loadPlayersOnly();
@@ -96,7 +96,19 @@ public class CreateGamesUseCaseTest extends UseCaseTemplate {
                 // then
                 .andExpect(content().string("1"));
 
+        request = convertDtoToByteArray(getGameInviteDTO(2L, 1L));
+        mockMvc.perform(put("/game/accept")
+                .content(request)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
 
+        request = convertDtoToByteArray(getGameInviteDTO(3L, 1L));
+        mockMvc.perform(put("/game/accept")
+                .content(request)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -111,6 +123,13 @@ public class CreateGamesUseCaseTest extends UseCaseTemplate {
         createGameDTO.setCreatedByPlayerId(1L);
         createGameDTO.setInvites(createInvitedPlayers(2L, 3L));
         return createGameDTO;
+    }
+
+    private GameInviteDTO getGameInviteDTO(Long playerId, Long gameId) {
+        GameInviteDTO gameInviteDTO = new GameInviteDTO();
+        gameInviteDTO.setPlayerId(playerId);
+        gameInviteDTO.setGameId(gameId);
+        return gameInviteDTO;
     }
 
     private List<InvitedPlayer> createInvitedPlayers(Long... ids) {
