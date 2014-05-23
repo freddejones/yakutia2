@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import se.freddejones.game.yakutia.TestBoilerplate;
 import se.freddejones.game.yakutia.dao.GameDao;
 import se.freddejones.game.yakutia.dao.GamePlayerDao;
 import se.freddejones.game.yakutia.dao.UnitDao;
@@ -36,7 +37,6 @@ import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
 public class GameServiceTest {
 
     public static final long GAME_ID = 1L;
@@ -44,12 +44,10 @@ public class GameServiceTest {
     public static final long GAME_PLAYER_ID = 12L;
     public static final long DEFENDING_GAME_PLAYER_ID = 48L;
 
-    @Mock private GamePlayerDao gamePlayerDaoMock;
-    @Mock private UnitDao unitDaoMock;
-    @Mock private GameDao gameDaoMock;
-    @Mock private GameSetupService gameSetupServiceMock;
-    @InjectMocks private GameServiceImpl gameService;
-
+    private GamePlayerDao gamePlayerDaoMock;
+    private GameDao gameDaoMock;
+    private GameSetupService gameSetupServiceMock;
+    private GameService gameService;
     private GamePlayer gamePlayerMock;
     private Game gameMock;
 
@@ -57,6 +55,10 @@ public class GameServiceTest {
     public void setup() {
         gamePlayerMock = mock(GamePlayer.class);
         gameMock = mock(Game.class);
+        gameDaoMock = mock(GameDao.class);
+        gamePlayerDaoMock = mock(GamePlayerDao.class);
+        gameSetupServiceMock = mock(GameSetupService.class);
+        gameService = new GameServiceImpl(gameDaoMock, gamePlayerDaoMock, gameSetupServiceMock);
     }
 
     @Test
@@ -130,8 +132,8 @@ public class GameServiceTest {
         when(gamePlayerMock.getGamePlayerStatus()).thenReturn(GamePlayerStatus.ACCEPTED);
 
         // opponent
-        List<GamePlayer> gamePlayers = new GamePlayersListBuilder()
-                .addGamePlayer(new GamePlayerMockBuilder()
+        List<GamePlayer> gamePlayers = new TestBoilerplate.GamePlayersListBuilder()
+                .addGamePlayer(new TestBoilerplate.GamePlayerMockBuilder()
                         .setGamePlayerId(DEFENDING_GAME_PLAYER_ID)
                         .setGamePlayerStatus(GamePlayerStatus.INVITED)
                         .build())
@@ -185,7 +187,15 @@ public class GameServiceTest {
         } catch (CouldNotCreateGameException e) {
             verifyZeroInteractions(gameDaoMock);
         }
+    }
 
+    @Test
+    public void testSetGameToFinished() throws Exception {
+        // when
+        gameService.setGameToFinished(GAME_ID);
+
+        // then
+        verify(gameDaoMock, times(1)).endGame(GAME_ID);
     }
 
     private void setupValidNumberOfPlayersInMock() {
@@ -198,76 +208,12 @@ public class GameServiceTest {
 
     private void setupGetGamesForPlayerDefaultMockSettings() {
         when(gamePlayerDaoMock.getGamePlayersByPlayerId(anyLong())).thenReturn(
-                new GamePlayersListBuilder().addGamePlayer(gamePlayerMock).build());
+                new TestBoilerplate.GamePlayersListBuilder().addGamePlayer(gamePlayerMock).build());
         when(gamePlayerDaoMock.getGamePlayerByGameIdAndPlayerId(anyLong(), anyLong())).thenReturn(gamePlayerMock);
         when(gamePlayerMock.getGameId()).thenReturn(GAME_ID);
         when(gamePlayerMock.getGamePlayerId()).thenReturn(GAME_PLAYER_ID);
         when(gameDaoMock.getGameByGameId(GAME_ID)).thenReturn(gameMock);
         when(gameMock.getCreationTime()).thenReturn(new Date());
         when(gameMock.getGameStatus()).thenReturn(GameStatus.CREATED);
-    }
-
-    public static class GamePlayersListBuilder {
-        private List<GamePlayer> gamePlayers;
-
-        public GamePlayersListBuilder() {
-            gamePlayers = new ArrayList<>();
-        }
-
-        public GamePlayersListBuilder addGamePlayer(GamePlayer gp) {
-            gamePlayers.add(gp);
-            return this;
-        }
-
-        public List<GamePlayer> build() {
-            return gamePlayers;
-        }
-    }
-
-    public static class UnitBuilder {
-        private List<Unit> units;
-
-        public UnitBuilder() {
-            units = new ArrayList<>();
-        }
-
-        public UnitBuilder addUnit(Territory territory, int strength) {
-            Unit u = new Unit();
-            u.setTerritory(territory);
-            u.setStrength(strength);
-            units.add(u);
-            return this;
-        }
-
-        public List<Unit> build() {
-            return units;
-        }
-    }
-
-    public static class GamePlayerMockBuilder {
-        private GamePlayer gamePlayerMock;
-
-        public GamePlayerMockBuilder() {
-            gamePlayerMock = mock(GamePlayer.class);
-        }
-
-        public GamePlayerMockBuilder setGamePlayerId(Long id) {
-            when(gamePlayerMock.getGamePlayerId()).thenReturn(id);
-            return this;
-        }
-
-        public GamePlayerMockBuilder setUnits(List<Unit> units) {
-            when(gamePlayerMock.getUnits()).thenReturn(units);
-            return this;
-        }
-
-        public GamePlayerMockBuilder setGamePlayerStatus(GamePlayerStatus gamePlayerStatus) {
-            when(gamePlayerMock.getGamePlayerStatus()).thenReturn(gamePlayerStatus);
-            return this;
-        }
-
-        public GamePlayer build() {
-            return gamePlayerMock;
-        }
     }
 }

@@ -5,15 +5,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import se.freddejones.game.yakutia.dao.GameDao;
 import se.freddejones.game.yakutia.dao.GamePlayerDao;
-import se.freddejones.game.yakutia.dao.UnitDao;
 import se.freddejones.game.yakutia.entity.Game;
 import se.freddejones.game.yakutia.entity.GamePlayer;
 import se.freddejones.game.yakutia.entity.Player;
-import se.freddejones.game.yakutia.entity.Unit;
-import se.freddejones.game.yakutia.exception.*;
-import se.freddejones.game.yakutia.model.*;
-import se.freddejones.game.yakutia.model.dto.*;
-import se.freddejones.game.yakutia.model.statuses.ActionStatus;
+import se.freddejones.game.yakutia.exception.CouldNotCreateGameException;
+import se.freddejones.game.yakutia.exception.NotEnoughPlayersException;
+import se.freddejones.game.yakutia.exception.TooManyPlayersException;
+import se.freddejones.game.yakutia.model.dto.CreateGameDTO;
+import se.freddejones.game.yakutia.model.dto.GameDTO;
 import se.freddejones.game.yakutia.model.statuses.GamePlayerStatus;
 import se.freddejones.game.yakutia.service.GameService;
 import se.freddejones.game.yakutia.service.GameSetupService;
@@ -30,14 +29,16 @@ public class GameServiceImpl implements GameService {
 
     private static final Logger LOGGER = Logger.getLogger(GameServiceImpl.class.getName());
 
+    private GameDao gameDao;
+    private GamePlayerDao gamePlayerDao;
+    private GameSetupService gameSetupService;
+
     @Autowired
-    protected GameDao gameDao;
-    @Autowired
-    protected GamePlayerDao gamePlayerDao;
-    @Autowired
-    protected GameSetupService gameSetupService;
-    @Autowired
-    protected UnitDao unitDao;
+    public GameServiceImpl(GameDao gameDao, GamePlayerDao gamePlayerDao, GameSetupService gameSetupService) {
+        this.gameDao = gameDao;
+        this.gamePlayerDao = gamePlayerDao;
+        this.gameSetupService = gameSetupService;
+    }
 
     @Override
     @Transactional(readOnly = false)
@@ -103,10 +104,6 @@ public class GameServiceImpl implements GameService {
     }
 
     private boolean isAtLeastTwoAcceptedGamePlayers(List<GamePlayer> gamePlayers) {
-
-        // TODO remove this properly
-        if ("dev".equals(System.getProperty("ENVIRONMENT"))) { return true; }
-
         int count = 0;
         for (GamePlayer gp : gamePlayers) {
             if (gp.getGamePlayerStatus() == GamePlayerStatus.ACCEPTED) {

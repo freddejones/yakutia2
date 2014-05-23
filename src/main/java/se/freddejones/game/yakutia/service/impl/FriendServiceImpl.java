@@ -20,11 +20,14 @@ import java.util.Set;
 @Transactional(readOnly = true)
 public class FriendServiceImpl implements FriendService {
 
-    @Autowired
-    PlayerDao playerDao;
+    private PlayerFriendDao playerFriendDao;
+    private PlayerDao playerDao;
 
     @Autowired
-    PlayerFriendDao playerFriendDao;
+    public FriendServiceImpl(PlayerDao playerDao, PlayerFriendDao playerFriendDao) {
+        this.playerDao = playerDao;
+        this.playerFriendDao = playerFriendDao;
+    }
 
     @Override
     @Transactional(readOnly = false)
