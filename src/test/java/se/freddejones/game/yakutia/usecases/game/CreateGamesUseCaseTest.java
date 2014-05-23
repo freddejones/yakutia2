@@ -96,19 +96,7 @@ public class CreateGamesUseCaseTest extends UseCaseTemplate {
                 // then
                 .andExpect(content().string("1"));
 
-        // when
-        mockMvc.perform(put("/game/start/1"))
-                .andDo(print())
-                // then
-                .andExpect(status().isOk());
 
-        // when
-        mockMvc.perform(get("/game/get/1"))
-                .andDo(print())
-                // then
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[*].status", containsInAnyOrder("CREATED")))
-                .andExpect(jsonPath("$[*].canStartGame", containsInAnyOrder(true)));
     }
 
     @Test

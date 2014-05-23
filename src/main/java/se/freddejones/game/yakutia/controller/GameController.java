@@ -3,6 +3,7 @@ package se.freddejones.game.yakutia.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import se.freddejones.game.yakutia.entity.Player;
 import se.freddejones.game.yakutia.exception.NoGameFoundException;
 import se.freddejones.game.yakutia.model.Territory;
 import se.freddejones.game.yakutia.model.TerritoryDTO;
@@ -48,4 +49,17 @@ public class GameController {
         gameService.setGameToStarted(gameId);
     }
 
+    @RequestMapping(value = "/accept", method = RequestMethod.PUT)
+    @ResponseBody
+    public void acceptGameInvite(@RequestBody final GameInviteDTO gameInviteDTO) {
+        LOGGER.info("PlayerId " + gameInviteDTO.getPlayerId() + " accepts game " + gameInviteDTO.getGameId());
+        gameService.acceptGameInvite(gameInviteDTO);
+    }
+
+    @RequestMapping(value = "/decline", method = RequestMethod.PUT)
+    @ResponseBody
+    public void declineGameInvite(@RequestBody final GameInviteDTO gameInviteDTO) {
+        LOGGER.info("PlayerId " + gameInviteDTO.getPlayerId() + " declines game " + gameInviteDTO.getGameId());
+        gameService.declineGameInvite(gameInviteDTO);
+    }
 }

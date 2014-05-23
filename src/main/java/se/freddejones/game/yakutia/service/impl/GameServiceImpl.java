@@ -13,6 +13,7 @@ import se.freddejones.game.yakutia.exception.NotEnoughPlayersException;
 import se.freddejones.game.yakutia.exception.TooManyPlayersException;
 import se.freddejones.game.yakutia.model.dto.CreateGameDTO;
 import se.freddejones.game.yakutia.model.dto.GameDTO;
+import se.freddejones.game.yakutia.model.dto.GameInviteDTO;
 import se.freddejones.game.yakutia.model.statuses.GamePlayerStatus;
 import se.freddejones.game.yakutia.service.GameService;
 import se.freddejones.game.yakutia.service.GameSetupService;
@@ -94,12 +95,12 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public void acceptGameInvite(Player accepting, Game g) {
+    public void acceptGameInvite(GameInviteDTO gameInviteDTO) {
 
     }
 
     @Override
-    public void declineGameInvite(Player declining, Game g) {
+    public void declineGameInvite(GameInviteDTO gameInviteDTO) {
 
     }
 
