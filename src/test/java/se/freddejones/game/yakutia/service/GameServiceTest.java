@@ -8,7 +8,10 @@ import se.freddejones.game.yakutia.dao.GamePlayerDao;
 import se.freddejones.game.yakutia.entity.Game;
 import se.freddejones.game.yakutia.entity.GamePlayer;
 import se.freddejones.game.yakutia.exception.*;
+import se.freddejones.game.yakutia.model.dto.CreateGameDTO;
 import se.freddejones.game.yakutia.model.dto.GameDTO;
+import se.freddejones.game.yakutia.model.dto.GameInviteDTO;
+import se.freddejones.game.yakutia.model.dto.InvitedPlayer;
 import se.freddejones.game.yakutia.model.statuses.GamePlayerStatus;
 import se.freddejones.game.yakutia.model.statuses.GameStatus;
 import se.freddejones.game.yakutia.service.impl.GameServiceImpl;
@@ -28,6 +31,7 @@ public class GameServiceTest {
     public static final long PLAYER_ID = 1L;
     public static final long GAME_PLAYER_ID = 12L;
     public static final long DEFENDING_GAME_PLAYER_ID = 48L;
+    public static final String GAME_NAME = "GAME_NAME";
 
     private GamePlayerDao gamePlayerDaoMock;
     private GameDao gameDaoMock;
@@ -87,12 +91,45 @@ public class GameServiceTest {
     }
 
     @Test(expected = NotEnoughPlayersException.class)
+    public void testForExceptionIfNotEnoughInvitedPlayersWhenCreatingGame() throws Exception {
+        // given
+        CreateGameDTO createGameDTO = new CreateGameDTO();
+        createGameDTO.setInvites(new ArrayList<InvitedPlayer>());
+        createGameDTO.setCreatedByPlayerId(PLAYER_ID);
+        createGameDTO.setGameName(GAME_NAME);
+
+        // when
+        gameService.createNewGame(createGameDTO);
+    }
+
+    @Test
+    public void testCreateNewGameWithEnoughNumberOfPlayers() throws Exception {
+        // given
+        List<InvitedPlayer> invitedPlayers = new ArrayList<InvitedPlayer>();
+        invitedPlayers.add(new InvitedPlayer());
+        invitedPlayers.add(new InvitedPlayer());
+
+        CreateGameDTO createGameDTO = new CreateGameDTO();
+        createGameDTO.setInvites(invitedPlayers);
+        createGameDTO.setCreatedByPlayerId(PLAYER_ID);
+        createGameDTO.setGameName(GAME_NAME);
+
+        // when
+        gameService.createNewGame(createGameDTO);
+
+        // then
+        verify(gameDaoMock, times(1)).createNewGame(any(CreateGameDTO.class));
+    }
+
+    @Test(expected = NotEnoughPlayersException.class)
     public void testNotEnoughPlayerToStartGame() throws Exception {
         // Given: No players received from gamePlayerDao
         when(gamePlayerDaoMock.getGamePlayersByGameId(1L)).thenReturn(new ArrayList<GamePlayer>());
+        when(gameDaoMock.getGameByGameId(GAME_ID)).thenReturn(gameMock);
+        when(gameMock.getGameCreatorPlayerId()).thenReturn(PLAYER_ID);
 
         // When: setting game to started
-        gameService.setGameToStarted(1L);
+        gameService.setGameToStarted(GAME_ID, PLAYER_ID);
 
         // Then: exception is thrown
     }
@@ -103,9 +140,11 @@ public class GameServiceTest {
         List<GamePlayer> gamePlayers = new ArrayList<>();
         gamePlayers.add(gamePlayerMock);
         when(gamePlayerDaoMock.getGamePlayersByGameId(GAME_ID)).thenReturn(gamePlayers);
+        when(gameDaoMock.getGameByGameId(GAME_ID)).thenReturn(gameMock);
+        when(gameMock.getGameCreatorPlayerId()).thenReturn(PLAYER_ID);
 
         // When: setting game to started
-        gameService.setGameToStarted(GAME_ID);
+        gameService.setGameToStarted(GAME_ID, PLAYER_ID);
 
         // Then: exception is thrown
     }
@@ -125,9 +164,11 @@ public class GameServiceTest {
                 .addGamePlayer(gamePlayerMock)
                 .build();
         when(gamePlayerDaoMock.getGamePlayersByGameId(GAME_ID)).thenReturn(gamePlayers);
+        when(gameDaoMock.getGameByGameId(GAME_ID)).thenReturn(gameMock);
+        when(gameMock.getGameCreatorPlayerId()).thenReturn(PLAYER_ID);
 
         // When: setting game to started
-        gameService.setGameToStarted(GAME_ID);
+        gameService.setGameToStarted(GAME_ID, PLAYER_ID);
 
         // Then: exception is thrown
     }
@@ -141,9 +182,11 @@ public class GameServiceTest {
             gamePlayers.add(gamePlayerMock);
         }
         when(gamePlayerDaoMock.getGamePlayersByGameId(1L)).thenReturn(gamePlayers);
+        when(gameDaoMock.getGameByGameId(GAME_ID)).thenReturn(gameMock);
+        when(gameMock.getGameCreatorPlayerId()).thenReturn(PLAYER_ID);
 
         // When: setting game to started
-        gameService.setGameToStarted(1L);
+        gameService.setGameToStarted(GAME_ID, PLAYER_ID);
 
         // Then: exception is thrown
     }
@@ -151,8 +194,10 @@ public class GameServiceTest {
     @Test
     public void testStartGameSuccessfully() throws Exception {
         setupValidNumberOfPlayersInMock();
+        when(gameDaoMock.getGameByGameId(GAME_ID)).thenReturn(gameMock);
+        when(gameMock.getGameCreatorPlayerId()).thenReturn(PLAYER_ID);
 
-        gameService.setGameToStarted(1L);
+        gameService.setGameToStarted(GAME_ID, PLAYER_ID);
 
         verify(gameSetupServiceMock).initializeNewGame(any(List.class));
         verify(gameDaoMock).startGame(1L);
@@ -162,15 +207,19 @@ public class GameServiceTest {
     public void testStartGameThrowsException() {
         try {
             setupValidNumberOfPlayersInMock();
+            when(gameDaoMock.getGameByGameId(GAME_ID)).thenReturn(gameMock);
+            when(gameMock.getGameCreatorPlayerId()).thenReturn(PLAYER_ID);
             doThrow(CouldNotCreateGameException.class).when(gameSetupServiceMock)
                     .initializeNewGame(any(List.class));
-            gameService.setGameToStarted(1L);
+            gameService.setGameToStarted(GAME_ID, PLAYER_ID);
         } catch (NotEnoughPlayersException e) {
             fail("Should not enter this exception");
         } catch (TooManyPlayersException e) {
             fail("Should not enter this exception");
+        } catch (OnlyCreatorCanStartGame onlyCreatorCanStartGame) {
+            fail("Should not enter this exception");
         } catch (CouldNotCreateGameException e) {
-            verifyZeroInteractions(gameDaoMock);
+            verify(gameDaoMock, times(1)).getGameByGameId(GAME_ID);
         }
     }
 
@@ -181,6 +230,20 @@ public class GameServiceTest {
 
         // then
         verify(gameDaoMock, times(1)).endGame(GAME_ID);
+    }
+
+    @Test
+    public void testToDeclineGameInvitation() throws Exception {
+        // given
+        GameInviteDTO gameInviteDTO = mock(GameInviteDTO.class);
+        when(gamePlayerDaoMock.getGamePlayerByGameIdAndPlayerId(anyLong(),anyLong())).thenReturn(gamePlayerMock);
+
+        // when
+        gameService.declineGameInvite(gameInviteDTO);
+
+        // then
+        verify(gamePlayerDaoMock, times(1)).updateGamePlayer(any(GamePlayer.class));
+
     }
 
     private void setupValidNumberOfPlayersInMock() {

@@ -10,7 +10,6 @@ import se.freddejones.game.yakutia.model.dto.AttackActionUpdate;
 import se.freddejones.game.yakutia.model.dto.GameStateModelDTO;
 import se.freddejones.game.yakutia.model.dto.PlaceUnitUpdate;
 import se.freddejones.game.yakutia.service.GameActionService;
-import se.freddejones.game.yakutia.service.GameService;
 import se.freddejones.game.yakutia.service.GameStateService;
 
 import java.util.List;

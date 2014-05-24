@@ -79,12 +79,6 @@ public class GameActionServiceTest {
         assertThat(returnObj.getUnits()).isEqualTo(8);
     }
 
-    @Test
-    @Ignore
-    public void testPlaceUnitTransitionToAttackState() throws Exception {
-        fail("not implmented test yet");
-    }
-
     @Test(expected = NotEnoughUnitsException.class)
     public void testPlaceUnitWhenInsufficientFunds() throws Exception {
         // Given
@@ -204,49 +198,6 @@ public class GameActionServiceTest {
         // Then:
         verify(gamePlayerDaoMock, times(1)).setUnitsToGamePlayer(eq(GAME_PLAYER_ID), any(Unit.class));
         verify(gamePlayerDaoMock, times(1)).setUnitsToGamePlayer(eq(DEFENDING_GAME_PLAYER_ID), any(Unit.class));
-    }
-
-    @Test
-    @Ignore
-    public void testAttackTerritoryAndLooseBattleAndAllUnits() throws Exception {
-        // given
-        int attackingTerritoryStrength = 2;
-        AttackActionUpdate attackActionUpdate =
-                new AttackActionUpdate(Territory.SWEDEN.toString(),
-                        Territory.NORWAY.toString(), attackingTerritoryStrength-1, GAME_ID, PLAYER_ID);
-
-        // attacking part
-        when(gamePlayerDaoMock.getGamePlayerByGameIdAndPlayerId(GAME_ID, PLAYER_ID)).thenReturn(gamePlayerMock);
-        when(gamePlayerMock.getGamePlayerId()).thenReturn(GAME_PLAYER_ID);
-        when(gameDaoMock.getGameByGameId(GAME_ID)).thenReturn(gameMock);
-        when(gamePlayerMock.getUnits()).thenReturn(new TestBoilerplate.UnitBuilder().
-                addUnit(Territory.SWEDEN, attackingTerritoryStrength)
-                .build());
-        when(gamePlayerMock.getGamePlayerId()).thenReturn(GAME_PLAYER_ID);
-
-        // defending part
-        GamePlayer defendingGamePlayerMock = mock(GamePlayer.class);
-        when(gamePlayerDaoMock.getGamePlayerByGameIdAndTerritory(GAME_ID, Territory.NORWAY)).thenReturn(defendingGamePlayerMock);
-        when(defendingGamePlayerMock.getUnits()).thenReturn(new TestBoilerplate.UnitBuilder().
-                        addUnit(Territory.NORWAY, 2)
-                        .build()
-        );
-
-        // battle calc
-        BattleResult battleResult = mock(BattleResult.class);
-        when(battleCalculator.battle(any(Unit.class), any(Unit.class))).thenReturn(battleResult);
-        when(battleResult.getAttackingTerritoryLosses()).thenReturn(1);
-        when(battleResult.getDefendingTerritoryLosses()).thenReturn(0);
-        when(battleResult.isTakenOver()).thenReturn(false);
-
-        TerritoryDTO returnObj = gameActionService.attackTerritoryAction(attackActionUpdate);
-
-        // Then:
-        assertThat(returnObj.getUnits()).isEqualTo(1);
-        assertThat(returnObj.getLandName()).isEqualTo(Territory.SWEDEN.toString());
-        assertThat(returnObj.isOwnedByPlayer()).isFalse();
-        verify(gamePlayerDaoMock).setUnitsToGamePlayer(eq(GAME_PLAYER_ID), any(Unit.class));
-        verify(gamePlayerDaoMock, times(2)).setUnitsToGamePlayer(anyLong(), any(Unit.class));
     }
 
     @Test

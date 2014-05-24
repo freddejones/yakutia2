@@ -1,7 +1,6 @@
 package se.freddejones.game.yakutia.dao.impl;
 
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Repository;
 import se.freddejones.game.yakutia.dao.GamePlayerDao;
 import se.freddejones.game.yakutia.entity.GamePlayer;
@@ -82,6 +81,11 @@ public class GamePlayerDaoImpl extends AbstractDaoImpl implements GamePlayerDao 
     public void setActionStatus(Long gamePlayerId, ActionStatus actionStatus) {
         GamePlayer gamePlayer = (GamePlayer) getCurrentSession().get(GamePlayer.class, gamePlayerId);
         gamePlayer.setActionStatus(actionStatus);
+    }
+
+    @Override
+    public void updateGamePlayer(GamePlayer gamePlayer) {
+        getCurrentSession().saveOrUpdate(gamePlayer);
     }
 
 

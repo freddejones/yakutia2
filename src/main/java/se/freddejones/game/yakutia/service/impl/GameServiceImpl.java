@@ -7,9 +7,9 @@ import se.freddejones.game.yakutia.dao.GameDao;
 import se.freddejones.game.yakutia.dao.GamePlayerDao;
 import se.freddejones.game.yakutia.entity.Game;
 import se.freddejones.game.yakutia.entity.GamePlayer;
-import se.freddejones.game.yakutia.entity.Player;
 import se.freddejones.game.yakutia.exception.CouldNotCreateGameException;
 import se.freddejones.game.yakutia.exception.NotEnoughPlayersException;
+import se.freddejones.game.yakutia.exception.OnlyCreatorCanStartGame;
 import se.freddejones.game.yakutia.exception.TooManyPlayersException;
 import se.freddejones.game.yakutia.model.dto.CreateGameDTO;
 import se.freddejones.game.yakutia.model.dto.GameDTO;
@@ -43,7 +43,10 @@ public class GameServiceImpl implements GameService {
 
     @Override
     @Transactional(readOnly = false)
-    public Long createNewGame(CreateGameDTO createGameDTO) {
+    public Long createNewGame(CreateGameDTO createGameDTO) throws NotEnoughPlayersException {
+        if (createGameDTO.getInvites().size() < 2) {
+            throw new NotEnoughPlayersException("Not enough players added to game");
+        }
         return gameDao.createNewGame(createGameDTO);
     }
 
@@ -71,8 +74,14 @@ public class GameServiceImpl implements GameService {
 
     @Override
     @Transactional(readOnly = false)
-    public void setGameToStarted(Long gameId) throws NotEnoughPlayersException,
-            TooManyPlayersException, CouldNotCreateGameException {
+    public void setGameToStarted(Long gameId, Long playerId) throws NotEnoughPlayersException,
+            TooManyPlayersException, CouldNotCreateGameException, OnlyCreatorCanStartGame {
+
+        Game game = gameDao.getGameByGameId(gameId);
+        if (game.getGameCreatorPlayerId() != playerId) {
+            throw new OnlyCreatorCanStartGame("only player who created game can start");
+        }
+
 
         List<GamePlayer> gamePlayers = gamePlayerDao.getGamePlayersByGameId(gameId);
 
@@ -95,13 +104,18 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
+    @Transactional(readOnly = false)
     public void acceptGameInvite(GameInviteDTO gameInviteDTO) {
-
+        GamePlayer gamePlayer = gamePlayerDao.getGamePlayerByGameIdAndPlayerId(gameInviteDTO.getPlayerId(), gameInviteDTO.getGameId());
+        gamePlayer.setGamePlayerStatus(GamePlayerStatus.ACCEPTED);
+        gamePlayerDao.updateGamePlayer(gamePlayer);
     }
 
     @Override
     public void declineGameInvite(GameInviteDTO gameInviteDTO) {
-
+        GamePlayer gamePlayer = gamePlayerDao.getGamePlayerByGameIdAndPlayerId(gameInviteDTO.getPlayerId(), gameInviteDTO.getGameId());
+        gamePlayer.setGamePlayerStatus(GamePlayerStatus.DECLINED);
+        gamePlayerDao.updateGamePlayer(gamePlayer);
     }
 
     private boolean isAtLeastTwoAcceptedGamePlayers(List<GamePlayer> gamePlayers) {

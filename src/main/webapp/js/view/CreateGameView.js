@@ -44,7 +44,7 @@ function(Backbone,
             this.collection = new FriendsCollection();
             this.listenTo(this.collection, "add remove", this.render)
             this.listenTo(this.collection, "add remove", this.render)
-            this.collection.fetch({ url: '/friend/get/all/'+window.playerId });
+            this.collection.fetch({ url: '/friend/get/all/'+ $.cookie("yakutiaPlayerId") });
         },
         render: function() {
             var textInput = $('#gameName').val();

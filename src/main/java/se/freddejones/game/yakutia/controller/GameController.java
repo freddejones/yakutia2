@@ -3,11 +3,10 @@ package se.freddejones.game.yakutia.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import se.freddejones.game.yakutia.entity.Player;
-import se.freddejones.game.yakutia.exception.NoGameFoundException;
-import se.freddejones.game.yakutia.model.Territory;
-import se.freddejones.game.yakutia.model.TerritoryDTO;
-import se.freddejones.game.yakutia.model.dto.*;
+import se.freddejones.game.yakutia.exception.NotEnoughPlayersException;
+import se.freddejones.game.yakutia.model.dto.CreateGameDTO;
+import se.freddejones.game.yakutia.model.dto.GameDTO;
+import se.freddejones.game.yakutia.model.dto.GameInviteDTO;
 import se.freddejones.game.yakutia.service.GameService;
 
 import java.util.List;
@@ -28,7 +27,7 @@ public class GameController {
     @RequestMapping(value  = "/create", method = RequestMethod.POST,
             headers = {"content-type=application/json"})
     @ResponseBody
-    public Long createNewGame(@RequestBody final CreateGameDTO createGameDTO) {
+    public Long createNewGame(@RequestBody final CreateGameDTO createGameDTO) throws NotEnoughPlayersException {
         LOGGER.info("Received CreateGameDTO: " + createGameDTO.toString());
         return gameService.createNewGame(createGameDTO);
     }
@@ -42,11 +41,12 @@ public class GameController {
         return list;
     }
 
-    @RequestMapping(value = "/start/{gameId}", method = RequestMethod.PUT)
+    @RequestMapping(value = "/start/{gameId}/{playerId}", method = RequestMethod.PUT)
     @ResponseBody
-    public void startGame(@PathVariable("gameId") Long gameId) throws Exception {
+    public void startGame(@PathVariable("gameId") Long gameId, @PathVariable("playerId") Long playerId) throws Exception {
         LOGGER.info("Starting game for gameId: " + gameId);
-        gameService.setGameToStarted(gameId);
+        gameService.setGameToStarted(gameId, playerId);
+        LOGGER.info("Game id: "+ gameId + " started by " + playerId);
     }
 
     @RequestMapping(value = "/accept", method = RequestMethod.PUT)

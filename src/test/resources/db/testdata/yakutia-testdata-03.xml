@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd">
+
+    <changeSet author="ninja-fidde" id="td-003" runAlways="true">
+        <loadUpdateData encoding="UTF-8"
+                        file="src/test/resources/db/testdata/csv/players.csv"
+                        primaryKey="PLAYER_ID"
+                        schemaName="public"
+                        separator=","
+                        tableName="player">
+            <column name="PLAYER_ID" type="NUMERIC"/>
+            <column name="EMAIL" type="STRING"/>
+            <column name="PLAYER_NAME" type="STRING"/>
+        </loadUpdateData>
+        <loadUpdateData encoding="UTF-8"
+                        file="src/test/resources/db/testdata/csv/games.csv"
+                        primaryKey="GAME_ID"
+                        schemaName="public"
+                        separator=","
+                        tableName="GAMES">
+            <column name="GAME_ID" type="NUMERIC"/>
+            <column name="GAME_CREATED" type="DATE"/>
+            <column name="GAME_FINISHED" type="DATE"/>
+            <column name="CREATED_BY_PLAYER_ID" type="NUMERIC"/>
+            <column name="gameStatus" type="STRING"/>
+            <column name="GAME_NAME" type="STRING"/>
+            <column name="GAME_STARTED" type="DATE"/>
+        </loadUpdateData>
+        <loadUpdateData encoding="UTF-8"
+                        file="src/test/resources/db/testdata/csv/game_players.csv"
+                        primaryKey="GAME_PLAYER_ID"
+                        schemaName="public"
+                        separator=","
+                        tableName="GAME_PLAYERS_CON">
+            <column name="GAME_PLAYER_ID" type="NUMERIC"/>
+            <column name="actionStatus" type="STRING"/>
+            <column name="IS_CURRENT_PLAYER_TURN" type="NUMERIC"/>
+            <column name="GAME_ID" type="NUMERIC"/>
+            <column name="gamePlayerStatus" type="STRING"/>
+            <column name="NEXT_GAME_PLAYER_ID" type="NUMERIC"/>
+            <column name="PLAYER_ID" type="NUMERIC"/>
+        </loadUpdateData>
+    </changeSet>
+
+</databaseChangeLog>

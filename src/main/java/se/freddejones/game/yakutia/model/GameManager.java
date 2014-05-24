@@ -5,6 +5,8 @@ import java.util.List;
 
 public class GameManager {
 
+    private GameManager() {}
+
     public static List<Territory> getLandAreas() {
         List<Territory> territories = new ArrayList<Territory>();
         territories.add(Territory.SWEDEN);
@@ -61,6 +63,7 @@ public class GameManager {
                 if (dst == Territory.SKAUNE || dst == Territory.TYSKLAND) {
                     return true;
                 } break;
+            default: return false;
         }
 
         return false;

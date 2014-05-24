@@ -6,14 +6,12 @@ import org.springframework.web.bind.annotation.*;
 import se.freddejones.game.yakutia.entity.Player;
 import se.freddejones.game.yakutia.entity.PlayerFriend;
 import se.freddejones.game.yakutia.model.dto.FriendDTO;
-import se.freddejones.game.yakutia.model.statuses.FriendStatus;
 import se.freddejones.game.yakutia.service.FriendService;
 import se.freddejones.game.yakutia.service.PlayerService;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 @Controller
 @RequestMapping(value = "/friend")
