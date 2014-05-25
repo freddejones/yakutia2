@@ -44,7 +44,7 @@ public class GameControllerTest {
     @Test
     public void testThatControllerAcceptsBodyForAcceptGameInvite() throws Exception {
         GameInviteDTO gameInviteDTO = getGameInviteDTO();
-        mockMvc.perform(put("/game/accept")
+        mockMvc.perform(post("/game/accept")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsBytes(gameInviteDTO)))
                 .andDo(print())
@@ -54,7 +54,7 @@ public class GameControllerTest {
     @Test
     public void testThatControllerAcceptsBodyForDeclineGameInvite() throws Exception {
         GameInviteDTO gameInviteDTO = getGameInviteDTO();
-        mockMvc.perform(put("/game/decline")
+        mockMvc.perform(post("/game/decline")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsBytes(gameInviteDTO)))
                 .andDo(print())

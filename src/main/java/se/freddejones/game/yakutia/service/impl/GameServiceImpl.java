@@ -1,6 +1,7 @@
 package se.freddejones.game.yakutia.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import se.freddejones.game.yakutia.dao.GameDao;
@@ -25,6 +26,7 @@ import java.util.logging.Logger;
 import static se.freddejones.game.yakutia.model.GameManager.getLandAreas;
 
 @Service("gameservice")
+@Profile("default")
 @Transactional(readOnly = true)
 public class GameServiceImpl implements GameService {
 
@@ -55,20 +57,30 @@ public class GameServiceImpl implements GameService {
         List<GameDTO> gamesForPlayer = new ArrayList<>();
         List<GamePlayer> gamePlayersList = gamePlayerDao.getGamePlayersByPlayerId(playerid);
         for(GamePlayer gamePlayer : gamePlayersList) {
-            Game game = gameDao.getGameByGameId(gamePlayer.getGameId());
-            GameDTO gameDto = buildGameDTO(playerid, game);
-            gamesForPlayer.add(gameDto);
+            gamesForPlayer.add(buildGameDTO(gamePlayer));
         }
         return gamesForPlayer;
     }
 
-    private GameDTO buildGameDTO(Long playerid, Game game) {
+    private GameDTO buildGameDTO(GamePlayer gamePlayer) {
         GameDTO gameDto = new GameDTO();
+
+        Game game = gameDao.getGameByGameId(gamePlayer.getGameId());
+
+        if (game.getGameCreatorPlayerId() == gamePlayer.getPlayerId()) {
+            gameDto.setCanStartGame(true);
+        }
+
+        if (gamePlayer.getGamePlayerStatus() != GamePlayerStatus.INVITED) {
+            gameDto.setStatus(gamePlayer.getGamePlayerStatus().toString());
+        } else {
+            gameDto.setStatus(game.getGameStatus().toString());
+        }
+
         gameDto.setId(game.getGameId());
-        gameDto.setCanStartGame(playerid == game.getGameCreatorPlayerId());
         gameDto.setName(game.getName());
         gameDto.setDate(game.getCreationTime().toString());
-        gameDto.setStatus(game.getGameStatus().toString());
+
         return gameDto;
     }
 

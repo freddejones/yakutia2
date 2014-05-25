@@ -49,14 +49,14 @@ public class GameController {
         LOGGER.info("Game id: "+ gameId + " started by " + playerId);
     }
 
-    @RequestMapping(value = "/accept", method = RequestMethod.PUT)
+    @RequestMapping(value = "/accept", method = RequestMethod.POST)
     @ResponseBody
     public void acceptGameInvite(@RequestBody final GameInviteDTO gameInviteDTO) {
         LOGGER.info("PlayerId " + gameInviteDTO.getPlayerId() + " accepts game " + gameInviteDTO.getGameId());
         gameService.acceptGameInvite(gameInviteDTO);
     }
 
-    @RequestMapping(value = "/decline", method = RequestMethod.PUT)
+    @RequestMapping(value = "/decline", method = RequestMethod.POST)
     @ResponseBody
     public void declineGameInvite(@RequestBody final GameInviteDTO gameInviteDTO) {
         LOGGER.info("PlayerId " + gameInviteDTO.getPlayerId() + " declines game " + gameInviteDTO.getGameId());

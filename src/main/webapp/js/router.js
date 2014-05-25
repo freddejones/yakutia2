@@ -4,13 +4,12 @@ define([
 'view/CreateGameView',
 'view/ActiveGameView',
 'view/ListMyGamesView',
-'view/CreatePlayerView',
 'view/SearchFriendsView',
 'view/MyFriendsView',
 'view/UpdatePlayerNameView',
 'view/WelcomeView'],
 function(Backbone, $, CreateGameView, ActiveGameView, ListMyGamesView,
-CreatePlayerView, SearchFriendsView, MyFriendsView, UpdatePlayerNameView,
+ SearchFriendsView, MyFriendsView, UpdatePlayerNameView,
     WelcomeView) {
 
     var YakutiaRouter = Backbone.Router.extend({

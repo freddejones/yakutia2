@@ -71,7 +71,9 @@ public class GameServiceTest {
     public void testIfGameCreatorCanStartGame() throws Exception {
         // Given a player has one game created
         setupGetGamesForPlayerDefaultMockSettings();
-        when(gameMock.getGameCreatorPlayerId()).thenReturn(1L);
+        when(gameMock.getGameCreatorPlayerId()).thenReturn(PLAYER_ID);
+        when(gamePlayerMock.getGamePlayerStatus()).thenReturn(GamePlayerStatus.INVITED);
+        when(gamePlayerMock.getPlayerId()).thenReturn(PLAYER_ID);
 
         List<GameDTO> games = gameService.getGamesForPlayerById(1L);
 
@@ -258,8 +260,12 @@ public class GameServiceTest {
         when(gamePlayerDaoMock.getGamePlayersByPlayerId(anyLong())).thenReturn(
                 new TestBoilerplate.GamePlayersListBuilder().addGamePlayer(gamePlayerMock).build());
         when(gamePlayerDaoMock.getGamePlayerByGameIdAndPlayerId(anyLong(), anyLong())).thenReturn(gamePlayerMock);
+
         when(gamePlayerMock.getGameId()).thenReturn(GAME_ID);
         when(gamePlayerMock.getGamePlayerId()).thenReturn(GAME_PLAYER_ID);
+        when(gamePlayerMock.getGamePlayerStatus()).thenReturn(GamePlayerStatus.INVITED);
+        when(gamePlayerMock.getPlayerId()).thenReturn(PLAYER_ID);
+
         when(gameDaoMock.getGameByGameId(GAME_ID)).thenReturn(gameMock);
         when(gameMock.getCreationTime()).thenReturn(new Date());
         when(gameMock.getGameStatus()).thenReturn(GameStatus.CREATED);

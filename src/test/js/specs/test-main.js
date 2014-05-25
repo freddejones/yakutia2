@@ -13,6 +13,7 @@ requirejs.config({
 
     paths: {
         jquery: '../lib/jquery',
+        jqueryCookie: '../lib/jquery.cookie-1.4.1.min',
         underscore: '../lib/underscore',
         'underscore-string': '../lib/underscore-string',
         backbone: '../lib/backbone',

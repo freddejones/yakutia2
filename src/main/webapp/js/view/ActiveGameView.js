@@ -5,14 +5,16 @@ define(['backbone',
     'assets/MapDefinitions',
     'view/LandAreaView',
     'collections/TerritoryModelCollection',
-    'models/GameStateModel'],
+    'models/GameStateModel',
+    'jqueryCookie'],
 function(Backbone, _,
          Kinetic,
          GameMapTemplate,
          MapDefinitions,
          LandAreaView,
          TerritoryModelCollection,
-         GameStateModel) {
+         GameStateModel,
+         $Cookie) {
 
     var ActiveGameView = Backbone.View.extend({
 
@@ -22,8 +24,8 @@ function(Backbone, _,
             _.bindAll(this, 'renderSubModel');
 
             this.model = new GameStateModel({
-                playerId: window.playerId,
-                gameId: window.gameId
+                playerId: $.cookie("yakutiaPlayerId"),
+                gameId: $.cookie("yakutiaGameId")
             });
             this.updateState();
 
@@ -72,7 +74,7 @@ function(Backbone, _,
             this.stage.add(this.layer);
 
             this.collection.fetch({
-                url: '/game/get/'+window.playerId+'/game/'+window.gameId,
+                url: '/game/get/'+self.model.get("playerId")+'/game/'+self.model.get("gameId"),
                 success: function(models) {
                     _.each(models.models, function(model) {
                         self.renderSubModel(model);

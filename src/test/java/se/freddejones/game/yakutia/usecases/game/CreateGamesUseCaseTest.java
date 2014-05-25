@@ -56,7 +56,7 @@ public class CreateGamesUseCaseTest extends UseCaseTemplate {
                 .andDo(print())
                 // then
                 .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[*].status", containsInAnyOrder("CREATED")))
+                .andExpect(jsonPath("$[*].status", containsInAnyOrder("ACCEPTED")))
                 .andExpect(jsonPath("$[*].canStartGame", containsInAnyOrder(true)));
 
         // when
@@ -93,7 +93,7 @@ public class CreateGamesUseCaseTest extends UseCaseTemplate {
 
         // when
         request = convertDtoToByteArray(getGameInviteDTO(2L, 1L));
-        mockMvc.perform(put("/game/accept")
+        mockMvc.perform(post("/game/accept")
                 .content(request)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -102,7 +102,7 @@ public class CreateGamesUseCaseTest extends UseCaseTemplate {
 
         // when
         request = convertDtoToByteArray(getGameInviteDTO(3L, 1L));
-        mockMvc.perform(put("/game/accept")
+        mockMvc.perform(post("/game/accept")
                 .content(request)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
