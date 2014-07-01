@@ -51,4 +51,52 @@ public class PlayerServiceTest {
         // then
         verify(playerDaoMock, times(1)).getAllPlayers();
     }
+
+    @Test
+    public void testShouldCreatePlayerByCallingPlayerDao() {
+        // given
+        Player p = new Player();
+        p.setName("test");
+        PlayerId createdPlayerId = new PlayerId(1L);
+        when(playerDaoMock.createPlayer(p)).thenReturn(createdPlayerId);
+
+        // when
+        PlayerId playerId = playerService.createNewPlayer(p);
+
+        // then
+        assertThat(playerId.getPlayerId(), is(createdPlayerId.getPlayerId()));
+        verify(playerDaoMock, times(1)).createPlayer(p);
+    }
+
+    @Test
+    public void testCheckForPlayerIsFullyCreatedWhenPlayerIsFullyCreated() {
+        // given
+        PlayerId playerId = new PlayerId(1L);
+        Player fullyCreatedPlayer = new Player();
+        fullyCreatedPlayer.setName("my name is");
+        when(playerDaoMock.getPlayerById(playerId)).thenReturn(fullyCreatedPlayer);
+
+        // when
+        boolean isFullyCreated = playerService.isPlayerFullyCreated(playerId);
+
+        // then
+        assertThat(isFullyCreated, is(true));
+        verify(playerDaoMock, times(1)).getPlayerById(playerId);
+    }
+
+    @Test
+    public void testCheckForPlayerIsFullyCreatedWhenPlayerIsNotFullyCreated() {
+        // given
+        PlayerId playerId = new PlayerId(1L);
+        Player notFullyCreatedPlayer = new Player();
+        notFullyCreatedPlayer.setName(null);
+        when(playerDaoMock.getPlayerById(playerId)).thenReturn(notFullyCreatedPlayer);
+
+        // when
+        boolean isFullyCreated = playerService.isPlayerFullyCreated(playerId);
+
+        // then
+        assertThat(isFullyCreated, is(false));
+        verify(playerDaoMock, times(1)).getPlayerById(playerId);
+    }
 }

@@ -9,7 +9,7 @@
     <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="locations">
             <list>
-                <value>classpath:h2.properties</value>
+                <value>classpath:dev/h2.properties</value>
             </list>
         </property>
     </bean>

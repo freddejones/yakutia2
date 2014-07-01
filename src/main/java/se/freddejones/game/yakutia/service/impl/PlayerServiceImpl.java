@@ -40,17 +40,14 @@ public class PlayerServiceImpl implements PlayerService {
 //    public Player getPlayerById(Long playerId) {
 //        return playerDao.getPlayerById(playerId);
 //    }
-//
-//
-//    @Override
-//    public boolean isPlayerFullyCreated(Long id) {
-//        Player p = playerDao.getPlayerById(id);
-//        if (p == null || p.getName() == null || p.getName().isEmpty()) {
-//            return false;
-//        }
-//        return true;
-//    }
-//
+
+
+    @Override
+    public boolean isPlayerFullyCreated(PlayerId id) {
+        Player p = playerDao.getPlayerById(id);
+        return !(p == null || p.getName() == null || p.getName().isEmpty());
+    }
+
 //    @Override
 //    @Transactional(readOnly = false)
 //    public Long updatePlayerName(Player p) {
@@ -62,11 +59,6 @@ public class PlayerServiceImpl implements PlayerService {
     @Override
     public Player getPlayerById(PlayerId playerId) {
         return null;
-    }
-
-    @Override
-    public boolean isPlayerFullyCreated(PlayerId id) {
-        return false;
     }
 
     @Override

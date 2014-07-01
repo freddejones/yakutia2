@@ -10,7 +10,7 @@ import javax.annotation.Resource;
 import javax.sql.DataSource;
 
 @Configuration
-@PropertySource("classpath:h2.properties")
+@PropertySource("classpath:dev/h2.properties")
 public class UseCaseConfiguration {
 
     @Resource

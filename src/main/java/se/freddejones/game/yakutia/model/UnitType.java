@@ -1,7 +1,9 @@
 package se.freddejones.game.yakutia.model;
 
 public enum UnitType {
-    TANK ("TANK");
+    AIRPLANE ("AIRPLANE"),
+    TANK ("TANK"),
+    SOLDIER ("SOLDIER");
 
     private String unitType;
 
