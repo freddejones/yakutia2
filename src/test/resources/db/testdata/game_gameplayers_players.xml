@@ -44,6 +44,18 @@
             <column name="NEXT_GAME_PLAYER_ID" type="NUMERIC"/>
             <column name="PLAYER_ID" type="NUMERIC"/>
         </loadUpdateData>
+        <loadUpdateData encoding="UTF-8"
+                        file="src/test/resources/db/testdata/csv/units.csv"
+                        primaryKey="UNITID"
+                        schemaName="public"
+                        separator=","
+                        tableName="UNITS">
+            <column name="UNITID" type="NUMERIC"/>
+            <column name="STRENGTH" type="NUMERIC"/>
+            <column name="TERRITORY" type="STRING"/>
+            <column name="TYPEOFUNIT" type="STRING"/>
+            <column name="GAMEPLAYERID" type="NUMERIC"/>
+        </loadUpdateData>
     </changeSet>
 
 </databaseChangeLog>

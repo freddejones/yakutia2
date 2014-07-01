@@ -5,14 +5,9 @@ import java.io.Serializable;
 public class TerritoryDTO implements Serializable {
 
     private String landName;
-    private int units;
+    private Long units;
+    private Long territoryId;
     private boolean isOwnedByPlayer;
-
-    public TerritoryDTO(String landName, int units, boolean ownedByPlayer) {
-        this.landName = landName;
-        this.units = units;
-        isOwnedByPlayer = ownedByPlayer;
-    }
 
     public String getLandName() {
         return landName;
@@ -22,19 +17,27 @@ public class TerritoryDTO implements Serializable {
         this.landName = landName;
     }
 
-    public int getUnits() {
+    public Long getUnits() {
         return units;
     }
 
-    public void setUnits(int units) {
+    public void setUnits(Long units) {
         this.units = units;
+    }
+
+    public Long getTerritoryId() {
+        return territoryId;
+    }
+
+    public void setTerritoryId(Long territoryId) {
+        this.territoryId = territoryId;
     }
 
     public boolean isOwnedByPlayer() {
         return isOwnedByPlayer;
     }
 
-    public void setOwnedByPlayer(boolean ownedByPlayer) {
-        isOwnedByPlayer = ownedByPlayer;
+    public void setOwnedByPlayer(boolean isOwnedByPlayer) {
+        this.isOwnedByPlayer = isOwnedByPlayer;
     }
 }

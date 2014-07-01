@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import se.freddejones.game.yakutia.entity.Player;
+import se.freddejones.game.yakutia.model.PlayerId;
 import se.freddejones.game.yakutia.service.PlayerService;
 
 import javax.servlet.ServletException;
@@ -30,7 +31,7 @@ public class FeedSuccessHandler implements AuthenticationSuccessHandler {
 
 
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        Long playerId = Long.parseLong(userDetails.getUsername());
+        PlayerId playerId = new PlayerId(Long.parseLong(userDetails.getUsername()));
         Player p = playerService.getPlayerById(playerId);
         Cookie cookieEmail = new Cookie("yakutiaPlayerEmail", p.getEmail());
         Cookie cookiePlayerId = new Cookie("yakutiaPlayerId", userDetails.getUsername());
@@ -39,7 +40,7 @@ public class FeedSuccessHandler implements AuthenticationSuccessHandler {
 
 
 
-        if (playerService.isPlayerFullyCreated(Long.parseLong(userDetails.getUsername()))) {
+        if (playerService.isPlayerFullyCreated(playerId)) {
             response.sendRedirect("/#");
             return;
         }

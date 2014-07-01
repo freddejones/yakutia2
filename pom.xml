@@ -13,7 +13,7 @@
     <packaging>war</packaging>
 
     <properties>
-        <spring.version>3.2.3.RELEASE</spring.version>
+        <spring.version>4.0.3.RELEASE</spring.version>
         <spring.sec.version>3.2.2.RELEASE</spring.sec.version>
         <mockito.version>1.9.5</mockito.version>
         <junit.version>4.11</junit.version>
@@ -22,7 +22,7 @@
     </properties>
 
     <dependencies>
-        <!-- Spring 3 dependencies -->
+        <!-- Spring 4 dependencies -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
@@ -116,11 +116,17 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>4.1.5.Final</version>
+            <version>4.2.0.Final</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
+            <version>4.2.0.Final</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
             <version>4.2.0.Final</version>
         </dependency>
 

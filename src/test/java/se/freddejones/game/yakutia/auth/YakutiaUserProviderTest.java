@@ -1,6 +1,7 @@
 package se.freddejones.game.yakutia.auth;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.openid.OpenIDAttribute;
@@ -14,6 +15,7 @@ import java.util.List;
 
 import static org.mockito.Mockito.mock;
 
+@Ignore
 public class YakutiaUserProviderTest {
 
     private YakutiaUserProvider yakutiaUserProvider;

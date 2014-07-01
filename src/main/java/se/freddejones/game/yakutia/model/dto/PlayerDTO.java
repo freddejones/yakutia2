@@ -34,18 +34,6 @@ public class PlayerDTO implements Serializable {
         this.playerId = playerId;
     }
 
-    public static Player bind(PlayerDTO playerDTO) {
-        Player p = new Player();
-        p.setName(playerDTO.getPlayerName());
-        p.setEmail(playerDTO.getEmail());
-        if (null != playerDTO.getPlayerId()) {
-            p.setPlayerId(playerDTO.getPlayerId());
-        }
-
-        return p;
-    }
-
-
     @Override
     public String toString() {
         return "PlayerDTO{" +

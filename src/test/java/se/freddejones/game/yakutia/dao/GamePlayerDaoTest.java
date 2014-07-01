@@ -2,20 +2,28 @@ package se.freddejones.game.yakutia.dao;
 
 import org.hibernate.Session;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.transaction.annotation.Transactional;
+import se.freddejones.game.yakutia.HibernateConfig;
 import se.freddejones.game.yakutia.entity.Game;
 import se.freddejones.game.yakutia.entity.GamePlayer;
 import se.freddejones.game.yakutia.entity.Player;
 import se.freddejones.game.yakutia.entity.Unit;
-import se.freddejones.game.yakutia.model.Territory;
-import se.freddejones.game.yakutia.model.UnitType;
+import se.freddejones.game.yakutia.model.*;
+import se.freddejones.game.yakutia.model.statuses.ActionStatus;
 import se.freddejones.game.yakutia.model.statuses.GamePlayerStatus;
 import se.freddejones.game.yakutia.model.statuses.GameStatus;
+import se.freddejones.game.yakutia.usecases.framework.FullApplicationContextConfiguration;
 import se.freddejones.game.yakutia.usecases.framework.TestdataHandler;
 
 import java.util.ArrayList;
@@ -23,81 +31,151 @@ import java.util.Date;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath*:**/hibernateTestContext.xml"
-        ,"classpath*:**/applicationTestContext.xml"
-})
+@ContextConfiguration(loader = AnnotationConfigContextLoader.class)
 @Transactional(readOnly = false)
 public class GamePlayerDaoTest {
 
-    public static final String GAME_NAME = "GAME_NAME";
-    public static final String TEST_EMAIL = "test@email.com";
-    public static final String PLAYER_NAME = "PLAYER_NAME";
+    @Configuration
+    @Import(HibernateConfig.class)
+    @ComponentScan(basePackages = {"se.freddejones.game.yakutia.dao"})
+    static class TestConfiguration {}
 
     @Autowired
     private GamePlayerDao gamePlayerDao;
 
-    private Long playerId;
-    private Long gameId;
+    @BeforeClass
+    public static void beforeSetup() throws Exception {
+        TestdataHandler.resetAndRebuild();
+    }
 
     @Before
-    public void setup() throws Exception {
-        TestdataHandler.resetAndRebuild();
-        Session session = gamePlayerDao.getSession();
-        Player p = new Player();
-        p.setEmail(TEST_EMAIL);
-        p.setName(PLAYER_NAME);
-        session.persist(p);
-        session.refresh(p);
-        playerId = p.getPlayerId();
-
-        Game g = new Game();
-        g.setCreationTime(new Date());
-        g.setGameCreatorPlayerId(p.getPlayerId());
-        g.setName(GAME_NAME);
-        g.setGameStatus(GameStatus.CREATED);
-        session.persist(g);
-        gameId = g.getGameId();
-        session.refresh(g);
-
-        GamePlayer gp = new GamePlayer();
-        gp.setGame(g);
-        gp.setGameId(g.getGameId());
-        gp.setPlayer(p);
-        gp.setPlayerId(p.getPlayerId());
-        gp.setGamePlayerStatus(GamePlayerStatus.ACCEPTED);
-        gp.setActivePlayerTurn(false);
-        session.persist(gp);
-
-        Unit unit = new Unit();
-        unit.setStrength(1);
-        unit.setTerritory(Territory.SWEDEN);
-        unit.setTypeOfUnit(UnitType.TANK);
-        unit.setGamePlayer(gp);
-        List<Unit> units = new ArrayList<>();
-        units.add(unit);
-        gp.setUnits(units);
-        session.persist(gp);
+    public void setUp() throws Exception {
+        TestdataHandler.loadChangeSet("src/test/resources/db/testdata/game_gameplayers_players.xml");
     }
 
     @Test
-    public void testUpdateStrengthSettingsOnUnit() throws Exception {
-        // given (gameplayer with one unit)
-        GamePlayer gp = gamePlayerDao.getGamePlayerByGameIdAndPlayerId(playerId, gameId);
-        assertThat(gp.getUnits().size(), is(1));
-        assertThat(gp.getUnits().get(0).getStrength(), is(1));
-
-        Unit u = gp.getUnits().get(0);
-        u.setStrength(0);
+    public void testGetGamePlayersByPlayerId() {
+        // given
+        // testdata loaded
+        PlayerId playerId = new PlayerId(1L);
 
         // when
-        gamePlayerDao.setUnitsToGamePlayer(gp.getGamePlayerId(), u);
+        List<GamePlayer> gamePlayers = gamePlayerDao.getGamePlayersByPlayerId(playerId);
 
-        // then (refresh gameplayer object from db)
-        gp = gamePlayerDao.getGamePlayerByGameIdAndPlayerId(playerId, gameId);
-        assertThat(gp.getUnits().size(), is(1));
-        assertThat(gp.getUnits().get(0).getStrength(), is(0));
+        // then
+        assertThat(gamePlayers.size(), is(greaterThanOrEqualTo(1)));
+    }
+
+    @Test
+    public void testGetGAmePlayersByGameId() {
+        // given
+        // testdata loaded
+        GameId gameId = new GameId(1L);
+
+        // when
+        List<GamePlayer> gamePlayers = gamePlayerDao.getGamePlayersByGameId(gameId);
+
+        // then
+        assertThat(gamePlayers.size(), is(greaterThanOrEqualTo(1)));
+    }
+
+    @Test
+    public void testGetGamePlayerByGameIdAndPlayerId() {
+        // given
+        // testdata loaded
+        PlayerId playerId = new PlayerId(1L);
+        GameId gameId = new GameId(1L);
+
+        // when
+        GamePlayer gamePlayer = gamePlayerDao.getGamePlayerByGameIdAndPlayerId(playerId, gameId);
+
+        // then
+        assertThat(gamePlayer.getPlayerId(), is(playerId.getPlayerId()));
+        assertThat(gamePlayer.getGameId(), is(gameId.getGameId()));
+    }
+
+    @Test
+    public void testGetGamePlayerByGamePlayerId() {
+        // given
+        // testdata loaded
+        GamePlayerId gamePlayerId = new GamePlayerId(1L);
+
+        // when
+        GamePlayer gamePlayer = gamePlayerDao.getGamePlayerByGamePlayerId(gamePlayerId);
+
+        // then
+        assertThat(gamePlayer.getGamePlayerId(), is(gamePlayerId.getGamePlayerId()));
+    }
+
+    @Test
+    public void testSetUnitsToGamePlayer() throws Exception {
+        // given
+        // testdata loaded
+        GamePlayerId gamePlayerId = new GamePlayerId(1L);
+        Unit u = new Unit();
+        u.setStrength(1);
+        u.setTerritory(Territory.SWEDEN);
+        u.setTypeOfUnit(UnitType.TANK);
+
+        // when
+        gamePlayerDao.setUnitsToGamePlayer(gamePlayerId, u);
+
+        // then
+        GamePlayer gamePlayer = gamePlayerDao.getGamePlayerByGamePlayerId(gamePlayerId);
+        assertThat(gamePlayer.getUnits().get(0).getGamePlayer().getGamePlayerId(), is(gamePlayerId.getGamePlayerId()));
+        assertThat(gamePlayer.getUnits().get(0).getTerritory(), is(Territory.SWEDEN));
+    }
+
+    @Test
+    public void testGetUnassignedLand() throws Exception {
+        // given
+        // test data loaded
+        GamePlayerId gamePlayerId = new GamePlayerId(3L);
+
+        // when
+        Unit unit = gamePlayerDao.getUnassignedLand(gamePlayerId);
+
+        // then
+        assertThat(unit.getUnitId(), is(2));
+        assertThat(unit.getGamePlayer().getGamePlayerId(), is(gamePlayerId.getGamePlayerId()));
+    }
+
+    @Test
+    public void testSetActionStatusOnGamePlayer() throws Exception {
+        // given
+        // testdata loaded
+        GamePlayerId gamePlayerId = new GamePlayerId(3L);
+
+        // when
+        gamePlayerDao.setActionStatus(gamePlayerId, ActionStatus.PLACE_UNITS);
+
+        // then
+        GamePlayer gamePlayer = gamePlayerDao.getGamePlayerByGamePlayerId(gamePlayerId);
+        assertThat(gamePlayer.getActionStatus(), is(ActionStatus.PLACE_UNITS));
+    }
+
+    @Test
+    public void testUpdateGamePlayer() {
+        // given
+        // testdata loaded
+        GamePlayerId gamePlayerId = new GamePlayerId(2L);
+        GamePlayer gamePlayer = gamePlayerDao.getGamePlayerByGamePlayerId(gamePlayerId);
+        gamePlayer.setGamePlayerStatus(GamePlayerStatus.ALIVE);
+        gamePlayer.setUnits(new ArrayList<Unit>());
+        gamePlayer.setActionStatus(ActionStatus.MOVE);
+
+        // when
+        gamePlayerDao.updateGamePlayer(gamePlayer);
+
+        // then
+        GamePlayer updatedGamePlayer = gamePlayerDao.getGamePlayerByGamePlayerId(gamePlayerId);
+        assertThat(updatedGamePlayer.getGamePlayerStatus(), is(GamePlayerStatus.ALIVE));
+        assertThat(updatedGamePlayer.getUnits().size(), is(0));
+        assertThat(updatedGamePlayer.getActionStatus(), is(ActionStatus.MOVE));
     }
 }

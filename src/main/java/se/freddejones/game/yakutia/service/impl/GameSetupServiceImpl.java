@@ -7,6 +7,7 @@ import se.freddejones.game.yakutia.dao.GamePlayerDao;
 import se.freddejones.game.yakutia.entity.GamePlayer;
 import se.freddejones.game.yakutia.entity.Unit;
 import se.freddejones.game.yakutia.exception.CouldNotCreateGameException;
+import se.freddejones.game.yakutia.model.GamePlayerId;
 import se.freddejones.game.yakutia.model.GameSetup;
 import se.freddejones.game.yakutia.model.Territory;
 import se.freddejones.game.yakutia.model.UnitType;
@@ -55,15 +56,16 @@ public class GameSetupServiceImpl implements GameSetupService {
                 }
             }
 
+            GamePlayerId gamePlayerId = new GamePlayerId(gss.getGp().getGamePlayerId());
             for (Unit u : gss.getUnits()) {
-                gamePlayerDao.setUnitsToGamePlayer(gss.getGp().getGamePlayerId(), u);
+                gamePlayerDao.setUnitsToGamePlayer(gamePlayerId, u);
             }
 
             Unit reinforcementUnit = new Unit();
             reinforcementUnit.setStrength(3);
             reinforcementUnit.setTypeOfUnit(UnitType.TANK);
             reinforcementUnit.setTerritory(Territory.UNASSIGNEDLAND);
-            gamePlayerDao.setUnitsToGamePlayer(gss.getGp().getGamePlayerId(), reinforcementUnit);
+            gamePlayerDao.setUnitsToGamePlayer(gamePlayerId, reinforcementUnit);
         }
     }
 

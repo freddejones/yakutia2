@@ -1,5 +1,6 @@
 package se.freddejones.game.yakutia.usecases.friend;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import se.freddejones.game.yakutia.model.dto.FriendDTO;
@@ -16,6 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static se.freddejones.game.yakutia.usecases.framework.UseCaseBoilerplate.convertDtoToByteArray;
 import static se.freddejones.game.yakutia.usecases.framework.UseCaseBoilerplate.createFriendDTO;
 
+@Ignore
 public class FriendUseCaseTest extends UseCaseTemplate {
 
     @Test

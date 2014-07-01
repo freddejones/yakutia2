@@ -8,13 +8,13 @@ import se.freddejones.game.yakutia.model.BattleResult;
 public class BattleCalculator {
 
     public BattleResult battle(Unit attackingUnit, Unit defendingUnit) {
-        BattleResult battleResult = new BattleResult();
-        battleResult.setDefendingTerritoryLosses(1);
-        battleResult.setAttackingTerritoryLosses(-1);
-        battleResult.setTakenOver(false);
-        if (defendingUnit.getStrength()-battleResult.getDefendingTerritoryLosses() <= 0) {
-            battleResult.setTakenOver(true);
-        }
-        return battleResult;
+//        BattleResult battleResult = new BattleResult(isBattleWon);
+//        battleResult.setDefendingTerritoryLosses(1);
+//        battleResult.setAttackingTerritoryLosses(-1);
+//        battleResult.setTakenOver(false);
+//        if (defendingUnit.getStrength()-battleResult.getDefendingTerritoryLosses() <= 0) {
+//            battleResult.setTakenOver(true);
+//        }
+        return new BattleResult(true);
     }
 }

@@ -1,6 +1,7 @@
 package se.freddejones.game.yakutia.dao;
 
 import se.freddejones.game.yakutia.entity.Game;
+import se.freddejones.game.yakutia.model.GameId;
 import se.freddejones.game.yakutia.model.dto.CreateGameDTO;
 
 /**
@@ -9,11 +10,11 @@ import se.freddejones.game.yakutia.model.dto.CreateGameDTO;
  */
 public interface GameDao {
 
-    public Long createNewGame(CreateGameDTO createGameDTO);
+    public GameId createNewGame(CreateGameDTO createGameDTO);
 
-    public Game getGameByGameId(long gameId);
+    public Game getGameByGameId(GameId gameId);
 
-    public void startGame(long gameId);
+    public void startGame(GameId gameId);
 
-    public void endGame(long gameId);
+    public void endGame(GameId gameId);
 }

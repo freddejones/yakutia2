@@ -1,9 +1,8 @@
 package se.freddejones.game.yakutia.dao;
 
-import org.hibernate.Session;
 import se.freddejones.game.yakutia.entity.GamePlayer;
 import se.freddejones.game.yakutia.entity.Unit;
-import se.freddejones.game.yakutia.model.Territory;
+import se.freddejones.game.yakutia.model.*;
 import se.freddejones.game.yakutia.model.statuses.ActionStatus;
 
 import java.util.List;
@@ -14,15 +13,12 @@ import java.util.List;
  */
 public interface GamePlayerDao {
 
-    List<GamePlayer> getGamePlayersByPlayerId(Long playerId);
-    List<GamePlayer> getGamePlayersByGameId(Long gameId);
-    GamePlayer getGamePlayerByGameIdAndPlayerId(Long playerId, Long gameId);
-    GamePlayer getGamePlayerByGamePlayerId(Long gamePlayerId);
-    GamePlayer getGamePlayerByGameIdAndTerritory(Long gameId, Territory territory);
-    void setUnitsToGamePlayer(Long gamePlayerId, Unit unit);
-    Unit getUnassignedLand(Long gamePlayerId);
-    void setActionStatus(Long gamePlayerId, ActionStatus actionStatus);
+    List<GamePlayer> getGamePlayersByPlayerId(PlayerId playerId);
+    List<GamePlayer> getGamePlayersByGameId(GameId gameId);
+    GamePlayer getGamePlayerByGameIdAndPlayerId(PlayerId playerId, GameId gameId);
+    GamePlayer getGamePlayerByGamePlayerId(GamePlayerId gamePlayerId);
+    void setUnitsToGamePlayer(GamePlayerId gamePlayerId, Unit unit);
+    Unit getUnassignedLand(GamePlayerId gamePlayerId);
+    void setActionStatus(GamePlayerId gamePlayerId, ActionStatus actionStatus);
     void updateGamePlayer(GamePlayer gamePlayer);
-    Session getSession();
-
 }

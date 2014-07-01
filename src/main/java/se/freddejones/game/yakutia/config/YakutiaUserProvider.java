@@ -39,11 +39,7 @@ public class YakutiaUserProvider implements UserDetailsService, AuthenticationUs
         Player player = playerService.getPlayerByEmail(parsedPlayer.getEmail());
         if (player == null) {
             player = new Player();
-            try {
-                player.setPlayerId(playerService.createNewPlayer(parsedPlayer));
-            } catch (PlayerAlreadyExistsException e) {
-                throw new UsernameNotFoundException(e.getMessage());
-            }
+            player.setPlayerId(playerService.createNewPlayer(parsedPlayer).getPlayerId());
         }
 
         List<GrantedAuthority> auths = new ArrayList<>();

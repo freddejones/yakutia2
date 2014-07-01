@@ -1,5 +1,6 @@
 package se.freddejones.game.yakutia.usecases.player;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import se.freddejones.game.yakutia.model.dto.PlayerDTO;
@@ -13,6 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static se.freddejones.game.yakutia.usecases.framework.UseCaseBoilerplate.convertDtoToByteArray;
 import static se.freddejones.game.yakutia.usecases.framework.UseCaseBoilerplate.createPlayerDTO;
 
+@Ignore
 public class CreatePlayerUseCaseTest extends UseCaseTemplate {
 
     @Test

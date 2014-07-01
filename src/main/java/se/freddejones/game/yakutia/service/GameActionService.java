@@ -1,15 +1,14 @@
 package se.freddejones.game.yakutia.service;
-
-import se.freddejones.game.yakutia.exception.NotEnoughUnitsException;
-import se.freddejones.game.yakutia.exception.TerritoryNotConnectedException;
-import se.freddejones.game.yakutia.model.TerritoryDTO;
-import se.freddejones.game.yakutia.model.dto.AttackActionUpdate;
-import se.freddejones.game.yakutia.model.dto.PlaceUnitUpdate;
+import se.freddejones.game.yakutia.model.GamePlayerId;
+import se.freddejones.game.yakutia.model.AttackActionUpdate;
+import se.freddejones.game.yakutia.model.MoveUnitUpdate;
+import se.freddejones.game.yakutia.model.PlaceUnitUpdate;
 
 public interface GameActionService {
 
-    public TerritoryDTO placeUnitAction(PlaceUnitUpdate placeUnitUpdate) throws NotEnoughUnitsException;
-    public TerritoryDTO attackTerritoryAction(AttackActionUpdate attackActionUpdate) throws TerritoryNotConnectedException;
-    public TerritoryDTO moveUnitsAction(PlaceUnitUpdate placeUnitUpdate);
+    public void placeUnitAction(PlaceUnitUpdate placeUnitUpdate);
+    public boolean attackTerritoryAction(AttackActionUpdate attackActionUpdate);
+    public void moveUnitsAction(MoveUnitUpdate placeUnitUpdate);
+    public void setActionsToDone(GamePlayerId gamePlayerId);
 
 }

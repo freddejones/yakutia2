@@ -26,47 +26,51 @@ public class FriendController {
     @RequestMapping(value  = "/invite", method = RequestMethod.POST)
     @ResponseBody
     public void inviteFriend(@RequestBody final FriendDTO friendDTO) {
-        friendService.inviteFriend(friendDTO.getPlayerId(), friendDTO.getFriendId());
+//        friendService.inviteFriend(friendDTO.getPlayerId(), friendDTO.getFriendId());
     }
 
     @RequestMapping(value = "/accept", method = RequestMethod.POST)
     @ResponseBody
     public FriendDTO acceptFriendInvite(@RequestBody final FriendDTO friendDTO) {
-        return friendService.acceptFriendInvite(friendDTO.getPlayerId(), friendDTO.getFriendId());
+//        return friendService.acceptFriendInvite(friendDTO.getPlayerId(), friendDTO.getFriendId());
+        return null;
     }
 
     @RequestMapping(value = "/decline", method = RequestMethod.POST)
     @ResponseBody
     public Boolean declineFriendInvite(@RequestBody final FriendDTO friendDTO) {
-        return friendService.declineFriendInvite(friendDTO.getPlayerId(), friendDTO.getFriendId());
+//        return friendService.declineFriendInvite(friendDTO.getPlayerId(), friendDTO.getFriendId());
+        return null;
     }
 
     @RequestMapping(value = "/get/all/{playerId}", method = RequestMethod.GET)
     @ResponseBody
     public List<FriendDTO> getAllFriends(@PathVariable("playerId") Long playerid) {
-        return friendService.getInvitedAndAcceptedFriends(playerid);
+//        return friendService.getInvitedAndAcceptedFriends(playerid);
+        return null;
     }
 
     @RequestMapping(value  = "/non/friends/{playerId}", method = RequestMethod.GET)
     @ResponseBody
     public List<FriendDTO> getNonFriends(@PathVariable("playerId") Long playerid) {
 
-        // TODO Extract this to the service bean, pretty please
-        List<Player> players = playerService.getAllPlayers();
-        Player currentPlayer = playerService.getPlayerById(playerid);
-
-        List<FriendDTO> nonFriends = new ArrayList<>();
-        for (Player player : players) {
-            if (!(currentPlayer.getPlayerId() == player.getPlayerId()) &&
-                    !isFriendOrInvited(currentPlayer, player)) {
-                FriendDTO friendDTO = new FriendDTO();
-                friendDTO.setPlayerId(player.getPlayerId());
-                friendDTO.setPlayerName(player.getName());
-                friendDTO.setEmail(player.getEmail());
-                nonFriends.add(friendDTO);
-            }
-        }
-        return nonFriends;
+//        // TODO Extract this to the service bean, pretty please
+//        List<Player> players = playerService.getAllPlayers();
+//        Player currentPlayer = playerService.getPlayerById(playerid);
+//
+//        List<FriendDTO> nonFriends = new ArrayList<>();
+//        for (Player player : players) {
+//            if (!(currentPlayer.getPlayerId() == player.getPlayerId()) &&
+//                    !isFriendOrInvited(currentPlayer, player)) {
+//                FriendDTO friendDTO = new FriendDTO();
+//                friendDTO.setPlayerId(player.getPlayerId());
+//                friendDTO.setPlayerName(player.getName());
+//                friendDTO.setEmail(player.getEmail());
+//                nonFriends.add(friendDTO);
+//            }
+//        }
+//        return nonFriends;
+        return null;
     }
 
 

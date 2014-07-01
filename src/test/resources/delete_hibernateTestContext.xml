@@ -9,7 +9,7 @@
     <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="locations">
             <list>
-                <value>classpath:hsqldb.properties</value>
+                <value>classpath:h2.properties</value>
             </list>
         </property>
     </bean>
@@ -33,6 +33,26 @@
 
         </property>
     </bean>
+
+    <!--<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">-->
+        <!--<property name="dataSource" ref="dataSource" />-->
+
+        <!--&lt;!&ndash;<property name="persistenceUnitName" value="myPersistenceUnit" />&ndash;&gt;-->
+        <!--<property name="packagesToScan" >-->
+            <!--<list>-->
+                <!--<value>se.freddejones.game.yakutia.entity</value>-->
+            <!--</list>-->
+        <!--</property>-->
+
+        <!--<property name="jpaProperties">-->
+            <!--<props>-->
+                <!--<prop key="hibernate.dialect">${jdbc.hibernate.dialect}</prop>-->
+                <!--&lt;!&ndash;<prop key="hibernate.hbm2ddl.auto">${jdbc.hibernate.hbm2ddl.auto}</prop>&ndash;&gt;-->
+                <!--<prop key="hibernate.show_sql">true</prop>-->
+                <!--&lt;!&ndash;<prop key="hibernate.format_sql">${hibernate.format_sql}</prop>&ndash;&gt;-->
+            <!--</props>-->
+        <!--</property>-->
+    <!--</bean>-->
 
     <tx:annotation-driven transaction-manager="transactionManager"/>
 

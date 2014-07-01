@@ -9,8 +9,8 @@ import java.io.Serializable;
 @Entity
 @Table(name = "UNITS")
 @NamedQueries({
-        @NamedQuery(name="Unit.getUnitsByLandArea",
-                query = "SELECT u FROM Unit u where territory = :laName")
+        @NamedQuery(name="Unit.getUnitsByGamePlayer",
+                query = "SELECT u FROM Unit u where gamePlayerId = :gpid")
 })
 public class Unit implements Serializable {
 

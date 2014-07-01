@@ -3,8 +3,7 @@ package se.freddejones.game.yakutia.model.dto;
 public class GameStateModelDTO {
 
     private String state;
-    private Long playerId;
-    private Long gameId;
+    private Long gamePlayerId;
 
     public String getState() {
         return state;
@@ -14,20 +13,11 @@ public class GameStateModelDTO {
         this.state = state;
     }
 
-    public Long getPlayerId() {
-        return playerId;
+    public Long getGamePlayerId() {
+        return gamePlayerId;
     }
 
-    public void setPlayerId(Long playerId) {
-        this.playerId = playerId;
+    public void setGamePlayerId(Long gamePlayerId) {
+        this.gamePlayerId = gamePlayerId;
     }
-
-    public Long getGameId() {
-        return gameId;
-    }
-
-    public void setGameId(Long gameId) {
-        this.gameId = gameId;
-    }
-
 }
