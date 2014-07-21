@@ -1,14 +1,37 @@
-package se.freddejones.game.yakutia.model;
+package se.freddejones.game.yakutia.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.stereotype.Component;
+import se.freddejones.game.yakutia.model.Territory;
+import se.freddejones.game.yakutia.service.GameTerritoryHandlerService;
 
-public class GameManager {
+import java.util.*;
 
-    private GameManager() {}
+@Component
+public class GameTerritoryHandlerServiceImpl implements GameTerritoryHandlerService {
+
+    @Override
+    public int getNumberOfTerritories() {
+        return 0;
+    }
+
+    @Override
+    public List<Territory> getShuffledTerritories() {
+        List<Territory> territories = new ArrayList<>();
+        territories.add(Territory.SWEDEN);
+        territories.add(Territory.FINLAND);
+        territories.add(Territory.NORWAY);
+        territories.add(Territory.DENMARK);
+        territories.add(Territory.ICELAND);
+        territories.add(Territory.TYSKLAND);
+        territories.add(Territory.UKRAINA);
+        territories.add(Territory.SKAUNE);
+        territories.add(Territory.TOMTEBODA);
+        Collections.shuffle(territories);
+        return territories;
+    }
 
     public static List<Territory> getLandAreas() {
-        List<Territory> territories = new ArrayList<Territory>();
+        List<Territory> territories = new ArrayList<>();
         territories.add(Territory.SWEDEN);
         territories.add(Territory.FINLAND);
         territories.add(Territory.NORWAY);
@@ -34,7 +57,7 @@ public class GameManager {
                 } break;
             case FINLAND:
                 if (dst == Territory.NORWAY || dst == Territory.DENMARK
-                    || dst == Territory.UKRAINA) {
+                        || dst == Territory.UKRAINA) {
                     return true;
                 } break;
             case DENMARK:

@@ -1,4 +1,4 @@
-package se.freddejones.game.yakutia.model;
+package se.freddejones.game.yakutia.model.dto;
 
 import java.io.Serializable;
 

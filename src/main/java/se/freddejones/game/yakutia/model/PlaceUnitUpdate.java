@@ -2,24 +2,33 @@ package se.freddejones.game.yakutia.model;
 
 public class PlaceUnitUpdate {
 
-    private Long numberOfUnits;
-    private UnitId territory;
+    private Integer numberOfUnits;
+    private Territory territory;
+    private UnitType unitType;
     private GamePlayerId gamePlayerId;
 
-    public Long getNumberOfUnits() {
+    public Integer getNumberOfUnits() {
         return numberOfUnits;
     }
 
-    public void setNumberOfUnits(Long numberOfUnits) {
+    public void setNumberOfUnits(Integer numberOfUnits) {
         this.numberOfUnits = numberOfUnits;
     }
 
-    public UnitId getTerritory() {
+    public Territory getTerritory() {
         return territory;
     }
 
-    public void setTerritory(UnitId territory) {
+    public void setTerritory(Territory territory) {
         this.territory = territory;
+    }
+
+    public UnitType getUnitType() {
+        return unitType;
+    }
+
+    public void setUnitType(UnitType unitType) {
+        this.unitType = unitType;
     }
 
     public GamePlayerId getGamePlayerId() {
@@ -35,6 +44,7 @@ public class PlaceUnitUpdate {
         return "PlaceUnitUpdate{" +
                 "numberOfUnits=" + numberOfUnits +
                 ", territory=" + territory +
+                ", unitType=" + unitType +
                 ", gamePlayerId=" + gamePlayerId +
                 '}';
     }

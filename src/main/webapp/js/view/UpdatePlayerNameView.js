@@ -35,6 +35,8 @@ define(['backbone',
             updateName: function () {
                 var self = this;
                 this.model.set('playerName', $('#yakutia-playername', this.$el).val());
+                this.model.idAttribute = 'playerId';
+                this.model.id = this.model.get('playerId');
                 this.model.save(null, {
                     success: function (model, response) {
                         var $modalEl = $('#loginModal', self.$el);

@@ -1,12 +1,16 @@
 package se.freddejones.game.yakutia.entity;
 
+import se.freddejones.game.yakutia.model.GameId;
+import se.freddejones.game.yakutia.model.GamePlayerId;
 import se.freddejones.game.yakutia.model.Territory;
 import se.freddejones.game.yakutia.model.statuses.ActionStatus;
 import se.freddejones.game.yakutia.model.statuses.GamePlayerStatus;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "GAME_PLAYERS_CON")
@@ -148,4 +152,20 @@ public class GamePlayer implements Serializable {
         }
         return null;
     }
+
+    public Set<Territory> getAllTerritoriesForGamePlayer() {
+        Set<Territory> territorySet = new HashSet<>();
+        for (Unit u : getUnits()) {
+            territorySet.add(u.getTerritory());
+        }
+        return territorySet;
+    }
+
+    public GamePlayerId getTheGamePlayerId() {
+        return new GamePlayerId(gamePlayerId);
+    }
+    public GameId getTheGameId() {
+        return new GameId(getGameId());
+    }
+
 }

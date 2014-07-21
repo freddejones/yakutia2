@@ -13,6 +13,22 @@ public class GamePlayerId {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof GamePlayerId)) return false;
+
+        GamePlayerId that = (GamePlayerId) o;
+
+        return gamePlayerId.equals(that.gamePlayerId);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return gamePlayerId.hashCode();
+    }
+
+    @Override
     public String toString() {
         return "GamePlayerId{" +
                 "gamePlayerId=" + gamePlayerId +

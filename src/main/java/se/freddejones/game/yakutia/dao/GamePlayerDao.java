@@ -17,8 +17,7 @@ public interface GamePlayerDao {
     List<GamePlayer> getGamePlayersByGameId(GameId gameId);
     GamePlayer getGamePlayerByGameIdAndPlayerId(PlayerId playerId, GameId gameId);
     GamePlayer getGamePlayerByGamePlayerId(GamePlayerId gamePlayerId);
-    void setUnitsToGamePlayer(GamePlayerId gamePlayerId, Unit unit);
-    Unit getUnassignedLand(GamePlayerId gamePlayerId);
+    void updateUnitsToGamePlayer(GamePlayerId gamePlayerId, Unit unit);
     void setActionStatus(GamePlayerId gamePlayerId, ActionStatus actionStatus);
     void updateGamePlayer(GamePlayer gamePlayer);
 }

@@ -104,4 +104,8 @@ public class Game implements Serializable {
         this.gameCreatorPlayerId = gameCreatorPlayerId;
     }
 
+    public boolean isCreatorOfGame(Long playerId) {
+        return playerId == this.gameCreatorPlayerId;
+    }
+
 }

@@ -6,7 +6,9 @@ import org.springframework.stereotype.Repository;
 import se.freddejones.game.yakutia.dao.UnitDao;
 import se.freddejones.game.yakutia.entity.GamePlayer;
 import se.freddejones.game.yakutia.entity.Unit;
+import se.freddejones.game.yakutia.model.GameId;
 import se.freddejones.game.yakutia.model.GamePlayerId;
+import se.freddejones.game.yakutia.model.Territory;
 import se.freddejones.game.yakutia.model.UnitId;
 
 import java.util.List;
@@ -31,6 +33,19 @@ public class UnitDaoImpl implements UnitDao {
         Unit unit = (Unit) sessionFactory.getCurrentSession().get(Unit.class, unitId.getUnitId());
         GamePlayer gamePlayer = getGamePlayerFromGamePlayerId(gamePlayerId);
         unit.setGamePlayer(gamePlayer);
+    }
+
+    @Override
+    public List<Unit> getUnitsForGamePlayerIdAndTerritory(GamePlayerId gamePlayerId, Territory territory) {
+        List<Unit> units = (List<Unit>) sessionFactory.getCurrentSession().getNamedQuery("Unit.getUnitsByGamePlayerAndTerritory")
+                .setParameter("gpid", gamePlayerId.getGamePlayerId())
+                .setParameter("territory", territory).list();
+        return units;
+    }
+
+    @Override
+    public List<Unit> getUnitsForTerritory(GameId gameId, Territory territory) {
+        return null;
     }
 
     private GamePlayer getGamePlayerFromGamePlayerId(GamePlayerId gamePlayerId) {

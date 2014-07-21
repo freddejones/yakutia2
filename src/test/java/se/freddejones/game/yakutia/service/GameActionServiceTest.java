@@ -2,145 +2,191 @@ package se.freddejones.game.yakutia.service;
 
 import org.junit.Before;
 import org.junit.Test;
-import se.freddejones.game.yakutia.TestBoilerplate;
-import se.freddejones.game.yakutia.dao.GameDao;
+import org.mockito.ArgumentCaptor;
+import se.freddejones.game.yakutia.application.BattleEngineCalculator;
 import se.freddejones.game.yakutia.dao.GamePlayerDao;
-import se.freddejones.game.yakutia.entity.Game;
-import se.freddejones.game.yakutia.entity.GamePlayer;
+import se.freddejones.game.yakutia.dao.UnitDao;
 import se.freddejones.game.yakutia.entity.Unit;
 import se.freddejones.game.yakutia.exception.NotEnoughUnitsException;
-import se.freddejones.game.yakutia.exception.TerritoryNotConnectedException;
-import se.freddejones.game.yakutia.model.Territory;
-import se.freddejones.game.yakutia.model.TerritoryDTO;
-import se.freddejones.game.yakutia.model.AttackActionUpdate;
-import se.freddejones.game.yakutia.model.PlaceUnitUpdate;
-import se.freddejones.game.yakutia.model.statuses.GameStatus;
+import se.freddejones.game.yakutia.exception.UnitCannotBeFoundException;
+import se.freddejones.game.yakutia.model.*;
 import se.freddejones.game.yakutia.service.impl.GameActionServiceImpl;
 
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
 public class GameActionServiceTest {
 
-    public static final long GAME_ID = 1L;
-    public static final long PLAYER_ID = 1L;
-    public static final long GAME_PLAYER_ID = 12L;
-    public static final long DEFENDING_GAME_PLAYER_ID = 48L;
-
-    private GamePlayerDao gamePlayerDaoMock;
-
-    private GameDao gameDaoMock;
-    private GamePlayer gamePlayerMock;
-    private Game gameMock;
+    private GamePlayerDao gamePlayerDao;
+    private UnitDao unitDao;
     private GameActionService gameActionService;
-    private BattleCalculator battleCalculator;
+    private BattleEngineCalculator battleEngineCalculator;
+    private GamePlayerId gamePlayerId;
 
     @Before
     public void setup() {
-        gamePlayerMock = mock(GamePlayer.class);
-        gameMock = mock(Game.class);
-        gameDaoMock = mock(GameDao.class);
-        gamePlayerDaoMock = mock(GamePlayerDao.class);
-        battleCalculator = mock(BattleCalculator.class);
-        gameActionService = new GameActionServiceImpl(gamePlayerDaoMock, battleCalculator);
+        gamePlayerId = new GamePlayerId(1L);
+        gamePlayerDao = mock(GamePlayerDao.class);
+        battleEngineCalculator = mock(BattleEngineCalculator.class);
+        unitDao = mock(UnitDao.class);
+        gameActionService = new GameActionServiceImpl(gamePlayerDao, unitDao, battleEngineCalculator);
     }
 
-//    @Test
-//    public void testPlaceUnitUpdateValid() throws Exception {
+    @Test
+    public void testUnitStrengthGetsAddedToUnit() {
+
+        // given
+        PlaceUnitUpdate placeUnitUpdate = getDefaultPlaceUnitUpdate();
+        Unit unit = createDefaultUnit(1);
+
+        Unit unitToUpdate = createDefaultUnit(1);
+        unitToUpdate.setTerritory(Territory.SWEDEN);
+        when(unitDao.getUnitsForGamePlayerIdAndTerritory(gamePlayerId, Territory.UNASSIGNED_TERRITORY)).thenReturn(Arrays.asList(unit));
+        when(unitDao.getUnitsForGamePlayerIdAndTerritory(gamePlayerId, Territory.SWEDEN)).thenReturn(Arrays.asList(unitToUpdate));
+
+
+        // when
+        gameActionService.placeUnitAction(placeUnitUpdate);
+
+        // then
+        ArgumentCaptor<Unit> unitCaptor = ArgumentCaptor.forClass(Unit.class);
+        verify(gamePlayerDao, times(2)).updateUnitsToGamePlayer(any(GamePlayerId.class), unitCaptor.capture());
+        assertThat(unitCaptor.getAllValues().get(0).getStrength(), is(2));
+    }
+
+    @Test
+    public void testUnitStrengthGetsSubtractedFromUnit() {
+
+        // given
+        PlaceUnitUpdate placeUnitUpdate = getDefaultPlaceUnitUpdate();
+        Unit unit = createDefaultUnit(1);
+        Unit unitToUpdate = createDefaultUnit(1);
+        unitToUpdate.setTerritory(Territory.SWEDEN);
+        when(unitDao.getUnitsForGamePlayerIdAndTerritory(gamePlayerId, Territory.UNASSIGNED_TERRITORY)).thenReturn(Arrays.asList(unit));
+        when(unitDao.getUnitsForGamePlayerIdAndTerritory(gamePlayerId, Territory.SWEDEN)).thenReturn(Arrays.asList(unitToUpdate));
+
+
+        // when
+        gameActionService.placeUnitAction(placeUnitUpdate);
+
+        // then
+        ArgumentCaptor<Unit> unitCaptor = ArgumentCaptor.forClass(Unit.class);
+        verify(gamePlayerDao, times(2)).updateUnitsToGamePlayer(any(GamePlayerId.class), unitCaptor.capture());
+        assertThat(unitCaptor.getAllValues().get(1).getStrength(), is(0));
+
+    }
+
+    @Test(expected = UnitCannotBeFoundException.class)
+    public void testCannotFindUnitWhenUpdate() {
+
+        // given
+        PlaceUnitUpdate placeUnitUpdate = getDefaultPlaceUnitUpdate();
+        Unit unit = createDefaultUnit(1);
+        when(unitDao.getUnitsForGamePlayerIdAndTerritory(gamePlayerId, Territory.UNASSIGNED_TERRITORY)).thenReturn(Arrays.asList(unit));
+        when(unitDao.getUnitsForGamePlayerIdAndTerritory(gamePlayerId, Territory.SWEDEN)).thenReturn(new ArrayList<Unit>());
+
+        // when
+        gameActionService.placeUnitAction(placeUnitUpdate);
+    }
+
+    @Test(expected = NotEnoughUnitsException.class)
+    public void testPlaceUnitForUnsufficientFunds() {
+
+        // given
+        PlaceUnitUpdate placeUnitUpdate = getDefaultPlaceUnitUpdate();
+        Unit unit = createDefaultUnit(0);
+        when(unitDao.getUnitsForGamePlayerIdAndTerritory(gamePlayerId, Territory.UNASSIGNED_TERRITORY)).thenReturn(Arrays.asList(unit));
+
+        // when
+        gameActionService.placeUnitAction(placeUnitUpdate);
+
+    }
+
+    @Test
+    public void testAttackTerritoryActionIsTakenOver() {
+
+        ArgumentCaptor<Unit> unitArgumentCaptor = ArgumentCaptor.forClass(Unit.class);
+        ArgumentCaptor<GamePlayerId> gamePlayerIdArgumentCaptor = ArgumentCaptor.forClass(GamePlayerId.class);
+
+        // given
+        AttackActionUpdate attackActionUpdate = createDefaultAttackActionUpdate();
+        BattleResult battleResult = new BattleResult(attackActionUpdate.getAttackingNumberOfUnits(), new HashMap<UnitType, Integer>(), true);
+        Unit unit = new Unit();
+        unit.setStrength(2);
+        unit.setTerritory(Territory.DENMARK);
+        unit.setTypeOfUnit(UnitType.SOLDIER);
+        when(unitDao.getUnitsForGamePlayerIdAndTerritory(any(GamePlayerId.class), eq(Territory.DENMARK))).thenReturn(Arrays.asList(unit));
+        when(battleEngineCalculator.battleForTerritory(any(HashMap.class), any(HashMap.class))).thenReturn(battleResult);
+
+        // when
+        gameActionService.attackTerritoryAction(attackActionUpdate);
+
+        // then
+        verify(unitDao, times(1)).setGamePlayerIdForUnit(eq(gamePlayerId), any(UnitId.class));
+        verify(gamePlayerDao, times(1)).updateUnitsToGamePlayer(gamePlayerIdArgumentCaptor.capture(), unitArgumentCaptor.capture());
+        assertThat(gamePlayerIdArgumentCaptor.getValue(), is(gamePlayerId));
+        assertThat(unitArgumentCaptor.getValue().getStrength(), is(5));
+    }
+
+    @Test
+    public void testAttackTerritoryActionIsNotTakenOver() {
+//        ArgumentCaptor<Unit> unitArgumentCaptor = ArgumentCaptor.forClass(Unit.class);
+//        ArgumentCaptor<GamePlayerId> gamePlayerIdArgumentCaptor = ArgumentCaptor.forClass(GamePlayerId.class);
 //
-//        // Given
-//        PlaceUnitUpdate placeUnitUpdate = getPlaceUnitUpdate();
-//        setupGetGamesForPlayerDefaultMockSettings();
+//        // given
+//        AttackActionUpdate attackActionUpdate = createDefaultAttackActionUpdate();
+//        Map<UnitType,Integer> defendingUnits = attackActionUpdate.getAttackingNumberOfUnits();
+//        BattleResult battleResult = new BattleResult(attackActionUpdate.getAttackingNumberOfUnits(),defendingUnits, false);
+//        Unit unit = new Unit();
+//        unit.setStrength(10);
+//        unit.setTerritory(Territory.DENMARK);
+//        unit.setTypeOfUnit(UnitType.SOLDIER);
+//        when(unitDao.getUnitsForGamePlayerIdAndTerritory(any(GamePlayerId.class), eq(Territory.DENMARK))).thenReturn(Arrays.asList(unit));
+//        when(battleEngineCalculator.battleForTerritory(any(HashMap.class), any(HashMap.class))).thenReturn(battleResult);
 //
-//        when(gamePlayerMock.getUnits())
-//                .thenReturn(new TestBoilerplate.UnitBuilder()
-//                        .addUnit(Territory.SWEDEN,5)
-//                        .addUnit(Territory.UNASSIGNEDLAND,1)
-//                        .build());
-//
-//        Unit unitMock = mock(Unit.class);
-//        when(unitMock.getStrength()).thenReturn(3);
-//        when(gamePlayerDaoMock.getUnassignedLand(anyLong())).thenReturn(unitMock);
-//
-//        // When: placing units
-//        TerritoryDTO returnObj = gameActionService.placeUnitAction(placeUnitUpdate);
-//
-//        // Then
-//        assertThat(returnObj.isOwnedByPlayer()).isTrue();
-//        assertThat(returnObj.getLandName()).isEqualTo(Territory.SWEDEN.toString());
-//        assertThat(returnObj.getUnits()).isEqualTo(8);
-//    }
-//
-//    @Test(expected = NotEnoughUnitsException.class)
-//    public void testPlaceUnitWhenInsufficientFunds() throws Exception {
-//        // Given
-//        PlaceUnitUpdate placeUnitUpdate = getPlaceUnitUpdate();
-//        placeUnitUpdate.setNumberOfUnits(1);
-//        setupGetGamesForPlayerDefaultMockSettings();
-//        Unit unitMock = mock(Unit.class);
-//        when(unitMock.getStrength()).thenReturn(0);
-//        when(gamePlayerDaoMock.getUnassignedLand(anyLong())).thenReturn(unitMock);
-//
-//        // When: placing units
-//        gameActionService.placeUnitAction(placeUnitUpdate);
-//    }
-//
-//    @Test
-//    public void testPlaceUnitUpdateValidPokesGamePlayerDao() throws Exception {
-//        // Given
-//        PlaceUnitUpdate placeUnitUpdate = getPlaceUnitUpdate();
-//        setupGetGamesForPlayerDefaultMockSettings();
-//
-//        when(gamePlayerMock.getUnits())
-//                .thenReturn(new TestBoilerplate.UnitBuilder()
-//                        .addUnit(Territory.SWEDEN,1)
-//                        .addUnit(Territory.UNASSIGNEDLAND,1)
-//                        .build());
-//
-//        Unit unitMock = mock(Unit.class);
-//        when(unitMock.getStrength()).thenReturn(3);
-//        when(gamePlayerDaoMock.getUnassignedLand(anyLong())).thenReturn(unitMock);
-//
-//        // When: placing units
-//        gameActionService.placeUnitAction(placeUnitUpdate);
+//        // when
+//        gameActionService.attackTerritoryAction(attackActionUpdate);
 //
 //        // then
-//        verify(gamePlayerDaoMock, times(2)).setUnitsToGamePlayer(eq(GAME_PLAYER_ID), any(Unit.class));
-//    }
-//
-//
-//    @Test(expected = TerritoryNotConnectedException.class)
-//    public void testAttackTerritoryNotConnectedTerritory() throws Exception {
-//        AttackActionUpdate attackActionUpdate =
-//                new AttackActionUpdate(Territory.SWEDEN.toString(), Territory.FINLAND.toString(), 5, GAME_ID, PLAYER_ID);
-//
-//        gameActionService.attackTerritoryAction(attackActionUpdate);
-//    }
+//        verify(unitDao, times(1)).setGamePlayerIdForUnit(eq(gamePlayerId), any(UnitId.class));
+//        verify(gamePlayerDao, times(1)).updateUnitsToGamePlayer(gamePlayerIdArgumentCaptor.capture(), unitArgumentCaptor.capture());
+//        assertThat(gamePlayerIdArgumentCaptor.getValue(), is(gamePlayerId));
+//        assertThat(unitArgumentCaptor.getValue().getStrength(), is(5));
+    }
 
+    private AttackActionUpdate createDefaultAttackActionUpdate() {
+        AttackActionUpdate attackActionUpdate = new AttackActionUpdate();
+        attackActionUpdate.setGamePlayerId(gamePlayerId);
+        attackActionUpdate.setDefendingGamePlayerId(new GamePlayerId(2L));
+        Map<UnitType, Integer> attackingUnits = new HashMap<>();
+        attackingUnits.put(UnitType.SOLDIER, 5);
+        attackActionUpdate.setAttackingNumberOfUnits(attackingUnits);
+        attackActionUpdate.setTerritoryAttackDest(Territory.DENMARK);
+        attackActionUpdate.setTerritoryAttackSrc(Territory.SWEDEN);
+        return attackActionUpdate;
+    }
 
-//    private void setupGetGamesForPlayerDefaultMockSettings() {
-//        when(gamePlayerDaoMock.getGamePlayersByPlayerId(anyLong())).thenReturn(
-//                new TestBoilerplate.GamePlayersListBuilder().addGamePlayer(gamePlayerMock).build());
-//        when(gamePlayerDaoMock.getGamePlayerByGameIdAndPlayerId(anyLong(), anyLong())).thenReturn(gamePlayerMock);
-//        when(gamePlayerMock.getGameId()).thenReturn(GAME_ID);
-//        when(gamePlayerMock.getGamePlayerId()).thenReturn(GAME_PLAYER_ID);
-//        when(gameDaoMock.getGameByGameId(GAME_ID)).thenReturn(gameMock);
-//        when(gameMock.getCreationTime()).thenReturn(new Date());
-//        when(gameMock.getGameStatus()).thenReturn(GameStatus.CREATED);
-//    }
-//
-//    private PlaceUnitUpdate getPlaceUnitUpdate() {
-//        PlaceUnitUpdate placeUnitUpdate = new PlaceUnitUpdate();
-//        placeUnitUpdate.setGameId(GAME_ID);
-//        placeUnitUpdate.setNumberOfUnits(3);
-//        placeUnitUpdate.setPlayerId(PLAYER_ID);
-//        placeUnitUpdate.setTerritory("SWEDEN");
-//        return placeUnitUpdate;
-//    }
+    private PlaceUnitUpdate getDefaultPlaceUnitUpdate() {
+        PlaceUnitUpdate placeUnitUpdate = new PlaceUnitUpdate();
+        placeUnitUpdate.setNumberOfUnits(1);
+        placeUnitUpdate.setUnitType(UnitType.SOLDIER);
+        placeUnitUpdate.setTerritory(Territory.SWEDEN);
+        placeUnitUpdate.setGamePlayerId(gamePlayerId);
+        return placeUnitUpdate;
+    }
 
+    private Unit createDefaultUnit(int strength) {
+        Unit unit = new Unit();
+        unit.setTypeOfUnit(UnitType.SOLDIER);
+        unit.setStrength(strength);
+        unit.setTerritory(Territory.UNASSIGNED_TERRITORY);
+        return unit;
+    }
 }

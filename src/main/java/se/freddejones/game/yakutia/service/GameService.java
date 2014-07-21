@@ -1,19 +1,17 @@
 package se.freddejones.game.yakutia.service;
 
 import se.freddejones.game.yakutia.entity.Game;
+import se.freddejones.game.yakutia.model.CreateGame;
 import se.freddejones.game.yakutia.model.GameId;
 import se.freddejones.game.yakutia.model.GamePlayerId;
 import se.freddejones.game.yakutia.model.PlayerId;
-import se.freddejones.game.yakutia.model.dto.CreateGameDTO;
 
 import java.util.List;
 
 public interface GameService {
 
-    public GameId createNewGame(CreateGameDTO createGameDTO);
+    public GameId createNewGame(CreateGame createGame);
     public List<Game> getGamesForPlayerById(PlayerId playerId);
-    public void setGameToStarted(GamePlayerId gamePlayerId);
-    public void setGameToFinished(GameId gameId);
-    public void acceptGameInvite(GamePlayerId gamePlayerId);
-    public void declineGameInvite(GamePlayerId gamePlayerId);
+    public void startGame(GamePlayerId gamePlayerId);
+    public void endGame(GameId gameId);
 }

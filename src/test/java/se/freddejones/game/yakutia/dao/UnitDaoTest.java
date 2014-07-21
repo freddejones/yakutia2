@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import se.freddejones.game.yakutia.HibernateConfig;
 import se.freddejones.game.yakutia.entity.Unit;
 import se.freddejones.game.yakutia.model.GamePlayerId;
+import se.freddejones.game.yakutia.model.Territory;
 import se.freddejones.game.yakutia.model.UnitId;
 import se.freddejones.game.yakutia.usecases.framework.TestdataHandler;
 
@@ -51,7 +52,7 @@ public class UnitDaoTest {
     @Test
     public void testShouldGetUnits() {
         // given
-        // testdata loaded
+        // test data loaded
         GamePlayerId gamePlayerId = new GamePlayerId(3L);
 
         // when
@@ -64,7 +65,7 @@ public class UnitDaoTest {
     @Test
     public void testShouldChangeOwnerOfUnit() {
         // given
-        // testdata loaded
+        // test data loaded
         GamePlayerId gamePlayerId = new GamePlayerId(2L);
         UnitId unitId = new UnitId(2);
 
@@ -74,5 +75,18 @@ public class UnitDaoTest {
         // then
         List<Unit> units = unitDao.getUnitsByGamePlayerId(gamePlayerId);
         assertThat(units.get(0).getGamePlayer().getGamePlayerId(), is(gamePlayerId.getGamePlayerId()));
+    }
+
+    @Test
+    public void testShouldFetchAllUnitsForTerritoryAndGamePlayer() {
+        // given
+        // test data loaded
+        GamePlayerId gamePlayerId = new GamePlayerId(1L);
+
+        // when
+        List<Unit> units = unitDao.getUnitsForGamePlayerIdAndTerritory(gamePlayerId, Territory.SWEDEN);
+
+        // then
+        assertThat(units.size(), is(2));
     }
 }

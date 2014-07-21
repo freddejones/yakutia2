@@ -6,83 +6,63 @@ import org.springframework.transaction.annotation.Transactional;
 import se.freddejones.game.yakutia.dao.GamePlayerDao;
 import se.freddejones.game.yakutia.entity.GamePlayer;
 import se.freddejones.game.yakutia.entity.Unit;
-import se.freddejones.game.yakutia.exception.CouldNotCreateGameException;
-import se.freddejones.game.yakutia.model.GamePlayerId;
-import se.freddejones.game.yakutia.model.GameSetup;
 import se.freddejones.game.yakutia.model.Territory;
 import se.freddejones.game.yakutia.model.UnitType;
 import se.freddejones.game.yakutia.service.GameSetupService;
+import se.freddejones.game.yakutia.service.GameTerritoryHandlerService;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static se.freddejones.game.yakutia.model.GameManager.getLandAreas;
+import java.util.*;
 
 @Service("GameSetupService")
 @Transactional(readOnly = true)
 public class GameSetupServiceImpl implements GameSetupService {
 
+    private static final int DEFAULT_INIT_STRENGTH = 3;
+    private final GamePlayerDao gamePlayerDao;
+    private final GameTerritoryHandlerService gameTerritoryHandlerService;
+
     @Autowired
-    protected GamePlayerDao gamePlayerDao;
+    public GameSetupServiceImpl(GamePlayerDao gamePlayerDao, GameTerritoryHandlerService gameTerritoryHandlerService) {
+        this.gamePlayerDao = gamePlayerDao;
+        this.gameTerritoryHandlerService = gameTerritoryHandlerService;
+    }
 
     @Override
     @Transactional(readOnly = false)
-    public void initializeNewGame(List<GamePlayer> gamePlayers) throws CouldNotCreateGameException {
-        List<GameSetup> gamePlayerSetups = new ArrayList<>();
+    public void initializeNewGame(Set<GamePlayer> gamePlayers) {
 
-        for (GamePlayer gamePlayer : gamePlayers) {
-            GameSetup gameSetup = new GameSetup();
-            gameSetup.setGp(gamePlayer);
-            gameSetup.setUnits(new ArrayList<Unit>());
-            gameSetup.setTotalNumberOfUnits(10);
-            gamePlayerSetups.add(gameSetup);
-        }
+        ArrayList<Territory> territories = (ArrayList<Territory>) gameTerritoryHandlerService.getShuffledTerritories();
 
-        addTerritoryAndUnitsToGamePlayer(gamePlayers, gamePlayerSetups);
-
-        for (GameSetup gss : gamePlayerSetups) {
-
-            while(gss.getTotalNumberOfUnits() != 0) {
-                for (Unit unit : gss.getUnits()) {
-                    if (gss.getTotalNumberOfUnits() < 5) {
-                        int currentStrength = unit.getStrength();
-                        int newStrength = currentStrength + gss.getTotalNumberOfUnits();
-                        unit.setStrength(newStrength);
-                        gss.setTotalNumberOfUnits(gss.getTotalNumberOfUnits()-newStrength);
-                    } else {
-                        unit.setStrength(unit.getStrength()+5);
-                        gss.setTotalNumberOfUnits(gss.getTotalNumberOfUnits()-5);
-                    }
+        while(!territories.isEmpty()) {
+            for (GamePlayer gamePlayer : gamePlayers) {
+                if (!territories.isEmpty()) {
+                    Territory territory = territories.get(0);
+                    territories.remove(0);
+                    Unit assignedUnit = createAssignedUnit(territory);
+                    gamePlayerDao.updateUnitsToGamePlayer(gamePlayer.getTheGamePlayerId(), assignedUnit);
+                } else {
+                    addUnassignedUnitStrength(gamePlayer, 1);
                 }
             }
+        }
 
-            GamePlayerId gamePlayerId = new GamePlayerId(gss.getGp().getGamePlayerId());
-            for (Unit u : gss.getUnits()) {
-                gamePlayerDao.setUnitsToGamePlayer(gamePlayerId, u);
-            }
-
-            Unit reinforcementUnit = new Unit();
-            reinforcementUnit.setStrength(3);
-            reinforcementUnit.setTypeOfUnit(UnitType.TANK);
-            reinforcementUnit.setTerritory(Territory.UNASSIGNEDLAND);
-            gamePlayerDao.setUnitsToGamePlayer(gamePlayerId, reinforcementUnit);
+        for (GamePlayer gamePlayer : gamePlayers) {
+            addUnassignedUnitStrength(gamePlayer, DEFAULT_INIT_STRENGTH);
         }
     }
 
-    private void addTerritoryAndUnitsToGamePlayer(List<GamePlayer> gamePlayers, List<GameSetup> gamePlayersSetup) {
-        List<Territory> territories = getLandAreas();
-        int gamePlayerCounter = 0;
-        for(Territory territory : territories) {
-            Unit u = new Unit();
-            u.setTerritory(territory);
-            u.setStrength(0);
-            u.setTypeOfUnit(UnitType.TANK);
-            gamePlayersSetup.get(gamePlayerCounter).getUnits().add(u);
-            gamePlayerCounter++;
-            if (gamePlayerCounter == gamePlayers.size()) {
-                gamePlayerCounter = 0;
-            }
-        }
+    private Unit createAssignedUnit(Territory territory) {
+        Unit assignedUnit = new Unit();
+        assignedUnit.setTypeOfUnit(UnitType.SOLDIER);
+        assignedUnit.setTerritory(territory);
+        assignedUnit.setStrength(1);
+        return assignedUnit;
+    }
+
+    private void addUnassignedUnitStrength(GamePlayer gamePlayer, int strength) {
+        Unit unassignedTerritory = gamePlayerDao.getGamePlayerByGamePlayerId(gamePlayer.getTheGamePlayerId()).getUnitByTerritory(Territory.UNASSIGNED_TERRITORY);
+        unassignedTerritory.addStrength(strength);
+        gamePlayerDao.updateUnitsToGamePlayer(gamePlayer.getTheGamePlayerId(), unassignedTerritory);
     }
 
 }

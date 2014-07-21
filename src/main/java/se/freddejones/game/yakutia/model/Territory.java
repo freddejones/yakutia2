@@ -11,7 +11,7 @@ public enum Territory {
     TYSKLAND("TYSKLAND"),
     SKAUNE("SKAUNE"),
     TOMTEBODA("TOMTEBODA"),
-    UNASSIGNEDLAND("UNASSIGNEDLAND");
+    UNASSIGNED_TERRITORY("UNASSIGNED_TERRITORY");
 
     private String landArea;
 
@@ -23,6 +23,8 @@ public enum Territory {
     public String toString() {
         return landArea;
     }
+
+
 
     public static Territory translateLandArea(String landArea) {
         landArea = landArea.toUpperCase();
@@ -44,8 +46,8 @@ public enum Territory {
             return SKAUNE;
         } else if (landArea.equals(TOMTEBODA.toString())) {
             return TOMTEBODA;
-        } else if (landArea.equals(UNASSIGNEDLAND.toString())) {
-            return UNASSIGNEDLAND;
+        } else if (landArea.equals(UNASSIGNED_TERRITORY.toString())) {
+            return UNASSIGNED_TERRITORY;
         }
 
         return null;

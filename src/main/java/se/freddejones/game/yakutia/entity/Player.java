@@ -86,12 +86,4 @@ public class Player implements Serializable {
     public void setFriendsReqested(Set<PlayerFriend> friendsReqested) {
         this.friendsReqested = friendsReqested;
     }
-
-    public static PlayerDTO translate(Player p) {
-        PlayerDTO playerDTO = new PlayerDTO();
-        playerDTO.setEmail(p.getEmail());
-        playerDTO.setPlayerId(p.getPlayerId());
-        playerDTO.setPlayerName(p.getName());
-        return playerDTO;
-    }
 }

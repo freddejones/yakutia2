@@ -26,9 +26,13 @@ public class TestdataHandler {
     private static Liquibase liquibase;
     private static Database database;
 
+    public static Connection getConnection() {
+        return conn;
+    }
+
     private static void setupConnection() throws SQLException,
             ClassNotFoundException, DatabaseException {
-        Class.forName("org.hsqldb.jdbcDriver");
+        Class.forName("org.h2.Driver");
         String connectionUrl = "jdbc:h2:mem:test";
         conn = DriverManager.getConnection(connectionUrl, "", "");
 
@@ -69,17 +73,17 @@ public class TestdataHandler {
         liquibase.update(new Contexts("test"));
     }
 
-    public static void loadDefaultTestdata() throws Exception {
-
-        if (database == null) {
-            setupConnection();
-        }
-
-        ResourceAccessor resourceAccessor = new FileSystemResourceAccessor();
-        liquibase = new Liquibase("src/test/resources/db/testdata/player_playerfriend.xml",
-                resourceAccessor, database);
-        liquibase.update(new Contexts("test"));
-    }
+//    public static void loadDefaultTestdata() throws Exception {
+//
+//        if (database == null) {
+//            setupConnection();
+//        }
+//
+//        ResourceAccessor resourceAccessor = new FileSystemResourceAccessor();
+//        liquibase = new Liquibase("src/test/resources/db/testdata/player_playerfriend.xml",
+//                resourceAccessor, database);
+//        liquibase.update(new Contexts("test"));
+//    }
 
     public static void loadPlayersOnly() throws Exception {
 

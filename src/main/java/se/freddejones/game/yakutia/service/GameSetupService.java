@@ -4,9 +4,10 @@ import se.freddejones.game.yakutia.entity.GamePlayer;
 import se.freddejones.game.yakutia.exception.CouldNotCreateGameException;
 
 import java.util.List;
+import java.util.Set;
 
 public interface GameSetupService {
 
-    public void initializeNewGame(List<GamePlayer> gamePlayers) throws CouldNotCreateGameException;
+    public void initializeNewGame(Set<GamePlayer> gamePlayers);
 
 }

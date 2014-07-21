@@ -36,41 +36,29 @@ public class PlayerServiceImpl implements PlayerService {
         return playerDao.getAllPlayers();
     }
 
-//    @Override
-//    public Player getPlayerById(Long playerId) {
-//        return playerDao.getPlayerById(playerId);
-//    }
-
-
     @Override
     public boolean isPlayerFullyCreated(PlayerId id) {
         Player p = playerDao.getPlayerById(id);
         return !(p == null || p.getName() == null || p.getName().isEmpty());
     }
 
-//    @Override
-//    @Transactional(readOnly = false)
-//    public Long updatePlayerName(Player p) {
-//        Player playerToUpdate = playerDao.getPlayerById(p.getPlayerId());
-//        playerToUpdate.setName(p.getName());
-//        return playerDao.updatePlayerName(playerToUpdate);
-//    }
-
     @Override
     public Player getPlayerById(PlayerId playerId) {
-        return null;
-    }
-
-    @Override
-    public PlayerId updatePlayerName(PlayerId playerId, String name) {
-        return null;
+        return playerDao.getPlayerById(playerId);
     }
 
     @Override
     public Player getPlayerByEmail(String email) {
-        Player p = playerDao.getPlayerByEmail(email);
-        return p;
+        return playerDao.getPlayerByEmail(email);
     }
+
+    @Override
+    @Transactional(readOnly = false)
+    public PlayerId updatePlayerName(PlayerId playerId, String name) {
+        return playerDao.updatePlayerName(name, playerId);
+    }
+
+
 
 
 }

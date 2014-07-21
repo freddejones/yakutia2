@@ -1,9 +1,7 @@
 package se.freddejones.game.yakutia.dao;
 
-import org.hibernate.Session;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,19 +13,14 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.transaction.annotation.Transactional;
 import se.freddejones.game.yakutia.HibernateConfig;
-import se.freddejones.game.yakutia.entity.Game;
 import se.freddejones.game.yakutia.entity.GamePlayer;
-import se.freddejones.game.yakutia.entity.Player;
 import se.freddejones.game.yakutia.entity.Unit;
 import se.freddejones.game.yakutia.model.*;
 import se.freddejones.game.yakutia.model.statuses.ActionStatus;
 import se.freddejones.game.yakutia.model.statuses.GamePlayerStatus;
-import se.freddejones.game.yakutia.model.statuses.GameStatus;
-import se.freddejones.game.yakutia.usecases.framework.FullApplicationContextConfiguration;
 import se.freddejones.game.yakutia.usecases.framework.TestdataHandler;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -115,7 +108,7 @@ public class GamePlayerDaoTest {
     @Test
     public void testSetUnitsToGamePlayer() throws Exception {
         // given
-        // testdata loaded
+        // test data loaded
         GamePlayerId gamePlayerId = new GamePlayerId(1L);
         Unit u = new Unit();
         u.setStrength(1);
@@ -123,7 +116,7 @@ public class GamePlayerDaoTest {
         u.setTypeOfUnit(UnitType.TANK);
 
         // when
-        gamePlayerDao.setUnitsToGamePlayer(gamePlayerId, u);
+        gamePlayerDao.updateUnitsToGamePlayer(gamePlayerId, u);
 
         // then
         GamePlayer gamePlayer = gamePlayerDao.getGamePlayerByGamePlayerId(gamePlayerId);
@@ -132,23 +125,23 @@ public class GamePlayerDaoTest {
     }
 
     @Test
-    public void testGetUnassignedLand() throws Exception {
+    public void testGetUnassignedLandFromGamePlayer() {
         // given
         // test data loaded
         GamePlayerId gamePlayerId = new GamePlayerId(3L);
 
         // when
-        Unit unit = gamePlayerDao.getUnassignedLand(gamePlayerId);
+        GamePlayer gamePlayer = gamePlayerDao.getGamePlayerByGamePlayerId(gamePlayerId);
+        Unit unassignedUnit = gamePlayer.getUnitByTerritory(Territory.UNASSIGNED_TERRITORY);
 
-        // then
-        assertThat(unit.getUnitId(), is(2));
-        assertThat(unit.getGamePlayer().getGamePlayerId(), is(gamePlayerId.getGamePlayerId()));
+        assertThat(unassignedUnit.getGamePlayer().getGamePlayerId(), is (gamePlayerId.getGamePlayerId()));
+        assertThat(unassignedUnit.getTerritory(), is(Territory.UNASSIGNED_TERRITORY));
     }
 
     @Test
     public void testSetActionStatusOnGamePlayer() throws Exception {
         // given
-        // testdata loaded
+        // test data loaded
         GamePlayerId gamePlayerId = new GamePlayerId(3L);
 
         // when
@@ -162,7 +155,7 @@ public class GamePlayerDaoTest {
     @Test
     public void testUpdateGamePlayer() {
         // given
-        // testdata loaded
+        // test data loaded
         GamePlayerId gamePlayerId = new GamePlayerId(2L);
         GamePlayer gamePlayer = gamePlayerDao.getGamePlayerByGamePlayerId(gamePlayerId);
         gamePlayer.setGamePlayerStatus(GamePlayerStatus.ALIVE);

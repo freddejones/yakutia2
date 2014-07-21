@@ -10,7 +10,9 @@ import java.io.Serializable;
 @Table(name = "UNITS")
 @NamedQueries({
         @NamedQuery(name="Unit.getUnitsByGamePlayer",
-                query = "SELECT u FROM Unit u where gamePlayerId = :gpid")
+                query = "SELECT u FROM Unit u where gamePlayerId = :gpid"),
+        @NamedQuery(name="Unit.getUnitsByGamePlayerAndTerritory",
+                query = "SELECT u FROM Unit u where gamePlayerId = :gpid and territory = :territory")
 })
 public class Unit implements Serializable {
 
@@ -67,5 +69,9 @@ public class Unit implements Serializable {
 
     public boolean isSameGameId(long gameId) {
         return this.gamePlayer.getGameId() == gameId;
+    }
+
+    public void addStrength(int add) {
+        setStrength(getStrength() + add);
     }
 }

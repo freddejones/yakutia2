@@ -99,4 +99,58 @@ public class PlayerServiceTest {
         assertThat(isFullyCreated, is(false));
         verify(playerDaoMock, times(1)).getPlayerById(playerId);
     }
+
+    @Test
+    public void testGetPlayerById() {
+        // given
+        PlayerId playerId = new PlayerId(1L);
+        Player p = getAnyPlayer();
+        when(playerDaoMock.getPlayerById(playerId)).thenReturn(p);
+
+        // when
+        Player player = playerService.getPlayerById(playerId);
+
+        // then
+        assertThat(player.getPlayerId(), is(p.getPlayerId()));
+        verify(playerDaoMock, times(1)).getPlayerById(any(PlayerId.class));
+    }
+
+    @Test
+    public void testGetPlayerByEmail() {
+        // given
+        String email = "epost@epost.se";
+        Player p = getAnyPlayer();
+        when(playerDaoMock.getPlayerByEmail(email)).thenReturn(p);
+
+        // when
+        Player player = playerService.getPlayerByEmail(email);
+
+        // then
+        assertThat(player.getPlayerId(), is(p.getPlayerId()));
+        verify(playerDaoMock, times(1)).getPlayerByEmail(anyString());
+    }
+
+    @Test
+    public void testUpdatePlayerNameGoesViaPlayerDao() {
+        // given
+        String newName = "newname";
+        PlayerId playerId = new PlayerId(1L);
+        when(playerDaoMock.updatePlayerName(newName, playerId)).thenReturn(playerId);
+
+        // when
+        PlayerId updatedPlayerId = playerService.updatePlayerName(playerId, newName);
+
+        // then
+        assertThat(updatedPlayerId.getPlayerId(), is(playerId.getPlayerId()));
+        verify(playerDaoMock, times(1)).updatePlayerName(eq(newName), any(PlayerId.class));
+    }
+
+    private Player getAnyPlayer() {
+        Player p = new Player();
+        p.setName("tomte");
+        p.setPlayerId(1L);
+        p.setEmail("epost@epost.se");
+        return p;
+    }
+
 }

@@ -54,22 +54,11 @@ public class GamePlayerDaoImpl implements GamePlayerDao {
     }
 
     @Override
-    public void setUnitsToGamePlayer(GamePlayerId gamePlayerId, Unit unit) {
+    public void updateUnitsToGamePlayer(GamePlayerId gamePlayerId, Unit unit) {
         Session session = sessionFactory.getCurrentSession();
         GamePlayer gamePlayer = (GamePlayer) session.get(GamePlayer.class, gamePlayerId.getGamePlayerId());
         unit.setGamePlayer(gamePlayer);
         session.saveOrUpdate(unit);
-    }
-
-    @Override
-    public Unit getUnassignedLand(GamePlayerId gamePlayerId) {
-        GamePlayer gamePlayer = (GamePlayer) sessionFactory.getCurrentSession().get(GamePlayer.class, gamePlayerId.getGamePlayerId());
-        for (Unit unit : gamePlayer.getUnits()) {
-            if (unit.getTerritory() == Territory.UNASSIGNEDLAND) {
-                return unit;
-            }
-        }
-        return new Unit();
     }
 
     @Override

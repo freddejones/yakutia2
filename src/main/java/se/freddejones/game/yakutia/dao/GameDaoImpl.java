@@ -2,13 +2,16 @@ package se.freddejones.game.yakutia.dao;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import se.freddejones.game.yakutia.dao.GameDao;
 import se.freddejones.game.yakutia.entity.Game;
 import se.freddejones.game.yakutia.entity.GamePlayer;
 import se.freddejones.game.yakutia.entity.Player;
+import se.freddejones.game.yakutia.model.CreateGame;
 import se.freddejones.game.yakutia.model.GameId;
+import se.freddejones.game.yakutia.model.PlayerId;
 import se.freddejones.game.yakutia.model.dto.CreateGameDTO;
 import se.freddejones.game.yakutia.model.dto.InvitedPlayer;
 import se.freddejones.game.yakutia.model.statuses.GamePlayerStatus;
@@ -29,14 +32,14 @@ public class GameDaoImpl implements GameDao {
     }
 
     @Override
-    public GameId createNewGame(CreateGameDTO createGameDTO) {
+    public GameId createNewGame(CreateGame createGame) {
         Session session = sessionFactory.getCurrentSession();
 
-        Game game = setupGame(createGameDTO);
+        Game game = setupGame(createGame);
         session.saveOrUpdate(game);
         session.refresh(game);
 
-        List<GamePlayer> gamePlayers = setupGamePlayers(createGameDTO, game);
+        List<GamePlayer> gamePlayers = setupGamePlayers(createGame, game);
         for (GamePlayer gp : gamePlayers) {
             session.saveOrUpdate(gp);
             session.refresh(game);
@@ -47,12 +50,12 @@ public class GameDaoImpl implements GameDao {
         return new GameId(game.getGameId());
     }
 
-    private List<GamePlayer> setupGamePlayers(CreateGameDTO createGameDTO, Game game) {
+    private List<GamePlayer> setupGamePlayers(CreateGame createGame, Game game) {
         List<GamePlayer> gamePlayers = new ArrayList<>();
-        gamePlayers.add(setupGamePlayer(createGameDTO.getCreatedByPlayerId(), game, GamePlayerStatus.ACCEPTED));
+        gamePlayers.add(setupGamePlayer(createGame.getPlayerId().getPlayerId(), game, GamePlayerStatus.ACCEPTED));
 
-        for (InvitedPlayer invitedPlayer : createGameDTO.getInvites()) {
-            gamePlayers.add(setupGamePlayer(invitedPlayer.getId(), game, GamePlayerStatus.INVITED));
+        for (PlayerId invitedPlayerId : createGame.getInvitedPlayers()) {
+            gamePlayers.add(setupGamePlayer(invitedPlayerId.getPlayerId(), game, GamePlayerStatus.INVITED));
         }
         return gamePlayers;
     }
@@ -69,11 +72,11 @@ public class GameDaoImpl implements GameDao {
         return gp;
     }
 
-    private Game setupGame(CreateGameDTO createGameDTO) {
+    private Game setupGame(CreateGame createGame) {
         Game g = new Game();
-        g.setCreationTime(new Date());
-        g.setGameCreatorPlayerId(createGameDTO.getCreatedByPlayerId());
-        g.setName(createGameDTO.getGameName());
+        g.setCreationTime(new LocalDate().toDate());
+        g.setGameCreatorPlayerId(createGame.getPlayerId().getPlayerId());
+        g.setName(createGame.getGameName());
         g.setGameStatus(GameStatus.CREATED);
         return g;
     }

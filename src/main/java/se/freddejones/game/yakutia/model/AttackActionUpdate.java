@@ -1,35 +1,36 @@
 package se.freddejones.game.yakutia.model;
 
-import se.freddejones.game.yakutia.model.GamePlayerId;
+import java.util.Map;
 
 public class AttackActionUpdate {
 
-    private Long territoryAttackSrc;
-    private Long territoryAttackDest;
-    private Long attackingNumberOfUnits;
+    private Territory territoryAttackSrc;
+    private Territory territoryAttackDest;
+    private Map<UnitType, Integer> attackingNumberOfUnits;
     private GamePlayerId gamePlayerId;
+    private GamePlayerId defendingGamePlayerId;
 
-    public Long getTerritoryAttackSrc() {
+    public Territory getTerritoryAttackSrc() {
         return territoryAttackSrc;
     }
 
-    public void setTerritoryAttackSrc(Long territoryAttackSrc) {
+    public void setTerritoryAttackSrc(Territory territoryAttackSrc) {
         this.territoryAttackSrc = territoryAttackSrc;
     }
 
-    public Long getTerritoryAttackDest() {
+    public Territory getTerritoryAttackDest() {
         return territoryAttackDest;
     }
 
-    public void setTerritoryAttackDest(Long territoryAttackDest) {
+    public void setTerritoryAttackDest(Territory territoryAttackDest) {
         this.territoryAttackDest = territoryAttackDest;
     }
 
-    public Long getAttackingNumberOfUnits() {
+    public Map<UnitType, Integer> getAttackingNumberOfUnits() {
         return attackingNumberOfUnits;
     }
 
-    public void setAttackingNumberOfUnits(Long attackingNumberOfUnits) {
+    public void setAttackingNumberOfUnits(Map<UnitType, Integer> attackingNumberOfUnits) {
         this.attackingNumberOfUnits = attackingNumberOfUnits;
     }
 
@@ -41,13 +42,22 @@ public class AttackActionUpdate {
         this.gamePlayerId = gamePlayerId;
     }
 
+    public GamePlayerId getDefendingGamePlayerId() {
+        return defendingGamePlayerId;
+    }
+
+    public void setDefendingGamePlayerId(GamePlayerId defendingGamePlayerId) {
+        this.defendingGamePlayerId = defendingGamePlayerId;
+    }
+
     @Override
     public String toString() {
-        return "AttackActionUpdateDTO{" +
+        return "AttackActionUpdate{" +
                 "territoryAttackSrc=" + territoryAttackSrc +
                 ", territoryAttackDest=" + territoryAttackDest +
                 ", attackingNumberOfUnits=" + attackingNumberOfUnits +
                 ", gamePlayerId=" + gamePlayerId +
+                ", defendingGamePlayerId=" + defendingGamePlayerId +
                 '}';
     }
 }

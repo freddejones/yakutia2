@@ -10,8 +10,8 @@ public interface PlayerService {
 
     public PlayerId createNewPlayer(Player p);
     public List<Player> getAllPlayers();
-    public Player getPlayerById(PlayerId playerId);
     public boolean isPlayerFullyCreated(PlayerId id);
+    public Player getPlayerById(PlayerId playerId);
     public PlayerId updatePlayerName(PlayerId playerId, String name);
     public Player getPlayerByEmail(String email);
 

@@ -3,7 +3,7 @@ package se.freddejones.game.yakutia;
 import se.freddejones.game.yakutia.entity.GamePlayer;
 import se.freddejones.game.yakutia.entity.Unit;
 import se.freddejones.game.yakutia.model.Territory;
-import se.freddejones.game.yakutia.model.TerritoryDTO;
+import se.freddejones.game.yakutia.model.dto.TerritoryDTO;
 import se.freddejones.game.yakutia.model.statuses.GamePlayerStatus;
 
 import java.util.ArrayList;

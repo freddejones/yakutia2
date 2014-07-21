@@ -1,7 +1,5 @@
 package se.freddejones.game.yakutia.model.dto;
 
-import se.freddejones.game.yakutia.entity.Player;
-
 import java.io.Serializable;
 
 public class PlayerDTO implements Serializable {

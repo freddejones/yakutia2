@@ -13,7 +13,7 @@ public class PlayerDTOTest {
 //        dto.setPlayerId(55L);
 //
 //        // when
-//        Player p = PlayerDTO.bind(dto);
+//        Player p = PlayerDTO.map(dto);
 //
 //        // then
 //        assertThat(p.getPlayerId()).isEqualTo(55L);

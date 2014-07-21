@@ -1,32 +1,17 @@
 package se.freddejones.game.yakutia.controller;
 
 import org.junit.Before;
-import org.junit.Test;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import se.freddejones.game.yakutia.exception.NotEnoughUnitsException;
-import se.freddejones.game.yakutia.model.Territory;
-import se.freddejones.game.yakutia.model.TerritoryDTO;
-import se.freddejones.game.yakutia.model.AttackActionUpdate;
-import se.freddejones.game.yakutia.model.PlaceUnitUpdate;
 import se.freddejones.game.yakutia.service.GameActionService;
 import se.freddejones.game.yakutia.service.GameStateService;
 
-import java.util.ArrayList;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.StringContains.containsString;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class GameStateControllerTest {
 

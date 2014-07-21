@@ -3,6 +3,7 @@ package se.freddejones.game.yakutia.usecases.friend;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.MediaType;
+import se.freddejones.game.yakutia.TestDataSets;
 import se.freddejones.game.yakutia.model.dto.FriendDTO;
 import se.freddejones.game.yakutia.usecases.framework.TestdataHandler;
 import se.freddejones.game.yakutia.usecases.framework.UseCaseTemplate;
@@ -65,7 +66,7 @@ public class FriendUseCaseTest extends UseCaseTemplate {
     @Test
     public void UC_F_03_AcceptFriendAndFetch() throws Exception {
         // given
-        TestdataHandler.loadDefaultTestdata();
+        TestdataHandler.loadChangeSet(TestDataSets.PLAYER_PLAYERFRIEND_XML);
         FriendDTO friendDTO = new FriendDTO();
         friendDTO.setPlayerId(3L);
         friendDTO.setFriendId(1L);
@@ -99,7 +100,7 @@ public class FriendUseCaseTest extends UseCaseTemplate {
     @Test
     public void UC_F_04_DeclineFriendAndFetch() throws Exception {
         // given
-        TestdataHandler.loadDefaultTestdata();
+        TestdataHandler.loadChangeSet(TestDataSets.PLAYER_PLAYERFRIEND_XML);
         FriendDTO friendDTO = new FriendDTO();
         friendDTO.setPlayerId(3L);
         friendDTO.setFriendId(1L);
