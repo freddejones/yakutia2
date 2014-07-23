@@ -1,36 +1,36 @@
 package se.freddejones.game.yakutia.model;
 
-import se.freddejones.game.yakutia.model.GamePlayerId;
+import java.util.Map;
 
 public class MoveUnitUpdate {
 
-    private Long fromTerritory;
-    private Long toTerritiory;
-    private Long numberOfUnits;
+    private Territory fromTerritory;
+    private Territory toTerritiory;
+    private Map<UnitType, Integer> unitsToMove;
     private GamePlayerId gamePlayerId;
 
-    public Long getFromTerritory() {
+    public Territory getFromTerritory() {
         return fromTerritory;
     }
 
-    public void setFromTerritory(Long fromTerritory) {
+    public void setFromTerritory(Territory fromTerritory) {
         this.fromTerritory = fromTerritory;
     }
 
-    public Long getToTerritiory() {
+    public Territory getToTerritiory() {
         return toTerritiory;
     }
 
-    public void setToTerritiory(Long toTerritiory) {
+    public void setToTerritiory(Territory toTerritiory) {
         this.toTerritiory = toTerritiory;
     }
 
-    public Long getNumberOfUnits() {
-        return numberOfUnits;
+    public Map<UnitType, Integer> getUnitsToMove() {
+        return unitsToMove;
     }
 
-    public void setNumberOfUnits(Long numberOfUnits) {
-        this.numberOfUnits = numberOfUnits;
+    public void setUnitsToMove(Map<UnitType, Integer> unitsToMove) {
+        this.unitsToMove = unitsToMove;
     }
 
     public GamePlayerId getGamePlayerId() {
@@ -46,7 +46,7 @@ public class MoveUnitUpdate {
         return "MoveUnitUpdate{" +
                 "fromTerritory=" + fromTerritory +
                 ", toTerritiory=" + toTerritiory +
-                ", numberOfUnits=" + numberOfUnits +
+                ", unitsToMove=" + unitsToMove +
                 ", gamePlayerId=" + gamePlayerId +
                 '}';
     }

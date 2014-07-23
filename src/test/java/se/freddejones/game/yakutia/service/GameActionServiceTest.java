@@ -6,16 +6,15 @@ import org.mockito.ArgumentCaptor;
 import se.freddejones.game.yakutia.application.BattleEngineCalculator;
 import se.freddejones.game.yakutia.dao.GamePlayerDao;
 import se.freddejones.game.yakutia.dao.UnitDao;
+import se.freddejones.game.yakutia.entity.GamePlayer;
 import se.freddejones.game.yakutia.entity.Unit;
+import se.freddejones.game.yakutia.exception.CannotMoveUnitException;
 import se.freddejones.game.yakutia.exception.NotEnoughUnitsException;
 import se.freddejones.game.yakutia.exception.UnitCannotBeFoundException;
 import se.freddejones.game.yakutia.model.*;
 import se.freddejones.game.yakutia.service.impl.GameActionServiceImpl;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -29,10 +28,12 @@ public class GameActionServiceTest {
     private GameActionService gameActionService;
     private BattleEngineCalculator battleEngineCalculator;
     private GamePlayerId gamePlayerId;
+    private GamePlayerId defendingGamePlayerId;
 
     @Before
     public void setup() {
         gamePlayerId = new GamePlayerId(1L);
+        defendingGamePlayerId = new GamePlayerId(2L);
         gamePlayerDao = mock(GamePlayerDao.class);
         battleEngineCalculator = mock(BattleEngineCalculator.class);
         unitDao = mock(UnitDao.class);
@@ -118,10 +119,7 @@ public class GameActionServiceTest {
         // given
         AttackActionUpdate attackActionUpdate = createDefaultAttackActionUpdate();
         BattleResult battleResult = new BattleResult(attackActionUpdate.getAttackingNumberOfUnits(), new HashMap<UnitType, Integer>(), true);
-        Unit unit = new Unit();
-        unit.setStrength(2);
-        unit.setTerritory(Territory.DENMARK);
-        unit.setTypeOfUnit(UnitType.SOLDIER);
+        Unit unit = createSoldierUnit(2, Territory.DENMARK);
         when(unitDao.getUnitsForGamePlayerIdAndTerritory(any(GamePlayerId.class), eq(Territory.DENMARK))).thenReturn(Arrays.asList(unit));
         when(battleEngineCalculator.battleForTerritory(any(HashMap.class), any(HashMap.class))).thenReturn(battleResult);
 
@@ -137,34 +135,122 @@ public class GameActionServiceTest {
 
     @Test
     public void testAttackTerritoryActionIsNotTakenOver() {
-//        ArgumentCaptor<Unit> unitArgumentCaptor = ArgumentCaptor.forClass(Unit.class);
-//        ArgumentCaptor<GamePlayerId> gamePlayerIdArgumentCaptor = ArgumentCaptor.forClass(GamePlayerId.class);
-//
-//        // given
-//        AttackActionUpdate attackActionUpdate = createDefaultAttackActionUpdate();
-//        Map<UnitType,Integer> defendingUnits = attackActionUpdate.getAttackingNumberOfUnits();
-//        BattleResult battleResult = new BattleResult(attackActionUpdate.getAttackingNumberOfUnits(),defendingUnits, false);
-//        Unit unit = new Unit();
-//        unit.setStrength(10);
-//        unit.setTerritory(Territory.DENMARK);
-//        unit.setTypeOfUnit(UnitType.SOLDIER);
-//        when(unitDao.getUnitsForGamePlayerIdAndTerritory(any(GamePlayerId.class), eq(Territory.DENMARK))).thenReturn(Arrays.asList(unit));
-//        when(battleEngineCalculator.battleForTerritory(any(HashMap.class), any(HashMap.class))).thenReturn(battleResult);
-//
-//        // when
-//        gameActionService.attackTerritoryAction(attackActionUpdate);
-//
-//        // then
-//        verify(unitDao, times(1)).setGamePlayerIdForUnit(eq(gamePlayerId), any(UnitId.class));
-//        verify(gamePlayerDao, times(1)).updateUnitsToGamePlayer(gamePlayerIdArgumentCaptor.capture(), unitArgumentCaptor.capture());
-//        assertThat(gamePlayerIdArgumentCaptor.getValue(), is(gamePlayerId));
-//        assertThat(unitArgumentCaptor.getValue().getStrength(), is(5));
+        ArgumentCaptor<Unit> unitArgumentCaptor = ArgumentCaptor.forClass(Unit.class);
+        ArgumentCaptor<GamePlayerId> gamePlayerIdArgumentCaptor = ArgumentCaptor.forClass(GamePlayerId.class);
+
+        // given
+        Unit defendingSideStoredUnits = createSoldierUnit(10, Territory.DENMARK);
+        Unit attackingSideStoredUnits = createSoldierUnit(7, Territory.SWEDEN);
+        when(unitDao.getUnitsForGamePlayerIdAndTerritory(eq(defendingGamePlayerId), eq(Territory.DENMARK))).thenReturn(Arrays.asList(defendingSideStoredUnits));
+        when(unitDao.getUnitsForGamePlayerIdAndTerritory(eq(gamePlayerId), eq(Territory.SWEDEN))).thenReturn(Arrays.asList(attackingSideStoredUnits));
+
+
+        AttackActionUpdate attackActionUpdate = createDefaultAttackActionUpdate();
+        Map<UnitType,Integer> defendingUnitsLeft = new HashMap<>();
+        defendingUnitsLeft.put(UnitType.SOLDIER, 8);
+        Map<UnitType,Integer> attackingUnitsLeftFromAttack = new HashMap<>();
+        attackingUnitsLeftFromAttack.put(UnitType.SOLDIER, 3);
+        BattleResult battleResult = new BattleResult(attackingUnitsLeftFromAttack, defendingUnitsLeft, false);
+        when(battleEngineCalculator.battleForTerritory(any(HashMap.class), any(HashMap.class))).thenReturn(battleResult);
+
+        // when
+        gameActionService.attackTerritoryAction(attackActionUpdate);
+
+        // then
+        verify(unitDao, times(1)).getUnitsForGamePlayerIdAndTerritory(eq(gamePlayerId), eq(Territory.SWEDEN));
+        verify(gamePlayerDao, times(2)).updateUnitsToGamePlayer(gamePlayerIdArgumentCaptor.capture(), unitArgumentCaptor.capture());
+
+        // assert calls
+        assertThat(gamePlayerIdArgumentCaptor.getAllValues().get(0), is(defendingGamePlayerId));
+        assertThat(gamePlayerIdArgumentCaptor.getAllValues().get(1), is(gamePlayerId));
+
+        assertThat(unitArgumentCaptor.getAllValues().get(0).getStrength(), is(8));
+        assertThat(unitArgumentCaptor.getAllValues().get(1).getStrength(), is(5));
+    }
+
+    @Test
+    public void testWhenMoveUnitsToOwnedTerritory() {
+        ArgumentCaptor<GamePlayerId> gamePlayerIdArgumentCaptor = ArgumentCaptor.forClass(GamePlayerId.class);
+        ArgumentCaptor<Unit> unitArgumentCaptor = ArgumentCaptor.forClass(Unit.class);
+
+        // given
+        MoveUnitUpdate moveUnitUpdate = new MoveUnitUpdate();
+        moveUnitUpdate.setFromTerritory(Territory.DENMARK);
+        moveUnitUpdate.setToTerritiory(Territory.ICELAND);
+        moveUnitUpdate.setGamePlayerId(gamePlayerId);
+        Map<UnitType, Integer> unitsToMove = new HashMap<>();
+        unitsToMove.put(UnitType.SOLDIER, 4);
+        moveUnitUpdate.setUnitsToMove(unitsToMove);
+        List<Unit> persistedUnitsFromTerritory = Arrays.asList(createSoldierUnit(5, Territory.DENMARK));
+        List<Unit> persistedUnitsToTerritory = Arrays.asList(createSoldierUnit(5, Territory.ICELAND));
+        when(unitDao.getUnitsForGamePlayerIdAndTerritory(eq(gamePlayerId), eq(Territory.DENMARK))).thenReturn(persistedUnitsFromTerritory);
+        when(unitDao.getUnitsForGamePlayerIdAndTerritory(eq(gamePlayerId), eq(Territory.ICELAND))).thenReturn(persistedUnitsToTerritory);
+        GamePlayer gamePlayer = new GamePlayer();
+        List<Unit> units = new ArrayList<>();
+        for (Unit unit : persistedUnitsToTerritory) {
+            units.add(unit);
+        }
+        for (Unit unit : persistedUnitsFromTerritory) {
+            units.add(unit);
+        }
+        gamePlayer.setUnits(units);
+        when(gamePlayerDao.getGamePlayerByGamePlayerId(eq(gamePlayerId))).thenReturn(gamePlayer);
+
+        // when
+        gameActionService.moveUnitsAction(moveUnitUpdate);
+
+        // then
+        verify(gamePlayerDao, times(2)).updateUnitsToGamePlayer(gamePlayerIdArgumentCaptor.capture(), unitArgumentCaptor.capture());
+        assertThat(gamePlayerIdArgumentCaptor.getAllValues().get(0), is(gamePlayerId));
+        assertThat(gamePlayerIdArgumentCaptor.getAllValues().get(1), is(gamePlayerId));
+        assertThat(unitArgumentCaptor.getAllValues().get(0).getStrength(), is(1));
+        assertThat(unitArgumentCaptor.getAllValues().get(1).getStrength(), is(9));
+    }
+
+    @Test(expected = CannotMoveUnitException.class)
+    public void testWhenMoveAllUnitsFromATerritory() {
+        // given
+        MoveUnitUpdate moveUnitUpdate = new MoveUnitUpdate();
+        moveUnitUpdate.setFromTerritory(Territory.DENMARK);
+        moveUnitUpdate.setToTerritiory(Territory.ICELAND);
+        moveUnitUpdate.setGamePlayerId(gamePlayerId);
+        Map<UnitType, Integer> unitsToMove = new HashMap<>();
+        unitsToMove.put(UnitType.SOLDIER, 5);
+        moveUnitUpdate.setUnitsToMove(unitsToMove);
+        List<Unit> persistedUnitsFromTerritory = Arrays.asList(createSoldierUnit(5, Territory.DENMARK));
+        List<Unit> persistedUnitsToTerritory = Arrays.asList(createSoldierUnit(5, Territory.ICELAND));
+        when(unitDao.getUnitsForGamePlayerIdAndTerritory(eq(gamePlayerId), eq(Territory.DENMARK))).thenReturn(persistedUnitsFromTerritory);
+        when(unitDao.getUnitsForGamePlayerIdAndTerritory(eq(gamePlayerId), eq(Territory.ICELAND))).thenReturn(persistedUnitsToTerritory);
+
+        // when
+        gameActionService.moveUnitsAction(moveUnitUpdate);
+
+        // then (exception)
+    }
+
+    @Test(expected = CannotMoveUnitException.class)
+    public void testWhenMoveUnitsToNotOwnedTerritory() {
+        // given
+        MoveUnitUpdate moveUnitUpdate = new MoveUnitUpdate();
+
+        // when
+        gameActionService.moveUnitsAction(moveUnitUpdate);
+
+        // then (exception)
+    }
+
+    private Unit createSoldierUnit(int strength, Territory territory) {
+        Unit unit = new Unit();
+        unit.setStrength(strength);
+        unit.setTerritory(territory);
+        unit.setTypeOfUnit(UnitType.SOLDIER);
+        return unit;
     }
 
     private AttackActionUpdate createDefaultAttackActionUpdate() {
         AttackActionUpdate attackActionUpdate = new AttackActionUpdate();
         attackActionUpdate.setGamePlayerId(gamePlayerId);
-        attackActionUpdate.setDefendingGamePlayerId(new GamePlayerId(2L));
+        attackActionUpdate.setDefendingGamePlayerId(defendingGamePlayerId);
         Map<UnitType, Integer> attackingUnits = new HashMap<>();
         attackingUnits.put(UnitType.SOLDIER, 5);
         attackActionUpdate.setAttackingNumberOfUnits(attackingUnits);

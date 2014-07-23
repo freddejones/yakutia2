@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import se.freddejones.game.yakutia.dao.GamePlayerDao;
 import se.freddejones.game.yakutia.dao.UnitDao;
-import se.freddejones.game.yakutia.entity.GamePlayer;
 import se.freddejones.game.yakutia.entity.Unit;
+import se.freddejones.game.yakutia.exception.CannotMoveUnitException;
 import se.freddejones.game.yakutia.exception.NotEnoughUnitsException;
 import se.freddejones.game.yakutia.exception.UnitCannotBeFoundException;
 import se.freddejones.game.yakutia.model.*;
@@ -92,7 +92,7 @@ public class GameActionServiceImpl implements GameActionService {
             for (Unit defendingUnit : defendingUnits) {
                 Integer strength = battleResult.getDefendingUnitsLeft().get(defendingUnit.getTypeOfUnit());
                 defendingUnit.setStrength(strength);
-                gamePlayerDao.updateUnitsToGamePlayer(attackingGamePlayerId,defendingUnit);
+                gamePlayerDao.updateUnitsToGamePlayer(defendingGamePlayerId,defendingUnit);
             }
 
             // update for attacking unit
@@ -101,11 +101,9 @@ public class GameActionServiceImpl implements GameActionService {
                 Integer strength = battleResult.getAttackingUnitsLeft().get(attackingUnit.getTypeOfUnit());
                 Integer strengthBefore = attackActionUpdate.getAttackingNumberOfUnits().get(attackingUnit.getTypeOfUnit());
                 attackingUnit.addStrength(strength-strengthBefore);
-                gamePlayerDao.updateUnitsToGamePlayer(attackingGamePlayerId,attackingUnit);
+                gamePlayerDao.updateUnitsToGamePlayer(attackingGamePlayerId, attackingUnit);
             }
         }
-
-
     }
 
     private Map<UnitType, Integer> mapUnitsToAttackStructure(List<Unit> units) {
@@ -117,8 +115,44 @@ public class GameActionServiceImpl implements GameActionService {
     }
 
     @Override
-    public void moveUnitsAction(MoveUnitUpdate placeUnitUpdate) {
+    public void moveUnitsAction(MoveUnitUpdate moveUnitUpdate) {
+        GamePlayerId gamePlayerId = moveUnitUpdate.getGamePlayerId();
+        List<Unit> unitsToMoveFrom = unitDao.getUnitsForGamePlayerIdAndTerritory(gamePlayerId, moveUnitUpdate.getFromTerritory());
+        List<Unit> unitsToMoveTo = unitDao.getUnitsForGamePlayerIdAndTerritory(gamePlayerId, moveUnitUpdate.getToTerritiory());
 
+        if (unitsToMoveFrom.size() == 0 && unitsToMoveTo.size() ==0) {
+            throw new CannotMoveUnitException("Territories are not owned by player: " + moveUnitUpdate.toString());
+        }
+        validateMoveUnitUpdate(moveUnitUpdate.getUnitsToMove(), unitsToMoveFrom);
+
+        for (Unit u : unitsToMoveFrom) {
+            Integer strengthToRemove = moveUnitUpdate.getUnitsToMove().get(u.getTypeOfUnit());
+            u.addStrength(-1*strengthToRemove);
+            gamePlayerDao.updateUnitsToGamePlayer(gamePlayerId,u);
+        }
+
+        for (Unit u : unitsToMoveTo) {
+            Integer strengthToAdd = moveUnitUpdate.getUnitsToMove().get(u.getTypeOfUnit());
+            u.addStrength(strengthToAdd);
+            gamePlayerDao.updateUnitsToGamePlayer(gamePlayerId,u);
+        }
+
+    }
+
+    private void validateMoveUnitUpdate(Map<UnitType,Integer> unitsToMove, List<Unit> persistedUnits) {
+        int totalUnitsToMove = 0;
+        for (Integer strength : unitsToMove.values()) {
+            totalUnitsToMove += strength;
+        }
+
+        int totalUnitsPersisted = 0;
+        for (Unit persistedUnit : persistedUnits) {
+            totalUnitsPersisted += persistedUnit.getStrength();
+        }
+
+        if (totalUnitsPersisted-totalUnitsToMove <= 0) {
+            throw new CannotMoveUnitException("Cannot leave territory empty" + persistedUnits.get(0).getTerritory());
+        }
     }
 
     @Override
