@@ -12,6 +12,8 @@ import java.util.List;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+
+// TODO extract this to a nice factory pattern for test=
 public class TestBoilerplate {
 
     public static class GamePlayersListBuilder {
@@ -76,15 +78,5 @@ public class TestBoilerplate {
         public GamePlayer build() {
             return gamePlayerMock;
         }
-    }
-
-
-    public static boolean atLeastOneNotOwnedByPlayer(List<TerritoryDTO> list) {
-        for(TerritoryDTO territoryDTO : list) {
-            if (!territoryDTO.isOwnedByPlayer()) {
-                return true;
-            }
-        }
-        return false;
     }
 }

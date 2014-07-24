@@ -6,6 +6,6 @@ public interface GameActionService {
     public void placeUnitAction(PlaceUnitUpdate placeUnitUpdate);
     public void attackTerritoryAction(AttackActionUpdate attackActionUpdate);
     public void moveUnitsAction(MoveUnitUpdate placeUnitUpdate);
-    public void setActionsToDone(GamePlayerId gamePlayerId);
+    public void updateToNextAction(GamePlayerId gamePlayerId);
 
 }

@@ -67,11 +67,10 @@ public class Unit implements Serializable {
         this.gamePlayer = gamePlayer;
     }
 
-    public boolean isSameGameId(long gameId) {
-        return this.gamePlayer.getGameId() == gameId;
-    }
-
     public void addStrength(int add) {
         setStrength(getStrength() + add);
+    }
+    public void decreaseStrength(int subtract) {
+        setStrength(getStrength() - subtract);
     }
 }

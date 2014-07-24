@@ -6,12 +6,14 @@ import org.mockito.ArgumentCaptor;
 import se.freddejones.game.yakutia.application.BattleEngineCalculator;
 import se.freddejones.game.yakutia.dao.GamePlayerDao;
 import se.freddejones.game.yakutia.dao.UnitDao;
+import se.freddejones.game.yakutia.entity.Game;
 import se.freddejones.game.yakutia.entity.GamePlayer;
 import se.freddejones.game.yakutia.entity.Unit;
 import se.freddejones.game.yakutia.exception.CannotMoveUnitException;
 import se.freddejones.game.yakutia.exception.NotEnoughUnitsException;
 import se.freddejones.game.yakutia.exception.UnitCannotBeFoundException;
 import se.freddejones.game.yakutia.model.*;
+import se.freddejones.game.yakutia.model.statuses.ActionStatus;
 import se.freddejones.game.yakutia.service.impl.GameActionServiceImpl;
 
 import java.util.*;
@@ -239,6 +241,57 @@ public class GameActionServiceTest {
         // then (exception)
     }
 
+    @Test
+    public void testGameActionStatusPlaceUnits() {
+        ArgumentCaptor<GamePlayer> gamePlayerArgumentCaptor = ArgumentCaptor.forClass(GamePlayer.class);
+
+        // given
+        GamePlayer gamePlayer = createGamePlayer(ActionStatus.PLACE_UNITS);
+        when(gamePlayerDao.getGamePlayerByGamePlayerId(eq(gamePlayerId))).thenReturn(gamePlayer);
+
+        // when
+        gameActionService.updateToNextAction(gamePlayerId);
+
+        // then
+        verify(gamePlayerDao, times(1)).updateGamePlayer(gamePlayerArgumentCaptor.capture());
+        assertThat(gamePlayerArgumentCaptor.getValue().getActionStatus(), is(ActionStatus.ATTACK));
+    }
+
+    @Test
+    public void testGameActionStatusAttack() {
+        ArgumentCaptor<GamePlayer> gamePlayerArgumentCaptor = ArgumentCaptor.forClass(GamePlayer.class);
+
+        // given
+        GamePlayer gamePlayer = createGamePlayer(ActionStatus.ATTACK);
+        when(gamePlayerDao.getGamePlayerByGamePlayerId(eq(gamePlayerId))).thenReturn(gamePlayer);
+
+        // when
+        gameActionService.updateToNextAction(gamePlayerId);
+
+        // then
+        verify(gamePlayerDao, times(1)).updateGamePlayer(gamePlayerArgumentCaptor.capture());
+        assertThat(gamePlayerArgumentCaptor.getValue().getActionStatus(), is(ActionStatus.MOVE));
+    }
+
+    @Test
+    public void testGameActionStatusMove() {
+        ArgumentCaptor<GamePlayer> gamePlayerArgumentCaptor = ArgumentCaptor.forClass(GamePlayer.class);
+
+        // given
+        GamePlayer gamePlayer = createGamePlayer(ActionStatus.MOVE);
+        GamePlayer nextGamePlayerInTurn = createGamePlayer(ActionStatus.MOVE);
+        when(gamePlayerDao.getGamePlayerByGamePlayerId(any(GamePlayerId.class))).thenReturn(gamePlayer).thenReturn(nextGamePlayerInTurn);
+
+        // when
+        gameActionService.updateToNextAction(gamePlayerId);
+
+        // then
+        verify(gamePlayerDao, times(2)).updateGamePlayer(gamePlayerArgumentCaptor.capture());
+        assertThat(gamePlayerArgumentCaptor.getAllValues().get(0).getActionStatus(), is(ActionStatus.PLACE_UNITS));
+        assertThat(gamePlayerArgumentCaptor.getAllValues().get(0).isActivePlayerTurn(), is(true));
+        assertThat(gamePlayerArgumentCaptor.getAllValues().get(1).isActivePlayerTurn(), is(false));
+    }
+
     private Unit createSoldierUnit(int strength, Territory territory) {
         Unit unit = new Unit();
         unit.setStrength(strength);
@@ -274,5 +327,11 @@ public class GameActionServiceTest {
         unit.setStrength(strength);
         unit.setTerritory(Territory.UNASSIGNED_TERRITORY);
         return unit;
+    }
+
+    private GamePlayer createGamePlayer(ActionStatus status) {
+        GamePlayer gamePlayer = new GamePlayer();
+        gamePlayer.setActionStatus(status);
+        return gamePlayer;
     }
 }

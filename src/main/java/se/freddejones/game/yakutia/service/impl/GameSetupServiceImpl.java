@@ -49,6 +49,28 @@ public class GameSetupServiceImpl implements GameSetupService {
         for (GamePlayer gamePlayer : gamePlayers) {
             addUnassignedUnitStrength(gamePlayer, DEFAULT_INIT_STRENGTH);
         }
+
+        scramblePlayerIdTurn(gamePlayers);
+    }
+
+    private void scramblePlayerIdTurn(Set<GamePlayer> gamePlayers) {
+        List<GamePlayer> gamePlayerList = new ArrayList<>();
+        gamePlayerList.addAll(gamePlayers);
+        Collections.shuffle(gamePlayerList);
+        int size = gamePlayerList.size();
+        for (int i = 0; i < size; i++) {
+            GamePlayer gp = gamePlayerList.get(i);
+            if (i==0) {
+                gp.setActivePlayerTurn(true);
+            }
+
+            int idx = i+1;
+            if (i+1 == size) {
+                idx = 0;
+            }
+            gp.setNextGamePlayerIdTurn(gamePlayerList.get(idx).getGamePlayerId());
+            gamePlayerDao.updateGamePlayer(gp);
+        }
     }
 
     private Unit createAssignedUnit(Territory territory) {

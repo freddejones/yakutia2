@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import se.freddejones.game.yakutia.dao.GamePlayerDao;
 import se.freddejones.game.yakutia.dao.UnitDao;
+import se.freddejones.game.yakutia.entity.GamePlayer;
 import se.freddejones.game.yakutia.entity.Unit;
 import se.freddejones.game.yakutia.exception.CannotMoveUnitException;
 import se.freddejones.game.yakutia.exception.NotEnoughUnitsException;
@@ -14,6 +15,7 @@ import se.freddejones.game.yakutia.model.AttackActionUpdate;
 import se.freddejones.game.yakutia.model.MoveUnitUpdate;
 import se.freddejones.game.yakutia.model.PlaceUnitUpdate;
 import se.freddejones.game.yakutia.application.BattleEngineCalculator;
+import se.freddejones.game.yakutia.model.statuses.ActionStatus;
 import se.freddejones.game.yakutia.service.GameActionService;
 
 import java.util.HashMap;
@@ -115,6 +117,7 @@ public class GameActionServiceImpl implements GameActionService {
     }
 
     @Override
+    @Transactional(readOnly = false)
     public void moveUnitsAction(MoveUnitUpdate moveUnitUpdate) {
         GamePlayerId gamePlayerId = moveUnitUpdate.getGamePlayerId();
         List<Unit> unitsToMoveFrom = unitDao.getUnitsForGamePlayerIdAndTerritory(gamePlayerId, moveUnitUpdate.getFromTerritory());
@@ -127,7 +130,7 @@ public class GameActionServiceImpl implements GameActionService {
 
         for (Unit u : unitsToMoveFrom) {
             Integer strengthToRemove = moveUnitUpdate.getUnitsToMove().get(u.getTypeOfUnit());
-            u.addStrength(-1*strengthToRemove);
+            u.decreaseStrength(strengthToRemove);
             gamePlayerDao.updateUnitsToGamePlayer(gamePlayerId,u);
         }
 
@@ -156,7 +159,20 @@ public class GameActionServiceImpl implements GameActionService {
     }
 
     @Override
-    public void setActionsToDone(GamePlayerId gamePlayerId) {
-
+    public void updateToNextAction(GamePlayerId gamePlayerId) {
+        GamePlayer gamePlayer = gamePlayerDao.getGamePlayerByGamePlayerId(gamePlayerId);
+        ActionStatus actionStatus = gamePlayer.getActionStatus();
+        if (actionStatus == ActionStatus.PLACE_UNITS) {
+            gamePlayer.setActionStatus(ActionStatus.ATTACK);
+        } else if (actionStatus == ActionStatus.ATTACK) {
+            gamePlayer.setActionStatus(ActionStatus.MOVE);
+        } else if (actionStatus == ActionStatus.MOVE) {
+            gamePlayer.setActivePlayerTurn(false);
+            GamePlayer nextGamePlayer = gamePlayerDao.getGamePlayerByGamePlayerId(new GamePlayerId(gamePlayer.getNextGamePlayerIdTurn()));
+            nextGamePlayer.setActivePlayerTurn(true);
+            nextGamePlayer.setActionStatus(ActionStatus.PLACE_UNITS);
+            gamePlayerDao.updateGamePlayer(nextGamePlayer);
+        }
+        gamePlayerDao.updateGamePlayer(gamePlayer);
     }
 }

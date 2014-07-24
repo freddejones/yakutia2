@@ -63,6 +63,30 @@ public class GameSetupServiceTest {
     }
 
     @Test
+    public void testThatAllGamePlayersAreAssignedNextPlayerTurn() {
+        ArgumentCaptor<GamePlayer> gamePlayerArgumentCaptor = ArgumentCaptor.forClass(GamePlayer.class);
+        // given
+        Set<GamePlayer> gamePlayerSet = defaultGamePlayerSet();
+        setupMockForUnassignedTerritory();
+        when(gameTerritoryHandlerService.getShuffledTerritories()).thenReturn(new ArrayList<Territory>());
+
+        // when
+        gameSetupService.initializeNewGame(gamePlayerSet);
+
+        // then
+        verify(gamePlayerDao, times(2)).updateGamePlayer(gamePlayerArgumentCaptor.capture());
+        long verifyPointer = 2L;
+        long verifyLastPointer = 1L;
+        if (gamePlayerArgumentCaptor.getAllValues().get(0).getNextGamePlayerIdTurn() == 1L) {
+            verifyPointer = 1L;
+            verifyLastPointer = 2L;
+        }
+        assertThat(gamePlayerArgumentCaptor.getAllValues().get(0).getNextGamePlayerIdTurn(), is(verifyPointer));
+        assertThat(gamePlayerArgumentCaptor.getAllValues().get(0).isActivePlayerTurn(), is(true));
+        assertThat(gamePlayerArgumentCaptor.getAllValues().get(1).getNextGamePlayerIdTurn(), is(verifyLastPointer));
+    }
+
+    @Test
     public void testAllPlayersAreAssignedAllEvenTerritories() {
 
         // given

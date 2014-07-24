@@ -1,43 +1,37 @@
 package se.freddejones.game.yakutia.model.dto;
 
+import se.freddejones.game.yakutia.model.UnitType;
+
 import java.io.Serializable;
+import java.util.Map;
 
 public class TerritoryDTO implements Serializable {
 
-    private String landName;
-    private Long units;
-    private Long territoryId;
-    private boolean isOwnedByPlayer;
+    private String territory;
+    private Map<UnitType, Integer> units;
+    private Long gamePlayerId;
 
-    public String getLandName() {
-        return landName;
+    public String getTerritory() {
+        return territory;
     }
 
-    public void setLandName(String landName) {
-        this.landName = landName;
+    public void setTerritory(String territory) {
+        this.territory = territory;
     }
 
-    public Long getUnits() {
+    public Map<UnitType, Integer> getUnits() {
         return units;
     }
 
-    public void setUnits(Long units) {
+    public void setUnits(Map<UnitType, Integer> units) {
         this.units = units;
     }
 
-    public Long getTerritoryId() {
-        return territoryId;
+    public Long getGamePlayerId() {
+        return gamePlayerId;
     }
 
-    public void setTerritoryId(Long territoryId) {
-        this.territoryId = territoryId;
-    }
-
-    public boolean isOwnedByPlayer() {
-        return isOwnedByPlayer;
-    }
-
-    public void setOwnedByPlayer(boolean isOwnedByPlayer) {
-        this.isOwnedByPlayer = isOwnedByPlayer;
+    public void setGamePlayerId(Long gamePlayerId) {
+        this.gamePlayerId = gamePlayerId;
     }
 }
