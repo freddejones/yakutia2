@@ -5,15 +5,12 @@ import org.hibernate.SessionFactory;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import se.freddejones.game.yakutia.dao.GameDao;
 import se.freddejones.game.yakutia.entity.Game;
 import se.freddejones.game.yakutia.entity.GamePlayer;
 import se.freddejones.game.yakutia.entity.Player;
 import se.freddejones.game.yakutia.model.CreateGame;
 import se.freddejones.game.yakutia.model.GameId;
 import se.freddejones.game.yakutia.model.PlayerId;
-import se.freddejones.game.yakutia.model.dto.CreateGameDTO;
-import se.freddejones.game.yakutia.model.dto.InvitedPlayer;
 import se.freddejones.game.yakutia.model.statuses.GamePlayerStatus;
 import se.freddejones.game.yakutia.model.statuses.GameStatus;
 

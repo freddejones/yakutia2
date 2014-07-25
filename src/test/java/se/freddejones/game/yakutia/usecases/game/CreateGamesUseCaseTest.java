@@ -3,11 +3,8 @@ package se.freddejones.game.yakutia.usecases.game;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.MediaType;
-import se.freddejones.game.yakutia.entity.Player;
-import se.freddejones.game.yakutia.model.PlayerId;
 import se.freddejones.game.yakutia.model.dto.CreateGameDTO;
 import se.freddejones.game.yakutia.model.dto.GameInviteDTO;
-import se.freddejones.game.yakutia.model.dto.InvitedPlayer;
 import se.freddejones.game.yakutia.usecases.framework.TestdataHandler;
 import se.freddejones.game.yakutia.usecases.framework.UseCaseTemplate;
 

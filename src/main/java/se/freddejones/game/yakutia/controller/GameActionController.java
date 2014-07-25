@@ -1,20 +1,19 @@
 package se.freddejones.game.yakutia.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import se.freddejones.game.yakutia.model.AttackActionUpdate;
+import se.freddejones.game.yakutia.model.MoveUnitUpdate;
 import se.freddejones.game.yakutia.model.PlaceUnitUpdate;
+import se.freddejones.game.yakutia.model.dto.AttackActionDTO;
+import se.freddejones.game.yakutia.model.dto.MoveUnitUpdateDTO;
 import se.freddejones.game.yakutia.model.dto.PlaceUnitDTO;
 import se.freddejones.game.yakutia.model.translators.GameActionBinder;
 import se.freddejones.game.yakutia.service.GameActionService;
 
-import java.util.logging.Logger;
-
 @RestController
 public class GameActionController {
 
-    private static final Logger log = Logger.getLogger(GameActionController.class.getName());
     private final GameActionService gameActionService;
     private final GameActionBinder gameActionBinder;
 
@@ -24,38 +23,24 @@ public class GameActionController {
         this.gameActionBinder = new GameActionBinder();
     }
 
-    @RequestMapping(value = "/perform/place/unit",
-            method = RequestMethod.POST,
-            headers = {"content-type=application/json"},
-            consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/game/action/place", method = RequestMethod.POST)
     @ResponseBody
     public void placeUnitOperation(@RequestBody final PlaceUnitDTO placeUnitDTO) {
-        log.info(placeUnitDTO.toString());
         PlaceUnitUpdate placeUnitUpdate = gameActionBinder.bind(placeUnitDTO);
         gameActionService.placeUnitAction(placeUnitUpdate);
     }
 
-    @RequestMapping(value = "/perform/attack",
-            method = RequestMethod.POST,
-            headers = {"content-type=application/json"},
-            consumes = "application/json")
+    @RequestMapping(value = "/game/action/attack", method = RequestMethod.POST)
     @ResponseBody
-    public String attackTerritoryO(@RequestBody final AttackActionUpdate attackActionUpdate) {
-//        log.info(attackActionUpdate.toString());
-//        BattleInformation battleInformation = battleInformationBinder.map(attackActionUpdate);
-//        return gameActionService.attackTerritoryAction();
-        return "";
-    }
-
-    // TODO remove this old url
-    @RequestMapping(value = "/perform/attack/territory",
-            method = RequestMethod.POST,
-            headers = {"content-type=application/json"},
-            consumes = "application/json")
-    @ResponseBody
-    public void attackTerritoryOperation(@RequestBody final AttackActionUpdate attackActionUpdate) {
-        log.info(attackActionUpdate.toString());
+    public void attackTerritory(@RequestBody final AttackActionDTO attackActionDTO) {
+        AttackActionUpdate attackActionUpdate = gameActionBinder.bind(attackActionDTO);
         gameActionService.attackTerritoryAction(attackActionUpdate);
     }
 
+    @RequestMapping(value = "/game/action/move", method = RequestMethod.POST)
+    @ResponseBody
+    public void attackTerritory(@RequestBody final MoveUnitUpdateDTO moveUnitUpdateDTO) {
+        MoveUnitUpdate moveUnitUpdate = gameActionBinder.bind(moveUnitUpdateDTO);
+        gameActionService.moveUnitsAction(moveUnitUpdate);
+    }
 }

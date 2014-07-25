@@ -4,7 +4,8 @@ package se.freddejones.game.yakutia.model.dto;
 public class PlaceUnitDTO {
 
     private Long numberOfUnits;
-    private Long territory;
+    private String territory;
+    private String unitType;
     private Long gamePlayerId;
 
     public Long getNumberOfUnits() {
@@ -15,12 +16,20 @@ public class PlaceUnitDTO {
         this.numberOfUnits = numberOfUnits;
     }
 
-    public Long getTerritory() {
+    public String getTerritory() {
         return territory;
     }
 
-    public void setTerritory(Long territory) {
+    public void setTerritory(String territory) {
         this.territory = territory;
+    }
+
+    public String getUnitType() {
+        return unitType;
+    }
+
+    public void setUnitType(String unitType) {
+        this.unitType = unitType;
     }
 
     public Long getGamePlayerId() {
@@ -36,6 +45,7 @@ public class PlaceUnitDTO {
         return "PlaceUnitDTO{" +
                 "numberOfUnits=" + numberOfUnits +
                 ", territory=" + territory +
+                ", unitType='" + unitType + '\'' +
                 ", gamePlayerId=" + gamePlayerId +
                 '}';
     }

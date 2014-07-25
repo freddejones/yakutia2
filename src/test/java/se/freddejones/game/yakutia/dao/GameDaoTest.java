@@ -16,15 +16,11 @@ import se.freddejones.game.yakutia.entity.Game;
 import se.freddejones.game.yakutia.model.CreateGame;
 import se.freddejones.game.yakutia.model.GameId;
 import se.freddejones.game.yakutia.model.PlayerId;
-import se.freddejones.game.yakutia.model.dto.CreateGameDTO;
-import se.freddejones.game.yakutia.model.dto.InvitedPlayer;
 import se.freddejones.game.yakutia.model.statuses.GameStatus;
 import se.freddejones.game.yakutia.usecases.framework.TestdataHandler;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
