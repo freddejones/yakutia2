@@ -6,6 +6,8 @@ import org.springframework.transaction.annotation.Transactional;
 import se.freddejones.game.yakutia.dao.GamePlayerDao;
 import se.freddejones.game.yakutia.entity.GamePlayer;
 import se.freddejones.game.yakutia.entity.Unit;
+import se.freddejones.game.yakutia.model.GameId;
+import se.freddejones.game.yakutia.model.GamePlayerId;
 import se.freddejones.game.yakutia.model.Territory;
 import se.freddejones.game.yakutia.model.UnitType;
 import se.freddejones.game.yakutia.service.GameSetupService;
@@ -32,22 +34,24 @@ public class GameSetupServiceImpl implements GameSetupService {
     public void initializeNewGame(Set<GamePlayer> gamePlayers) {
 
         ArrayList<Territory> territories = (ArrayList<Territory>) gameTerritoryHandlerService.getShuffledTerritories();
+        GameId gameId = gamePlayers.iterator().next().getTheGameId();
 
         while(!territories.isEmpty()) {
             for (GamePlayer gamePlayer : gamePlayers) {
                 if (!territories.isEmpty()) {
                     Territory territory = territories.get(0);
                     territories.remove(0);
-                    Unit assignedUnit = createAssignedUnit(territory);
+                    Unit assignedUnit = createUnit(territory);
                     gamePlayerDao.updateUnitsToGamePlayer(gamePlayer.getTheGamePlayerId(), assignedUnit);
                 } else {
-                    addUnassignedUnitStrength(gamePlayer, 1);
+                    addUnassignedUnitStrength(gamePlayer.getTheGamePlayerId(), 1);
                 }
             }
         }
 
+
         for (GamePlayer gamePlayer : gamePlayers) {
-            addUnassignedUnitStrength(gamePlayer, DEFAULT_INIT_STRENGTH);
+            addUnassignedUnitStrength(gamePlayer.getTheGamePlayerId(), DEFAULT_INIT_STRENGTH);
         }
 
         scramblePlayerIdTurn(gamePlayers);
@@ -73,7 +77,7 @@ public class GameSetupServiceImpl implements GameSetupService {
         }
     }
 
-    private Unit createAssignedUnit(Territory territory) {
+    private Unit createUnit(Territory territory) {
         Unit assignedUnit = new Unit();
         assignedUnit.setTypeOfUnit(UnitType.SOLDIER);
         assignedUnit.setTerritory(territory);
@@ -81,10 +85,12 @@ public class GameSetupServiceImpl implements GameSetupService {
         return assignedUnit;
     }
 
-    private void addUnassignedUnitStrength(GamePlayer gamePlayer, int strength) {
-        Unit unassignedTerritory = gamePlayerDao.getGamePlayerByGamePlayerId(gamePlayer.getTheGamePlayerId()).getUnitByTerritory(Territory.UNASSIGNED_TERRITORY);
+    private void addUnassignedUnitStrength(GamePlayerId gamePlayerId, int strength) {
+
+        Unit u = gamePlayerDao.getGamePlayerByGamePlayerId(gamePlayerId).getUnitByTerritory(Territory.UNASSIGNED_TERRITORY);
+        Unit unassignedTerritory = u != null ? u : createUnit(Territory.UNASSIGNED_TERRITORY);
         unassignedTerritory.addStrength(strength);
-        gamePlayerDao.updateUnitsToGamePlayer(gamePlayer.getTheGamePlayerId(), unassignedTerritory);
+        gamePlayerDao.updateUnitsToGamePlayer(gamePlayerId, unassignedTerritory);
     }
 
 }

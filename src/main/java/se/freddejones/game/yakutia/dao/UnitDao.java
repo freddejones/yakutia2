@@ -13,6 +13,5 @@ public interface UnitDao {
     List<Unit> getUnitsByGamePlayerId(GamePlayerId gamePlaerId);
     void setGamePlayerIdForUnit(GamePlayerId gamePlayerId, UnitId unitId);
     List<Unit> getUnitsForGamePlayerIdAndTerritory(GamePlayerId gamePlayerId, Territory territory);
-    List<Unit> getUnitsForTerritory(GameId gameId, Territory territory);
 
 }

@@ -42,7 +42,6 @@ public class GameActionControllerTest {
         mockMvc.perform(post("/game/action/place")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsBytes(placeUnitDTO)))
-                .andDo(print())
                 .andExpect(status().isOk());
         verify(gameActionService, times(1)).placeUnitAction(any(PlaceUnitUpdate.class));
     }
@@ -60,7 +59,6 @@ public class GameActionControllerTest {
         mockMvc.perform(post("/game/action/attack")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsBytes(attackActionDTO)))
-                .andDo(print())
                 .andExpect(status().isOk());
         verify(gameActionService, times(1)).attackTerritoryAction(any(AttackActionUpdate.class));
     }
@@ -68,7 +66,7 @@ public class GameActionControllerTest {
     @Test
     public void testControlleToAcceptMoveUnitOperationForPOST() throws Exception {
         MoveUnitUpdateDTO moveUnitUpdateDTO = new MoveUnitUpdateDTO();
-        HashMap<String, Integer> units = new HashMap<String, Integer>();
+        HashMap<String, Integer> units = new HashMap<>();
         units.put("TANK", 5);
         moveUnitUpdateDTO.setUnits(units);
         moveUnitUpdateDTO.setGamePlayerId(1L);
@@ -77,7 +75,6 @@ public class GameActionControllerTest {
         mockMvc.perform(post("/game/action/move")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsBytes(moveUnitUpdateDTO)))
-                .andDo(print())
                 .andExpect(status().isOk());
         verify(gameActionService, times(1)).moveUnitsAction(any(MoveUnitUpdate.class));
     }

@@ -1,46 +1,33 @@
 package se.freddejones.game.yakutia.usecases;
 
-import com.jolbox.bonecp.BoneCPDataSource;
-import org.springframework.context.annotation.Bean;
+import org.junit.runner.RunWith;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.AnnotationConfigContextLoader;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
+import se.freddejones.game.yakutia.HibernateConfig;
+import se.freddejones.game.yakutia.application.BattleEngineCalculator;
+import se.freddejones.game.yakutia.application.Dice;
+import se.freddejones.game.yakutia.controller.PlayerController;
+import se.freddejones.game.yakutia.dao.PlayerDao;
+import se.freddejones.game.yakutia.service.PlayerService;
 
-import javax.annotation.Resource;
-import javax.sql.DataSource;
-
-//@Configuration
-//@PropertySource("classpath:dev/h2.properties")
+@RunWith(SpringJUnit4ClassRunner.class)
+@WebAppConfiguration
+@ContextConfiguration(loader = AnnotationConfigContextLoader.class)
+@Transactional(readOnly = false)
 public class UseCaseConfiguration {
 
-//    @Resource
-//    private Environment environment;
-//
-//    @Bean
-//    public DataSource dataSource() {
-//        BoneCPDataSource dataSource = new BoneCPDataSource();
-//
-//        dataSource.setDriverClass(environment.getRequiredProperty("jdbc.driver.className"));
-//        dataSource.setJdbcUrl(environment.getRequiredProperty("jdbc.url"));
-//        dataSource.setUsername(environment.getRequiredProperty("jdbc.user"));
-//        dataSource.setPassword(environment.getRequiredProperty("jdbc.password"));
-//
-//        return dataSource;
-//    }
+    @Configuration
+    @Import(HibernateConfig.class)
+    @ComponentScan(basePackageClasses = {PlayerController.class, PlayerService.class, PlayerDao.class, BattleEngineCalculator.class, Dice.class})
+    static class TestConfiguration {}
 
-//    @Bean
-//    public PlayerDao playerDao() {
-//        return new PlayerDaoImpl();
-//    }
-//
-//    @Bean
-//    public PlayerService playerService() {
-//        return new PlayerServiceImpl();
-//    }
-//
-//    @Bean
-//    public PlayerController playerController() {
-//        return new PlayerController();
-//    }
+    protected MockMvc mockMvc;
 
 }

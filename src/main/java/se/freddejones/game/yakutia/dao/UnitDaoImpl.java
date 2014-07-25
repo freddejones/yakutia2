@@ -43,11 +43,6 @@ public class UnitDaoImpl implements UnitDao {
         return units;
     }
 
-    @Override
-    public List<Unit> getUnitsForTerritory(GameId gameId, Territory territory) {
-        return null;
-    }
-
     private GamePlayer getGamePlayerFromGamePlayerId(GamePlayerId gamePlayerId) {
         Unit u = (Unit) sessionFactory.getCurrentSession().getNamedQuery("Unit.getUnitsByGamePlayer").setParameter("gpid", gamePlayerId.getGamePlayerId()).uniqueResult();
         return u.getGamePlayer();

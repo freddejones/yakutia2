@@ -8,15 +8,12 @@ import se.freddejones.game.yakutia.model.GamePlayerId;
 import se.freddejones.game.yakutia.model.PlayerId;
 import se.freddejones.game.yakutia.model.dto.CreateGameDTO;
 import se.freddejones.game.yakutia.model.dto.GameDTO;
-import se.freddejones.game.yakutia.model.dto.GameInviteDTO;
 import se.freddejones.game.yakutia.model.translators.CreateGameBinder;
 import se.freddejones.game.yakutia.model.translators.GetGamesBinder;
 import se.freddejones.game.yakutia.service.GamePlayerStatusHandler;
 import se.freddejones.game.yakutia.service.GameService;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 @RestController
 public class GameController {
@@ -50,7 +47,7 @@ public class GameController {
         return getGamesBinder.bind(games, playerId);
     }
 
-    @RequestMapping(value = "/game/{gamePlayerId}", method = RequestMethod.PUT)
+    @RequestMapping(value = "/game/start/{gamePlayerId}", method = RequestMethod.PUT)
     @ResponseBody
     public void startGame(@PathVariable("gamePlayerId") final Long gamePlayerId) throws Exception {
         gameService.startGame(new GamePlayerId(gamePlayerId));

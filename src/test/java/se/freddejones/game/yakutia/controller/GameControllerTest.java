@@ -77,7 +77,6 @@ public class GameControllerTest {
     @Test
     public void testThatControllerForAcceptGameInvitePOST() throws Exception {
         mockMvc.perform(post("/game/accept/1"))
-                .andDo(print())
                 .andExpect(status().isOk());
         verify(gamePlayerStatusHandler, times(1)).acceptGameInvite(new GamePlayerId(1L));
     }
@@ -85,7 +84,6 @@ public class GameControllerTest {
     @Test
     public void testThatControllerAcceptsBodyForDeclineGameInvite() throws Exception {
         mockMvc.perform(post("/game/decline/1"))
-                .andDo(print())
                 .andExpect(status().isOk());
         verify(gamePlayerStatusHandler, times(1)).declineGameInvite(new GamePlayerId(1L));
     }

@@ -145,6 +145,10 @@ public class GamePlayer implements Serializable {
     }
 
     public Unit getUnitByTerritory(Territory territory) {
+        if (getUnits() == null) {
+            return null;
+        }
+
         for (Unit u : getUnits()) {
             if (u.getTerritory() == territory) {
                 return u;

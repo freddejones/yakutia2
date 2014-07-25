@@ -28,7 +28,6 @@ import se.freddejones.game.yakutia.usecases.framework.TestdataHandler;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
 import static se.freddejones.game.yakutia.usecases.framework.UseCaseBoilerplate.convertDtoToByteArray;
@@ -47,6 +46,7 @@ public class CreatePlayerUseCaseTest {
     static class TestConfiguration {}
 
     private MockMvc mockMvc;
+
     @Autowired
     PlayerController playerController;
 

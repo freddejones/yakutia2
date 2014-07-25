@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 @Service("gameservice")
-@Profile("default")
+//@Profile("default")
 @Transactional(readOnly = true)
 public class GameServiceImpl implements GameService {
 

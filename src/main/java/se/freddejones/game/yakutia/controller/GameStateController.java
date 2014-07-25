@@ -29,4 +29,7 @@ public class GameStateController {
         return gameInformationBinder.bind(territoryInformations);
     }
 
+    // TODO add get current action for gamePlayer
+    // add url for go to next step
+
 }
