@@ -66,7 +66,6 @@ public class CreatePlayerUseCaseTest {
         mockMvc.perform(post("/player/create/")
                 .content(request)
                 .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
                 // then
                 .andExpect(content().string("1"));
     }
@@ -84,7 +83,6 @@ public class CreatePlayerUseCaseTest {
         mockMvc.perform(put("/player/update/name")
                 .content(request)
                 .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
                 // then
                 .andExpect(content().string("1"));
     }
@@ -93,7 +91,6 @@ public class CreatePlayerUseCaseTest {
     public void UC_Player_03_fetchPlayer() throws Exception {
         TestdataHandler.loadChangeSet(TestDataSets.PLAYER_PLAYERFRIEND_XML);
         mockMvc.perform(get("/player/fetch/1"))
-                .andDo(print())
                 .andExpect(content().string("{\"playerName\":\"fidde_filth\",\"email\":\"freddejones@gmail.com\",\"playerId\":1}"));
     }
 
@@ -106,12 +103,11 @@ public class CreatePlayerUseCaseTest {
         MvcResult result = mockMvc.perform(post("/player/create/")
                 .content(request)
                 .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print()).andReturn();
+                .andReturn();
         String id = result.getResponse().getContentAsString();
 
         // when
         mockMvc.perform(get("/player/fetch/"+id))
-                .andDo(print())
                 // then
                 .andExpect(content().string("{\"playerName\":\"tomten\",\"email\":\"fräs@frässish\",\"playerId\":1}"));
     }
@@ -129,13 +125,11 @@ public class CreatePlayerUseCaseTest {
         mockMvc.perform(put("/player/update/name")
                 .content(request)
                 .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
                 // then
                 .andExpect(content().string("3"));
 
         // when
         mockMvc.perform(get("/player/fetch/3"))
-                .andDo(print())
                 // then
                 .andExpect(content().string("{\"playerName\":\"ny namnet\",\"email\":\"janek@gmail.com\",\"playerId\":3}"));
     }

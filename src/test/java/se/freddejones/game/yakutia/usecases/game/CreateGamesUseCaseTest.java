@@ -3,6 +3,8 @@ package se.freddejones.game.yakutia.usecases.game;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.MediaType;
+import se.freddejones.game.yakutia.entity.Player;
+import se.freddejones.game.yakutia.model.PlayerId;
 import se.freddejones.game.yakutia.model.dto.CreateGameDTO;
 import se.freddejones.game.yakutia.model.dto.GameInviteDTO;
 import se.freddejones.game.yakutia.model.dto.InvitedPlayer;
@@ -142,12 +144,10 @@ public class CreateGamesUseCaseTest extends UseCaseTemplate {
         return gameInviteDTO;
     }
 
-    private List<InvitedPlayer> createInvitedPlayers(Long... ids) {
-        List<InvitedPlayer> invitedPlayers = new ArrayList<>();
-        for (Long id : ids) {
-            InvitedPlayer invitedPlayer = new InvitedPlayer();
-            invitedPlayer.setId(id);
-            invitedPlayers.add(invitedPlayer);
+    private List<Long> createInvitedPlayers(Long... ids) {
+        List<Long> invitedPlayers = new ArrayList<>();
+        for (Long id : ids) {;
+            invitedPlayers.add(id);
         }
         return invitedPlayers;
     }

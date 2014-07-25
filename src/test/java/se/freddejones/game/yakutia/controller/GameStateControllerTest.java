@@ -42,7 +42,6 @@ public class GameStateControllerTest {
     public void testGettingTerritoryInformatationGET() throws Exception {
         when(gameStateService.getTerritoryInformationForActiveGame(gamePlayerId)).thenReturn(getTerritories());
         mockMvc.perform(get("/state/gameplayer/1"))
-                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().string("[{\"territory\":\"DENMARK\",\"units\":{\"SOLDIER\":1},\"gamePlayerId\":1}]"));
     }

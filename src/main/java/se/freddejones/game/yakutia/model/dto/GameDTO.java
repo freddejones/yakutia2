@@ -7,6 +7,7 @@ public class GameDTO {
     private String status;
     private String date;
     private boolean canStartGame;
+    private boolean isPlayersTurn;
 
     public String getName() {
         return name;
@@ -46,5 +47,13 @@ public class GameDTO {
 
     public void setCanStartGame(boolean canStartGame) {
         this.canStartGame = canStartGame;
+    }
+
+    public boolean isPlayersTurn() {
+        return isPlayersTurn;
+    }
+
+    public void setPlayersTurn(boolean isPlayersTurn) {
+        this.isPlayersTurn = isPlayersTurn;
     }
 }

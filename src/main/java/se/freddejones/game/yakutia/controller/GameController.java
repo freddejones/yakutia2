@@ -1,68 +1,70 @@
 package se.freddejones.game.yakutia.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import se.freddejones.game.yakutia.exception.CannotCreateGameException;
+import se.freddejones.game.yakutia.entity.Game;
+import se.freddejones.game.yakutia.model.CreateGame;
+import se.freddejones.game.yakutia.model.GamePlayerId;
+import se.freddejones.game.yakutia.model.PlayerId;
 import se.freddejones.game.yakutia.model.dto.CreateGameDTO;
 import se.freddejones.game.yakutia.model.dto.GameDTO;
 import se.freddejones.game.yakutia.model.dto.GameInviteDTO;
+import se.freddejones.game.yakutia.model.translators.CreateGameBinder;
+import se.freddejones.game.yakutia.model.translators.GetGamesBinder;
+import se.freddejones.game.yakutia.service.GamePlayerStatusHandler;
 import se.freddejones.game.yakutia.service.GameService;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-@Controller
-@RequestMapping(value = "/game")
+@RestController
 public class GameController {
 
-    private static final Logger LOGGER = Logger.getLogger(GameController.class.getName());
-    private GameService gameService;
+    private final GameService gameService;
+    private final GamePlayerStatusHandler gamePlayerStatusHandler;
+    private final CreateGameBinder createGameBinder;
+    private final GetGamesBinder getGamesBinder;
 
     @Autowired
-    public GameController(GameService gameService) {
+    public GameController(GameService gameService, GamePlayerStatusHandler gamePlayerStatusHandler) {
         this.gameService = gameService;
+        this.gamePlayerStatusHandler = gamePlayerStatusHandler;
+        this.createGameBinder = new CreateGameBinder();
+        this.getGamesBinder = new GetGamesBinder();
     }
 
-    @RequestMapping(value  = "/create", method = RequestMethod.POST,
+    @RequestMapping(value  = "/game/create", method = RequestMethod.POST,
             headers = {"content-type=application/json"})
     @ResponseBody
-    public Long createNewGame(@RequestBody final CreateGameDTO createGameDTO) throws CannotCreateGameException {
-//        LOGGER.info("Received CreateGameDTO: " + createGameDTO.toString());
-//        return gameService.createNewGame(createGameDTO);
-        return 1L;
+    public Long createNewGame(@RequestBody final CreateGameDTO createGameDTO) {
+        CreateGame createGame = createGameBinder.bind(createGameDTO);
+        return gameService.createNewGame(createGame).getGameId();
     }
 
-    @RequestMapping(value = "/get/{playerId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/game/player/{playerId}", method = RequestMethod.GET)
     @ResponseBody
-    public List<GameDTO> getAllGamesById(@PathVariable("playerId") Long playerid) {
-//        LOGGER.info("Getting games for playerId: " + playerid);
-//        List<GameDTO> list = gameService.getGamesForPlayerById(playerid);
-//        LOGGER.info("Fetched " + list.size() + " number of games");
-//        return list;
-        return new ArrayList<GameDTO>();
+    public List<GameDTO> getAllGamesById(@PathVariable("playerId") Long id) {
+        PlayerId playerId = new PlayerId(id);
+        List<Game> games = gameService.getGamesForPlayerById(playerId);
+        return getGamesBinder.bind(games, playerId);
     }
 
-    @RequestMapping(value = "/start/{gameId}/{playerId}", method = RequestMethod.PUT)
+    @RequestMapping(value = "/game/{gamePlayerId}", method = RequestMethod.PUT)
     @ResponseBody
-    public void startGame(@PathVariable("gameId") Long gameId, @PathVariable("playerId") Long playerId) throws Exception {
-        LOGGER.info("Starting game for gameId: " + gameId);
-//        gameService.startGame(gameId, playerId);
-        LOGGER.info("Game id: "+ gameId + " started by " + playerId);
+    public void startGame(@PathVariable("gamePlayerId") final Long gamePlayerId) throws Exception {
+        gameService.startGame(new GamePlayerId(gamePlayerId));
     }
 
-    @RequestMapping(value = "/accept", method = RequestMethod.POST)
+    @RequestMapping(value = "/game/accept/{gamePlayerId}", method = RequestMethod.POST)
     @ResponseBody
-    public void acceptGameInvite(@RequestBody final GameInviteDTO gameInviteDTO) {
-        LOGGER.info("PlayerId " + gameInviteDTO.getPlayerId() + " accepts game " + gameInviteDTO.getGameId());
-//        gameService.acceptGameInvite(gameInviteDTO);
+    public void acceptGameInvite(@PathVariable("gamePlayerId") final Long gamePlayerId) {
+        gamePlayerStatusHandler.acceptGameInvite(new GamePlayerId(gamePlayerId));
     }
 
-    @RequestMapping(value = "/decline", method = RequestMethod.POST)
+    @RequestMapping(value = "/game/decline/{gamePlayerId}", method = RequestMethod.POST)
     @ResponseBody
-    public void declineGameInvite(@RequestBody final GameInviteDTO gameInviteDTO) {
-        LOGGER.info("PlayerId " + gameInviteDTO.getPlayerId() + " declines game " + gameInviteDTO.getGameId());
-//        gameService.declineGameInvite(gameInviteDTO);
+    public void declineGameInvite(@PathVariable("gamePlayerId") final Long gamePlayerId) {
+        gamePlayerStatusHandler.declineGameInvite(new GamePlayerId(gamePlayerId));
     }
 }

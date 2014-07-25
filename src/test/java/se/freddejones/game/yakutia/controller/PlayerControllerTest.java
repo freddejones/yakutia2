@@ -36,9 +36,7 @@ public class PlayerControllerTest {
         when(playerService.createNewPlayer(any(Player.class))).thenReturn(new PlayerId(1L));
         mockMvc.perform(post("/player/create")
                 .content(createPlayer).contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
                 .andExpect(status().isCreated());
-
         verify(playerService, times(1)).createNewPlayer(any(Player.class));
     }
 
@@ -48,7 +46,6 @@ public class PlayerControllerTest {
         when(playerService.updatePlayerName(any(PlayerId.class), anyString())).thenReturn(new PlayerId(1L));
         mockMvc.perform(put("/player/update/name")
                 .content(updatePlayerName).contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
                 .andExpect(status().isOk());
         verify(playerService, times(1)).updatePlayerName(any(PlayerId.class), anyString());
     }
@@ -57,7 +54,6 @@ public class PlayerControllerTest {
     public void testFetchPlayerSupportGET() throws Exception {
         when(playerService.getPlayerById(any(PlayerId.class))).thenReturn(new Player());
         mockMvc.perform(get("/player/fetch/1"))
-                .andDo(print())
                 .andExpect(status().isOk());
         verify(playerService, times(1)).getPlayerById(any(PlayerId.class));
     }

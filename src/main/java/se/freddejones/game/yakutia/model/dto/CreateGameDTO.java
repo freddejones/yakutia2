@@ -6,7 +6,7 @@ public class CreateGameDTO {
 
     private String gameName;
     private Long createdByPlayerId;
-    private List<InvitedPlayer> invites;
+    private List<Long> invites;
 
     public String getGameName() {
         return gameName;
@@ -24,11 +24,11 @@ public class CreateGameDTO {
         this.createdByPlayerId = createdByPlayerId;
     }
 
-    public List<InvitedPlayer> getInvites() {
+    public List<Long> getInvites() {
         return invites;
     }
 
-    public void setInvites(List<InvitedPlayer> invites) {
+    public void setInvites(List<Long> invites) {
         this.invites = invites;
     }
 
