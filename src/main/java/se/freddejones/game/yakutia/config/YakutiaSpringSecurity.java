@@ -1,7 +1,6 @@
 package se.freddejones.game.yakutia.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -24,6 +23,9 @@ public class YakutiaSpringSecurity extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+                .logout()
+                    .logoutUrl("/auth/logout")
+                .and()
                 .authorizeRequests()
                 .antMatchers("/css/**").permitAll()
                 .anyRequest().hasRole("USER")
@@ -42,10 +44,7 @@ public class YakutiaSpringSecurity extends WebSecurityConfigurerAdapter {
                     .failureUrl("/access_denied.html")
                     .loginProcessingUrl("/authentication/login/process")
                     .authenticationUserDetailsService(userProvider)
-                    .successHandler(feedSuccessHandler)
-                .and()
-                    .logout()
-                    .logoutUrl("/auth/logout");
+                    .successHandler(feedSuccessHandler);
     }
 
 }
