@@ -5,6 +5,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.exception.ConstraintViolationException;
 import org.junit.Before;
 import org.junit.Test;
+import se.freddejones.game.yakutia.dao.impl.PlayerDaoImpl;
 import se.freddejones.game.yakutia.entity.Player;
 import se.freddejones.game.yakutia.exception.PlayerAlreadyExistsException;
 

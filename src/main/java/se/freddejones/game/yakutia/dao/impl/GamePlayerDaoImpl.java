@@ -1,4 +1,4 @@
-package se.freddejones.game.yakutia.dao;
+package se.freddejones.game.yakutia.dao.impl;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -10,12 +10,11 @@ import se.freddejones.game.yakutia.entity.Unit;
 import se.freddejones.game.yakutia.model.GameId;
 import se.freddejones.game.yakutia.model.GamePlayerId;
 import se.freddejones.game.yakutia.model.PlayerId;
-import se.freddejones.game.yakutia.model.Territory;
 import se.freddejones.game.yakutia.model.statuses.ActionStatus;
 
 import java.util.List;
 
-@Repository
+@Repository("gamePlayerDao")
 public class GamePlayerDaoImpl implements GamePlayerDao {
 
     private final SessionFactory sessionFactory;

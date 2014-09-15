@@ -6,16 +6,12 @@ import org.springframework.transaction.annotation.Transactional;
 import se.freddejones.game.yakutia.dao.PlayerDao;
 import se.freddejones.game.yakutia.dao.PlayerFriendDao;
 import se.freddejones.game.yakutia.entity.Player;
-import se.freddejones.game.yakutia.entity.PlayerFriend;
 import se.freddejones.game.yakutia.model.PlayerId;
 import se.freddejones.game.yakutia.model.dto.FriendDTO;
 import se.freddejones.game.yakutia.model.statuses.FriendStatus;
 import se.freddejones.game.yakutia.service.FriendService;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 @Service("friendservice")
 @Transactional(readOnly = true)

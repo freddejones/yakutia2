@@ -4,12 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.freddejones.game.yakutia.dao.GamePlayerDao;
 import se.freddejones.game.yakutia.dao.UnitDao;
-import se.freddejones.game.yakutia.entity.Game;
 import se.freddejones.game.yakutia.entity.GamePlayer;
 import se.freddejones.game.yakutia.entity.Unit;
 import se.freddejones.game.yakutia.model.*;
-import se.freddejones.game.yakutia.model.dto.TerritoryDTO;
-import se.freddejones.game.yakutia.model.dto.GameStateModelDTO;
 import se.freddejones.game.yakutia.service.GameService;
 import se.freddejones.game.yakutia.service.GameStateService;
 

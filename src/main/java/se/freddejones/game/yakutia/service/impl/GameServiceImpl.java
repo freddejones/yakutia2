@@ -1,7 +1,6 @@
 package se.freddejones.game.yakutia.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import se.freddejones.game.yakutia.dao.GameDao;

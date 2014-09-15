@@ -1,10 +1,11 @@
-package se.freddejones.game.yakutia.dao;
+package se.freddejones.game.yakutia.dao.impl;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import se.freddejones.game.yakutia.dao.PlayerDao;
 import se.freddejones.game.yakutia.entity.Player;
 import se.freddejones.game.yakutia.exception.PlayerAlreadyExistsException;
 import se.freddejones.game.yakutia.model.PlayerId;
@@ -12,7 +13,7 @@ import se.freddejones.game.yakutia.model.PlayerId;
 import java.util.List;
 import java.util.logging.Logger;
 
-@Repository
+@Repository("playerDao")
 public class PlayerDaoImpl implements PlayerDao {
 
     private static final Logger LOG = Logger.getLogger(PlayerDaoImpl.class.getName());

@@ -6,7 +6,6 @@ import org.mockito.ArgumentCaptor;
 import se.freddejones.game.yakutia.application.BattleEngineCalculator;
 import se.freddejones.game.yakutia.dao.GamePlayerDao;
 import se.freddejones.game.yakutia.dao.UnitDao;
-import se.freddejones.game.yakutia.entity.Game;
 import se.freddejones.game.yakutia.entity.GamePlayer;
 import se.freddejones.game.yakutia.entity.Unit;
 import se.freddejones.game.yakutia.exception.CannotMoveUnitException;

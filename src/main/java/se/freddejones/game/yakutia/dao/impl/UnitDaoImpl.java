@@ -1,4 +1,4 @@
-package se.freddejones.game.yakutia.dao;
+package se.freddejones.game.yakutia.dao.impl;
 
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -6,14 +6,13 @@ import org.springframework.stereotype.Repository;
 import se.freddejones.game.yakutia.dao.UnitDao;
 import se.freddejones.game.yakutia.entity.GamePlayer;
 import se.freddejones.game.yakutia.entity.Unit;
-import se.freddejones.game.yakutia.model.GameId;
 import se.freddejones.game.yakutia.model.GamePlayerId;
 import se.freddejones.game.yakutia.model.Territory;
 import se.freddejones.game.yakutia.model.UnitId;
 
 import java.util.List;
 
-@Repository
+@Repository("unitDao")
 public class UnitDaoImpl implements UnitDao {
 
     private final SessionFactory sessionFactory;

@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import se.freddejones.game.yakutia.dao.PlayerDao;
 import se.freddejones.game.yakutia.entity.Player;
-import se.freddejones.game.yakutia.exception.PlayerAlreadyExistsException;
 import se.freddejones.game.yakutia.model.PlayerId;
 import se.freddejones.game.yakutia.service.PlayerService;
 

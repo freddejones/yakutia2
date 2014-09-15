@@ -62,7 +62,7 @@ function(Backbone, $, CreateGameView, ActiveGameView, ListMyGamesView,
         attachNewBodyView: function(view) {
             yakutia.bodyView = view;
             yakutia.bodyView.render();
-        },
+        }
     });
 
     return YakutiaRouter;

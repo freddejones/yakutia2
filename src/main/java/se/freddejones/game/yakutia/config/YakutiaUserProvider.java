@@ -51,7 +51,7 @@ public class YakutiaUserProvider implements UserDetailsService, AuthenticationUs
 
     private Player parseAuthData(List<OpenIDAttribute> attributes) {
         Player p = new Player();
-        if ("oiContactEmail".equals(attributes.get(0).getName())) {
+        if ("email".equals(attributes.get(0).getName())) {
             List<String> values = attributes.get(0).getValues();
             if (values.size() == 1) {
                 p.setEmail(values.get(0));

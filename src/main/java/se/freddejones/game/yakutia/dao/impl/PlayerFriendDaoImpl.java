@@ -1,4 +1,4 @@
-package se.freddejones.game.yakutia.dao;
+package se.freddejones.game.yakutia.dao.impl;
 
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +8,7 @@ import se.freddejones.game.yakutia.entity.PlayerFriend;
 import se.freddejones.game.yakutia.model.PlayerFriendId;
 import se.freddejones.game.yakutia.model.PlayerId;
 
-@Repository
+@Repository("playerFriendDao")
 public class PlayerFriendDaoImpl implements PlayerFriendDao {
 
     private final SessionFactory sessionFactory;

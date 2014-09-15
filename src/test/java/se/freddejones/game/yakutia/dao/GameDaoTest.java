@@ -12,6 +12,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.transaction.annotation.Transactional;
 import se.freddejones.game.yakutia.HibernateConfig;
+import se.freddejones.game.yakutia.dao.impl.GameDaoImpl;
 import se.freddejones.game.yakutia.entity.Game;
 import se.freddejones.game.yakutia.model.CreateGame;
 import se.freddejones.game.yakutia.model.GameId;

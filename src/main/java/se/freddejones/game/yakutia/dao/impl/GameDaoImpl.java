@@ -1,10 +1,11 @@
-package se.freddejones.game.yakutia.dao;
+package se.freddejones.game.yakutia.dao.impl;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import se.freddejones.game.yakutia.dao.GameDao;
 import se.freddejones.game.yakutia.entity.Game;
 import se.freddejones.game.yakutia.entity.GamePlayer;
 import se.freddejones.game.yakutia.entity.Player;
@@ -18,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@Repository
+@Repository("gameDao")
 public class GameDaoImpl implements GameDao {
 
     private SessionFactory sessionFactory;

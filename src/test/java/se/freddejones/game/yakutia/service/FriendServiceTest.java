@@ -2,7 +2,6 @@ package se.freddejones.game.yakutia.service;
 
 
 import org.junit.Before;
-import org.junit.Test;
 import se.freddejones.game.yakutia.dao.PlayerDao;
 import se.freddejones.game.yakutia.dao.PlayerFriendDao;
 import se.freddejones.game.yakutia.entity.Player;
@@ -11,13 +10,11 @@ import se.freddejones.game.yakutia.model.statuses.FriendStatus;
 import se.freddejones.game.yakutia.service.impl.FriendServiceImpl;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class FriendServiceTest {
 
