@@ -49,7 +49,7 @@ function(Backbone, _, ListMyGamesTmpl, $cookie) {
             this.model = Backbone.Model.extend({});
             this.collection = new GamesCollection();
             this.listenTo(this.collection, "change reset add remove", this.render)
-            this.collection.fetch({ url: '/game/get/'+ $.cookie("yakutiaPlayerId") });
+            this.collection.fetch({ url: '/game/player/'+ $.cookie("yakutiaPlayerId") });
         },
         startGame: function(e) {
             var gameId = $(e.currentTarget).attr("value");

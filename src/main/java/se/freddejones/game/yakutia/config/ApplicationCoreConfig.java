@@ -6,11 +6,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ComponentScan(
         basePackages = {
-                "se.freddejones.game.yakutia.controller",
-                "se.freddejones.game.yakutia.service",
                 "se.freddejones.game.yakutia.dao",
-                "se.freddejones.game.yakutia.config",
-                "se.freddejones.game.yakutia.application"
+                "se.freddejones.game.yakutia.service",
+                "se.freddejones.game.yakutia.entity",
+                "se.freddejones.game.yakutia.application",
+                "se.freddejones.game.yakutia.security"
         })
-public class ScanningConfig {
+public class ApplicationCoreConfig {
 }

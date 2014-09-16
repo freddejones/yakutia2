@@ -1,24 +1,39 @@
 package se.freddejones.game.yakutia.config;
 
 
-import org.springframework.web.WebApplicationInitializer;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
-import org.springframework.web.servlet.DispatcherServlet;
+import org.springframework.core.annotation.Order;
+import org.springframework.web.filter.CharacterEncodingFilter;
+import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRegistration;
+import javax.servlet.Filter;
 
-public class YakutiaSpringWebConfig implements WebApplicationInitializer {
+@Order(2)
+public class YakutiaSpringWebConfig extends AbstractAnnotationConfigDispatcherServletInitializer {
 
     @Override
-    public void onStartup(ServletContext servletContext) throws ServletException {
-        AnnotationConfigWebApplicationContext ctx = new AnnotationConfigWebApplicationContext();
-        ctx.register(YakutiaMvcServletConfig.class);
-        ctx.setServletContext(servletContext);
-        ServletRegistration.Dynamic servlet = servletContext.addServlet("dispatcher", new DispatcherServlet(ctx));
-        servlet.addMapping("/");
-        servlet.setLoadOnStartup(1);
+    protected Class<?>[] getRootConfigClasses() {
+        return new Class<?>[] { HibernateConfig.class,
+                ApplicationCoreConfig.class,
+                YakutiaSpringSecurityConfig.class };
     }
 
+    @Override
+    protected Class<?>[] getServletConfigClasses() {
+        return new Class<?>[] { WebMvcConfig.class };
+    }
+
+    @Override
+    protected String[] getServletMappings() {
+        return new String[] { "/" };
+    }
+
+
+    // TODO really need this?
+    @Override
+    protected Filter[] getServletFilters() {
+
+        CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
+        characterEncodingFilter.setEncoding("UTF-8");
+        return new Filter[] { characterEncodingFilter};
+    }
 }

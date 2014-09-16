@@ -7,7 +7,7 @@
 
     <changeSet author="ninja-fidde" id="td-002" runAlways="true">
         <loadUpdateData encoding="UTF-8"
-                        file="src/test/resources/db/testdata/csv/players.csv"
+                        file="src/main/resources/db/testdata/csv/players.csv"
                         primaryKey="PLAYER_ID"
                         schemaName="public"
                         separator=","

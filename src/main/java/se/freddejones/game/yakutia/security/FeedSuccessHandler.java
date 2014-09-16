@@ -1,4 +1,4 @@
-package se.freddejones.game.yakutia.config;
+package se.freddejones.game.yakutia.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@Component("feedSuccessHandler")
+@Component
 public class FeedSuccessHandler implements AuthenticationSuccessHandler {
 
     private PlayerService playerService;

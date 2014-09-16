@@ -2,17 +2,17 @@ package se.freddejones.game.yakutia.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.servlet.configuration.EnableWebMvcSecurity;
+import se.freddejones.game.yakutia.security.FeedSuccessHandler;
+import se.freddejones.game.yakutia.security.YakutiaUserProvider;
 
 @Configuration
 @EnableWebSecurity
 @EnableWebMvcSecurity
-@Import(ScanningConfig.class)
-public class YakutiaSpringSecurity extends WebSecurityConfigurerAdapter {
+public class YakutiaSpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     FeedSuccessHandler feedSuccessHandler;

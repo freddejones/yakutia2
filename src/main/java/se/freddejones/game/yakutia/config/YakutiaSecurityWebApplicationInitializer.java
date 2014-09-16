@@ -1,12 +1,9 @@
 package se.freddejones.game.yakutia.config;
 
+import org.springframework.core.annotation.Order;
 import org.springframework.security.web.context.AbstractSecurityWebApplicationInitializer;
 
-public class YakutiaSecurityWebApplicationInitializer
-        extends AbstractSecurityWebApplicationInitializer
-{
-    public YakutiaSecurityWebApplicationInitializer() {
+@Order(1)
+public class YakutiaSecurityWebApplicationInitializer extends AbstractSecurityWebApplicationInitializer {
 
-        super(YakutiaSpringSecurity.class);
-    }
 }

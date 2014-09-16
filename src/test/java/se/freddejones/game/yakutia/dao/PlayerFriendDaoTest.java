@@ -13,6 +13,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.transaction.annotation.Transactional;
 import se.freddejones.game.yakutia.HibernateConfig;
+import se.freddejones.game.yakutia.TestDataSets;
 import se.freddejones.game.yakutia.entity.Player;
 import se.freddejones.game.yakutia.entity.PlayerFriend;
 import se.freddejones.game.yakutia.model.PlayerFriendId;
@@ -49,7 +50,7 @@ public class PlayerFriendDaoTest {
 
     @Before
     public void setUp() throws Exception {
-        TestdataHandler.loadChangeSet("src/test/resources/db/testdata/player_playerfriend.xml");
+        TestdataHandler.loadChangeSet(TestDataSets.PLAYER_PLAYERFRIEND_XML);
     }
 
     @Test

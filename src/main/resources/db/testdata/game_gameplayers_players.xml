@@ -7,7 +7,7 @@
 
     <changeSet author="ninja-fidde" id="td-003" runAlways="true">
         <loadUpdateData encoding="UTF-8"
-                        file="src/test/resources/db/testdata/csv/players.csv"
+                        file="src/main/resources/db/testdata/csv/players.csv"
                         primaryKey="PLAYER_ID"
                         schemaName="public"
                         separator=","
@@ -17,7 +17,7 @@
             <column name="PLAYER_NAME" type="STRING"/>
         </loadUpdateData>
         <loadUpdateData encoding="UTF-8"
-                        file="src/test/resources/db/testdata/csv/games.csv"
+                        file="src/main/resources/db/testdata/csv/games.csv"
                         primaryKey="GAME_ID"
                         schemaName="public"
                         separator=","
@@ -31,7 +31,7 @@
             <column name="GAME_STARTED" type="DATE"/>
         </loadUpdateData>
         <loadUpdateData encoding="UTF-8"
-                        file="src/test/resources/db/testdata/csv/game_players.csv"
+                        file="src/main/resources/db/testdata/csv/game_players.csv"
                         primaryKey="GAME_PLAYER_ID"
                         schemaName="public"
                         separator=","
@@ -45,7 +45,7 @@
             <column name="PLAYER_ID" type="NUMERIC"/>
         </loadUpdateData>
         <loadUpdateData encoding="UTF-8"
-                        file="src/test/resources/db/testdata/csv/units.csv"
+                        file="src/main/resources/db/testdata/csv/units.csv"
                         primaryKey="UNITID"
                         schemaName="public"
                         separator=","

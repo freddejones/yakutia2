@@ -7,7 +7,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.openid.OpenIDAttribute;
 import org.springframework.security.openid.OpenIDAuthenticationStatus;
 import org.springframework.security.openid.OpenIDAuthenticationToken;
-import se.freddejones.game.yakutia.config.YakutiaUserProvider;
+import se.freddejones.game.yakutia.security.YakutiaUserProvider;
 import se.freddejones.game.yakutia.service.PlayerService;
 
 import java.util.ArrayList;

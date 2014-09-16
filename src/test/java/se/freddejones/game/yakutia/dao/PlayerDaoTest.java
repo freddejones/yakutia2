@@ -12,6 +12,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.transaction.annotation.Transactional;
 import se.freddejones.game.yakutia.HibernateConfig;
+import se.freddejones.game.yakutia.TestDataSets;
 import se.freddejones.game.yakutia.entity.Player;
 import se.freddejones.game.yakutia.model.PlayerId;
 import se.freddejones.game.yakutia.usecases.framework.TestdataHandler;
@@ -39,7 +40,7 @@ public class PlayerDaoTest {
     @BeforeClass
     public static void setUp() throws Exception {
         TestdataHandler.resetAndRebuild();
-        TestdataHandler.loadChangeSet("src/test/resources/db/testdata/players.xml");
+        TestdataHandler.loadChangeSet(TestDataSets.PLAYERS_ONLY_XML);
     }
 
     @Test

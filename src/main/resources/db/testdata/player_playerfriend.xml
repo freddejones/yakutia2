@@ -7,7 +7,7 @@
 
     <changeSet author="ninja-fidde" id="td-001" runAlways="true">
         <loadUpdateData encoding="UTF-8"
-                        file="src/test/resources/db/testdata/csv/players.csv"
+                        file="src/main/resources/db/testdata/csv/players.csv"
                         primaryKey="PLAYER_ID"
                         schemaName="public"
                         separator=","
@@ -17,7 +17,7 @@
             <column name="PLAYER_NAME" type="STRING"/>
         </loadUpdateData>
         <loadUpdateData encoding="UTF-8"
-                        file="src/test/resources/db/testdata/csv/player-friend.csv"
+                        file="src/main/resources/db/testdata/csv/player-friend.csv"
                         primaryKey="playerFriendId"
                         schemaName="public"
                         separator=","

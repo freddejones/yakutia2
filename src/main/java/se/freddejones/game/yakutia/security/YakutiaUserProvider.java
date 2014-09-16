@@ -1,4 +1,4 @@
-package se.freddejones.game.yakutia.config;
+package se.freddejones.game.yakutia.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -9,7 +9,6 @@ import org.springframework.security.openid.OpenIDAttribute;
 import org.springframework.security.openid.OpenIDAuthenticationToken;
 import org.springframework.stereotype.Service;
 import se.freddejones.game.yakutia.entity.Player;
-import se.freddejones.game.yakutia.exception.PlayerAlreadyExistsException;
 import se.freddejones.game.yakutia.service.PlayerService;
 
 import java.util.ArrayList;
