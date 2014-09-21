@@ -6,22 +6,25 @@ import org.springframework.transaction.annotation.Transactional;
 import se.freddejones.game.yakutia.dao.PlayerDao;
 import se.freddejones.game.yakutia.dao.PlayerFriendDao;
 import se.freddejones.game.yakutia.entity.Player;
+import se.freddejones.game.yakutia.entity.PlayerFriend;
 import se.freddejones.game.yakutia.model.PlayerId;
 import se.freddejones.game.yakutia.model.dto.FriendDTO;
 import se.freddejones.game.yakutia.model.statuses.FriendStatus;
 import se.freddejones.game.yakutia.service.FriendService;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service("friendservice")
 @Transactional(readOnly = true)
-public class FriendServiceImpl implements FriendService {
+public class DefaultFriendService implements FriendService {
 
     private PlayerFriendDao playerFriendDao;
     private PlayerDao playerDao;
 
     @Autowired
-    public FriendServiceImpl(PlayerDao playerDao, PlayerFriendDao playerFriendDao) {
+    public DefaultFriendService(PlayerDao playerDao, PlayerFriendDao playerFriendDao) {
         this.playerDao = playerDao;
         this.playerFriendDao = playerFriendDao;
     }
@@ -41,7 +44,7 @@ public class FriendServiceImpl implements FriendService {
 //    }
 //
 //    @Override
-//    public List<Player> getFriendInvites(Long playerId) {
+//    public List<Player> getAllFriendInvites(Long playerId) {
 //        List<Player> invitedFriends = new ArrayList<>();
 //        Player p = playerDao.getPlayerById(playerId);
 //        final Set<PlayerFriend> friends = p.getFriendsReqested();
@@ -101,7 +104,7 @@ public class FriendServiceImpl implements FriendService {
 //    @Override
 //    public List<FriendDTO> getInvitedAndAcceptedFriends(Long playerId) {
 //        List<FriendDTO> friendDTOs = new ArrayList<>();
-//        List<Player> invites = getFriendInvites(playerId);
+//        List<Player> invites = getAllFriendInvites(playerId);
 //        List<Player> friends = getFriends(playerId);
 //
 //        // TODO refactor this:
@@ -110,21 +113,6 @@ public class FriendServiceImpl implements FriendService {
 //        return friendDTOs;
 //    }
 
-    private void mapFriendDto(List<FriendDTO> friendDTOs, Long playerid,
-                              List<Player> playersList, FriendStatus status) {
-        for (Player invitedPlayer : playersList) {
-            if (invitedPlayer.getPlayerId() == playerid)
-            {
-                continue;
-            }
-            FriendDTO friendDTO = new FriendDTO();
-            friendDTO.setPlayerId(playerid);
-            friendDTO.setFriendId(invitedPlayer.getPlayerId());
-            friendDTO.setPlayerName(invitedPlayer.getName());
-            friendDTO.setFriendStatus(status);
-            friendDTOs.add(friendDTO);
-        }
-    }
 
 
     @Override
@@ -133,13 +121,25 @@ public class FriendServiceImpl implements FriendService {
     }
 
     @Override
-    public List<Player> getFriendInvites(PlayerId playerId) {
-        return null;
+    public List<Player> getAllFriendInvites(PlayerId playerId) {
+        Player player = playerDao.getPlayerById(playerId);
+        return getFriendsBasedOnStatus(player.getFriends(), FriendStatus.INVITED);
     }
 
     @Override
-    public List<Player> getFriends(PlayerId playerId) {
-        return null;
+    public List<Player> getAllAcceptedFriends(PlayerId playerId) {
+        Player player = playerDao.getPlayerById(playerId);
+        return getFriendsBasedOnStatus(player.getFriends(), FriendStatus.ACCEPTED);
+    }
+
+    private List<Player> getFriendsBasedOnStatus(Set<PlayerFriend> friends, FriendStatus status) {
+        List<Player> filteredFriends = new ArrayList<>();
+        for (PlayerFriend playerFriend : friends) {
+            if (playerFriend.getFriendStatus() == status) {
+                filteredFriends.add(playerFriend.getFriend());
+            }
+        }
+        return filteredFriends;
     }
 
     @Override
@@ -152,8 +152,4 @@ public class FriendServiceImpl implements FriendService {
         return null;
     }
 
-    @Override
-    public List<FriendDTO> getInvitedAndAcceptedFriends(PlayerId playerId) {
-        return null;
-    }
 }

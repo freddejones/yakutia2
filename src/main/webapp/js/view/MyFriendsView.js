@@ -7,6 +7,8 @@ function(Backbone, _, MyFriendsTemplate, FriendsCollection, $Cookie) {
 
     var FriendModel = Backbone.Model.extend({});
 
+    var FriendCollectionsModel = Backbone.Model.extend({});
+
     var MyFriendsView = Backbone.View.extend({
 
         el: "#bodyContainer",
@@ -18,10 +20,17 @@ function(Backbone, _, MyFriendsTemplate, FriendsCollection, $Cookie) {
 
         initialize: function() {
             this.template = _.template(MyFriendsTemplate);
+            this.model = new FriendCollectionsModel();
             this.collection = new FriendsCollection();
             this.render();
             this.listenTo(this.collection, "change reset add remove", this.render);
-            this.collection.fetch({ url: '/friend/get/all/'+ $.cookie("yakutiaPlayerId")});
+            this.collection.fetch({ url: '/friend/accepted/'+ $.cookie("yakutiaPlayerId")});
+
+            this.listenTo(this.collection, "change reset add remove", this.updatesForModel);
+        },
+        updatesForModel: function() {
+            console.log(this.collection.size());
+            this.model.set("accepts", this.collection);
         },
         render: function() {
             this.$el.html(this.template);

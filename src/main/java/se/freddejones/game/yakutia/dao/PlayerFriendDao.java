@@ -1,7 +1,5 @@
 package se.freddejones.game.yakutia.dao;
 
-
-import org.hibernate.Session;
 import se.freddejones.game.yakutia.entity.PlayerFriend;
 import se.freddejones.game.yakutia.model.PlayerFriendId;
 import se.freddejones.game.yakutia.model.PlayerId;

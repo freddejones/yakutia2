@@ -40,6 +40,8 @@ public class JustDoIT {
                 .findCorrectDatabaseImplementation(new JdbcConnection(conn));
 
         loadChangeSet("src/main/resources/db/testdata/game_gameplayers_players.xml");
+        loadChangeSet("src/main/resources/db/testdata/player_playerfriend.xml");
+
         conn.commit();
         conn.close();
     }

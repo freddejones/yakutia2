@@ -9,9 +9,8 @@ import java.util.List;
 public interface FriendService {
 
     void inviteFriend(PlayerId playerId, PlayerId playerToFriendInvite);
-    List<Player> getFriendInvites(PlayerId playerId);
-    List<Player> getFriends(PlayerId playerId);
+    List<Player> getAllFriendInvites(PlayerId playerId);
+    List<Player> getAllAcceptedFriends(PlayerId playerId);
     FriendDTO acceptFriendInvite(PlayerId playerId, Long friendId);
     Boolean declineFriendInvite(PlayerId playerId, Long friendId);
-    List<FriendDTO> getInvitedAndAcceptedFriends(PlayerId playerId);
 }

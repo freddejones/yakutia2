@@ -34,10 +34,10 @@ public class Player implements Serializable {
     private Set<GamePlayer> games;
 
     @OneToMany(mappedBy = "player", fetch = FetchType.EAGER)
-    private Set<PlayerFriend> friends = new HashSet<PlayerFriend>();
+    private Set<PlayerFriend> friends = new HashSet<>();
 
     @OneToMany(mappedBy = "friend", fetch = FetchType.EAGER)
-    private Set<PlayerFriend> friendsReqested = new HashSet<PlayerFriend>();
+    private Set<PlayerFriend> friendsReqested = new HashSet<>();
 
     public long getPlayerId() {
         return playerId;
