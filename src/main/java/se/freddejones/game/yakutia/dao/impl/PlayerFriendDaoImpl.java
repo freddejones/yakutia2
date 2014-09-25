@@ -1,5 +1,6 @@
 package se.freddejones.game.yakutia.dao.impl;
 
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -7,6 +8,8 @@ import se.freddejones.game.yakutia.dao.PlayerFriendDao;
 import se.freddejones.game.yakutia.entity.PlayerFriend;
 import se.freddejones.game.yakutia.model.PlayerFriendId;
 import se.freddejones.game.yakutia.model.PlayerId;
+
+import java.util.List;
 
 @Repository("playerFriendDao")
 public class PlayerFriendDaoImpl implements PlayerFriendDao {
@@ -21,8 +24,15 @@ public class PlayerFriendDaoImpl implements PlayerFriendDao {
 
     @Override
     public PlayerFriendId persistPlayerFriendEntity(PlayerFriend playerFriend) {
-        sessionFactory.getCurrentSession().saveOrUpdate(playerFriend);
+        Session currentSession = sessionFactory.getCurrentSession();
+        currentSession.saveOrUpdate(playerFriend);
+        currentSession.flush();
         return new PlayerFriendId(playerFriend.getPlayerFriendId());
+    }
+
+    public List<PlayerFriend> getAll() {
+        return sessionFactory.getCurrentSession()
+                .createQuery("SELECT pf from PlayerFriend pf").list();
     }
 
     @Override

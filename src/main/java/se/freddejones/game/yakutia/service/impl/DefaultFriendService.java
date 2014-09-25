@@ -7,14 +7,15 @@ import se.freddejones.game.yakutia.dao.PlayerDao;
 import se.freddejones.game.yakutia.dao.PlayerFriendDao;
 import se.freddejones.game.yakutia.entity.Player;
 import se.freddejones.game.yakutia.entity.PlayerFriend;
-import se.freddejones.game.yakutia.model.PlayerId;
 import se.freddejones.game.yakutia.model.dto.FriendDTO;
+import se.freddejones.game.yakutia.model.PlayerId;
 import se.freddejones.game.yakutia.model.statuses.FriendStatus;
 import se.freddejones.game.yakutia.service.FriendService;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Service("friendservice")
 @Transactional(readOnly = true)
@@ -44,7 +45,7 @@ public class DefaultFriendService implements FriendService {
 //    }
 //
 //    @Override
-//    public List<Player> getAllFriendInvites(Long playerId) {
+//    public List<Player> getAllFriendInvitesForPlayer(Long playerId) {
 //        List<Player> invitedFriends = new ArrayList<>();
 //        Player p = playerDao.getPlayerById(playerId);
 //        final Set<PlayerFriend> friends = p.getFriendsReqested();
@@ -104,7 +105,7 @@ public class DefaultFriendService implements FriendService {
 //    @Override
 //    public List<FriendDTO> getInvitedAndAcceptedFriends(Long playerId) {
 //        List<FriendDTO> friendDTOs = new ArrayList<>();
-//        List<Player> invites = getAllFriendInvites(playerId);
+//        List<Player> invites = getAllFriendInvitesForPlayer(playerId);
 //        List<Player> friends = getFriends(playerId);
 //
 //        // TODO refactor this:
@@ -116,40 +117,61 @@ public class DefaultFriendService implements FriendService {
 
 
     @Override
-    public void inviteFriend(PlayerId playerId, PlayerId playerToFriendInvite) {
+    @Transactional(readOnly = false)
+    public void inviteFriend(PlayerId playerId, PlayerId playerIdToInvite) {
 
+        Player player = playerDao.getPlayerById(playerId);
+        Player friend = playerDao.getPlayerById(playerIdToInvite);
+
+        PlayerFriend playerFriend = new PlayerFriend();
+        playerFriend.setFriendStatus(FriendStatus.INVITED);
+        playerFriend.setPlayer(player);
+        playerFriend.setFriend(friend);
+        playerFriendDao.persistPlayerFriendEntity(playerFriend);
+
+        player.setFriends(new HashSet<>(Arrays.asList(playerFriend)));
+        playerDao.mergePlayer(player);
+        friend.setFriendRequests(new HashSet<>(Arrays.asList(playerFriend)));
+        playerDao.mergePlayer(friend);
     }
 
     @Override
-    public List<Player> getAllFriendInvites(PlayerId playerId) {
+    public List<FriendDTO> getAllFriendInvitesForPlayer(PlayerId playerId) {
         Player player = playerDao.getPlayerById(playerId);
-        return getFriendsBasedOnStatus(player.getFriends(), FriendStatus.INVITED);
-    }
+        List<FriendDTO> filteredFriends = new ArrayList<>();
 
-    @Override
-    public List<Player> getAllAcceptedFriends(PlayerId playerId) {
-        Player player = playerDao.getPlayerById(playerId);
-        return getFriendsBasedOnStatus(player.getFriends(), FriendStatus.ACCEPTED);
-    }
+        player.getFriendRequests().stream().filter(playerFriend -> playerFriend.getFriendStatus() == FriendStatus.INVITED).forEach(playerFriend -> {
+            Player playerWhoInvited = playerFriend.getPlayer();
+            FriendDTO friendDTO = new FriendDTO(playerWhoInvited.getPlayerId(), playerWhoInvited.getName());
+            filteredFriends.add(friendDTO);
+        });
 
-    private List<Player> getFriendsBasedOnStatus(Set<PlayerFriend> friends, FriendStatus status) {
-        List<Player> filteredFriends = new ArrayList<>();
-        for (PlayerFriend playerFriend : friends) {
-            if (playerFriend.getFriendStatus() == status) {
-                filteredFriends.add(playerFriend.getFriend());
-            }
-        }
         return filteredFriends;
     }
 
     @Override
-    public FriendDTO acceptFriendInvite(PlayerId playerId, Long friendId) {
-        return null;
+    public List<FriendDTO> getAllAcceptedFriendsForPlayer(PlayerId playerId) {
+        Player player = playerDao.getPlayerById(playerId);
+        List<FriendDTO> filteredFriends = new ArrayList<>();
+
+        player.getFriends().stream().filter(playerFriend -> playerFriend.getFriendStatus() == FriendStatus.ACCEPTED).forEach(playerFriend -> {
+            Player acceptedFriend = playerFriend.getFriend();
+            FriendDTO friendDTO = new FriendDTO(acceptedFriend.getPlayerId(), acceptedFriend.getName());
+            filteredFriends.add(friendDTO);
+        });
+        return filteredFriends;
     }
 
     @Override
-    public Boolean declineFriendInvite(PlayerId playerId, Long friendId) {
-        return null;
+    public void acceptFriendInvite(PlayerId playerId, PlayerId friendId) {
+
     }
+
+    @Override
+    public void declineFriendInvite(PlayerId playerId, PlayerId friendId) {
+
+    }
+
+
 
 }

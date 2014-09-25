@@ -12,7 +12,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.transaction.annotation.Transactional;
-import se.freddejones.game.yakutia.HibernateConfig;
+import se.freddejones.game.yakutia.HibernateConfigForTest;
 import se.freddejones.game.yakutia.TestDataSets;
 import se.freddejones.game.yakutia.entity.Player;
 import se.freddejones.game.yakutia.entity.PlayerFriend;
@@ -34,7 +34,7 @@ import static org.hamcrest.core.Is.is;
 public class PlayerFriendDaoTest {
 
     @Configuration
-    @Import(HibernateConfig.class)
+    @Import(HibernateConfigForTest.class)
     @ComponentScan(basePackages = "se.freddejones.game.yakutia.dao")
     static class TestConfiguration {}
 
@@ -58,10 +58,10 @@ public class PlayerFriendDaoTest {
         // given
         // test data loaded
         PlayerId playerId = new PlayerId(1L);
-        PlayerId playerIdFriend = new PlayerId(3L);
+        PlayerId friendId = new PlayerId(3L);
 
         // when
-        PlayerFriend playerFriend = playerFriendDao.getPlayerFriend(playerId, playerIdFriend);
+        PlayerFriend playerFriend = playerFriendDao.getPlayerFriend(playerId, friendId);
 
         // then
         assertThat(playerFriend.getPlayerFriendId(), is(notNullValue()));
@@ -85,23 +85,23 @@ public class PlayerFriendDaoTest {
         // given
         // test data loaded
         PlayerId playerId = new PlayerId(1L);
-        Player p = playerDao.getPlayerById(playerId);
-        PlayerId playerIdFriend = new PlayerId(4L);
-        Player f = playerDao.getPlayerById(playerIdFriend);
+        Player player = playerDao.getPlayerById(playerId);
+        PlayerId friendId = new PlayerId(4L);
+        Player friend = playerDao.getPlayerById(friendId);
 
         PlayerFriend playerFriend = new PlayerFriend();
-        playerFriend.setPlayer(p);
+        playerFriend.setPlayer(player);
         playerFriend.setFriendStatus(FriendStatus.INVITED);
-        playerFriend.setFriend(f);
+        playerFriend.setFriend(friend);
 
         // when
         PlayerFriendId playerFriendId = playerFriendDao.persistPlayerFriendEntity(playerFriend);
 
         // then
-        PlayerFriend persistedPlayerFriend = playerFriendDao.getPlayerFriend(playerId, playerIdFriend);
+        PlayerFriend persistedPlayerFriend = playerFriendDao.getPlayerFriend(playerId, friendId);
         assertThat(persistedPlayerFriend.getPlayerFriendId(), is(playerFriendId.getPlayerFriendId()));
         assertThat(persistedPlayerFriend.getPlayer().getPlayerId(), is(playerId.getPlayerId()));
-        assertThat(persistedPlayerFriend.getFriend().getPlayerId(), is(playerIdFriend.getPlayerId()));
+        assertThat(persistedPlayerFriend.getFriend().getPlayerId(), is(friend.getPlayerId()));
     }
 
     @Test

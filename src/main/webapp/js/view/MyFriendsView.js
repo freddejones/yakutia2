@@ -21,38 +21,44 @@ function(Backbone, _, MyFriendsTemplate, FriendsCollection, $Cookie) {
         initialize: function() {
             this.template = _.template(MyFriendsTemplate);
             this.model = new FriendCollectionsModel();
-            this.collection = new FriendsCollection();
+            this.tomte = new FriendsCollection();
+            this.invtesCollection = new FriendsCollection();
+            this.tomte.fetch({ url: '/friend/accepted/'+ $.cookie("yakutiaPlayerId")});
+            this.invtesCollection.fetch({ url: '/friend/invites/'+ $.cookie("yakutiaPlayerId")});
+            this.listenTo(this.tomte, "change reset add remove", this.updatesForModel);
+            this.listenTo(this.invtesCollection, "change reset add remove", this.updatesForModel);
             this.render();
-            this.listenTo(this.collection, "change reset add remove", this.render);
-            this.collection.fetch({ url: '/friend/accepted/'+ $.cookie("yakutiaPlayerId")});
-
-            this.listenTo(this.collection, "change reset add remove", this.updatesForModel);
         },
         updatesForModel: function() {
-            console.log(this.collection.size());
-            this.model.set("accepts", this.collection);
+            console.log(this.tomte.size());
+            this.model.set("accepts", this.tomte);
+            this.model.set("invites", this.invtesCollection);
+            this.render();
         },
         render: function() {
             this.$el.html(this.template);
-            this.collection.each(function(friendObject) {
-                this.doStuff(friendObject);
-            }, this);
-            return this;
-        },
-        doStuff: function(friendModel) {
-            if (friendModel.get('status') === 'INVITED') {
-                $('#friendInvites').append('<tr><td>'+friendModel.get('name')+'</td>'
-                    +'<td>'
-                    +'<button value="'+friendModel.get('id')+'" type="button" class="btn btn-primary AcceptFriend">Accept</button>'
-                    +'</td>'
-                    +'<td>'
-                    +'<button value="'+friendModel.get('id')+'" type="button" class="btn btn-primary DeclineFriend">Decline</button>'
-                    +'</td>'
-                    +'</tr>');
-            } else if (friendModel.get('status') === 'ACCEPTED') {
-                $('#friendsForReals').append('<tr><td>'+friendModel.get('name')+'</td>'
-                    +'</tr>');
+
+            var accepts = this.model.get("accepts");
+            if (accepts !== undefined) {
+                accepts.each(function(object) {
+                    $('#friendsForReals').append('<tr><td>'+object.get('name')+'</td></tr>');
+                });
             }
+
+            var invites = this.model.get("invites");
+            if (invites !== undefined) {
+                invites.each(function(object) {
+                    $('#friendInvites').append('<tr><td>'+object.get('name')+'</td>'
+                    +'<td>'
+                        +'<button value="'+object.get('id')+'" type="button" class="btn btn-primary AcceptFriend">Accept</button>'
+                    +'</td>'
+                    +'<td>'
+                        +'<button value="'+object.get('id')+'" type="button" class="btn btn-primary DeclineFriend">Decline</button>'
+                    +'</td>'
+                    +'</tr>');
+                });
+            }
+            return this;
         },
         acceptInvite: function(e) {
             var self = this;

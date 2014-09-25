@@ -18,7 +18,7 @@ import javax.sql.DataSource;
 @Configuration
 @EnableTransactionManagement
 @PropertySource("classpath:/${environment:dev}/db.properties")
-public class HibernateConfig {
+public class HibernateConfigForTest {
 
     @Autowired
     private Environment env;

@@ -14,7 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
-import se.freddejones.game.yakutia.HibernateConfig;
+import se.freddejones.game.yakutia.HibernateConfigForTest;
 
 import javax.annotation.Resource;
 
@@ -25,7 +25,7 @@ import javax.annotation.Resource;
 public abstract class UseCaseTemplate {
 
     @Configuration
-    @Import(HibernateConfig.class)
+    @Import(HibernateConfigForTest.class)
     @ComponentScan(basePackages = "se.freddejones.game.yakutia")
     static class TestConfiguration {}
 

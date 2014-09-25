@@ -15,7 +15,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
-import se.freddejones.game.yakutia.HibernateConfig;
+import se.freddejones.game.yakutia.HibernateConfigForTest;
 import se.freddejones.game.yakutia.TestDataSets;
 import se.freddejones.game.yakutia.application.BattleEngineCalculator;
 import se.freddejones.game.yakutia.application.Dice;
@@ -41,7 +41,7 @@ import static se.freddejones.game.yakutia.usecases.framework.UseCaseBoilerplate.
 public class CreatePlayerUseCaseTest {
 
     @Configuration
-    @Import(HibernateConfig.class)
+    @Import(HibernateConfigForTest.class)
     @ComponentScan(basePackageClasses = {PlayerController.class, PlayerService.class, PlayerDao.class, BattleEngineCalculator.class, Dice.class})
     static class TestConfiguration {}
 

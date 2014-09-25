@@ -4,6 +4,8 @@ import se.freddejones.game.yakutia.entity.PlayerFriend;
 import se.freddejones.game.yakutia.model.PlayerFriendId;
 import se.freddejones.game.yakutia.model.PlayerId;
 
+import java.util.List;
+
 public interface PlayerFriendDao {
 
     PlayerFriendId persistPlayerFriendEntity(PlayerFriend playerFriend);
@@ -11,4 +13,5 @@ public interface PlayerFriendDao {
     PlayerFriend getPlayerFriendById(PlayerFriendId playerFriendId);
     void mergePlayerFriendEntity(PlayerFriend playerFriend);
     void deletePlayerFriend(PlayerFriend playerFriend);
+    List<PlayerFriend> getAll();
 }

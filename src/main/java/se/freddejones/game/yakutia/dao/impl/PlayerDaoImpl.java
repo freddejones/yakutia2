@@ -67,4 +67,10 @@ public class PlayerDaoImpl implements PlayerDao {
         return new PlayerId(p.getPlayerId());
     }
 
+    @Override
+    public void mergePlayer(Player p) {
+        Session session = sessionFactory.getCurrentSession();
+        session.merge(p);
+    }
+
 }

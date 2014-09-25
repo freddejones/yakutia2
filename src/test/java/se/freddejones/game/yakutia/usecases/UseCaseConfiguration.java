@@ -10,7 +10,7 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-import se.freddejones.game.yakutia.HibernateConfig;
+import se.freddejones.game.yakutia.HibernateConfigForTest;
 import se.freddejones.game.yakutia.application.BattleEngineCalculator;
 import se.freddejones.game.yakutia.application.Dice;
 import se.freddejones.game.yakutia.controller.PlayerController;
@@ -24,7 +24,7 @@ import se.freddejones.game.yakutia.service.PlayerService;
 public class UseCaseConfiguration {
 
     @Configuration
-    @Import(HibernateConfig.class)
+    @Import(HibernateConfigForTest.class)
     @ComponentScan(basePackageClasses = {PlayerController.class, PlayerService.class, PlayerDao.class, BattleEngineCalculator.class, Dice.class})
     static class TestConfiguration {}
 

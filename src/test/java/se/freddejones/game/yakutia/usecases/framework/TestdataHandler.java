@@ -72,39 +72,4 @@ public class TestdataHandler {
                 resourceAccessor, database);
         liquibase.update(new Contexts("test"));
     }
-
-//    public static void loadDefaultTestdata() throws Exception {
-//
-//        if (database == null) {
-//            setupConnection();
-//        }
-//
-//        ResourceAccessor resourceAccessor = new FileSystemResourceAccessor();
-//        liquibase = new Liquibase("src/test/resources/db/testdata/player_playerfriend.xml",
-//                resourceAccessor, database);
-//        liquibase.update(new Contexts("test"));
-//    }
-
-    public static void loadPlayersOnly() throws Exception {
-
-        if (database == null) {
-            setupConnection();
-        }
-
-        ResourceAccessor resourceAccessor = new FileSystemResourceAccessor();
-        liquibase = new Liquibase("src/test/resources/db/testdata/players.xml",
-                resourceAccessor, database);
-        liquibase.update(new Contexts("test"));
-    }
-
-//    public static void loadCreateGame() throws Exception {
-//        if (database == null) {
-//            setupConnection();
-//        }
-//
-//        ResourceAccessor resourceAccessor = new FileSystemResourceAccessor();
-//        liquibase = new Liquibase("src/test/resources/db/testdata/game_gameplayers_players.xml",
-//                resourceAccessor, database);
-//        liquibase.update(new Contexts("test"));
-//    }
 }

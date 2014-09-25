@@ -14,5 +14,6 @@ public interface PlayerDao {
     public Player getPlayerById(PlayerId playerId);
     public Player getPlayerByEmail(String email);
     public PlayerId updatePlayerName(String name, PlayerId playerId);
+    public void mergePlayer(Player p);
 
 }

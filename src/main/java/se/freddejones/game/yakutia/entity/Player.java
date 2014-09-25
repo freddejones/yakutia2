@@ -1,7 +1,5 @@
 package se.freddejones.game.yakutia.entity;
 
-import se.freddejones.game.yakutia.model.dto.PlayerDTO;
-
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
@@ -37,7 +35,7 @@ public class Player implements Serializable {
     private Set<PlayerFriend> friends = new HashSet<>();
 
     @OneToMany(mappedBy = "friend", fetch = FetchType.EAGER)
-    private Set<PlayerFriend> friendsReqested = new HashSet<>();
+    private Set<PlayerFriend> friendRequests = new HashSet<>();
 
     public long getPlayerId() {
         return playerId;
@@ -79,11 +77,11 @@ public class Player implements Serializable {
         this.friends = friends;
     }
 
-    public Set<PlayerFriend> getFriendsReqested() {
-        return friendsReqested;
+    public Set<PlayerFriend> getFriendRequests() {
+        return friendRequests;
     }
 
-    public void setFriendsReqested(Set<PlayerFriend> friendsReqested) {
-        this.friendsReqested = friendsReqested;
+    public void setFriendRequests(Set<PlayerFriend> friendRequests) {
+        this.friendRequests = friendRequests;
     }
 }

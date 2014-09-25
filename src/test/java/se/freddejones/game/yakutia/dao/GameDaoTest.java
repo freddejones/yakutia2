@@ -11,7 +11,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.transaction.annotation.Transactional;
-import se.freddejones.game.yakutia.HibernateConfig;
+import se.freddejones.game.yakutia.HibernateConfigForTest;
 import se.freddejones.game.yakutia.TestDataSets;
 import se.freddejones.game.yakutia.dao.impl.GameDaoImpl;
 import se.freddejones.game.yakutia.entity.Game;
@@ -34,7 +34,7 @@ import static org.hamcrest.core.Is.is;
 public class GameDaoTest {
 
     @Configuration
-    @Import(HibernateConfig.class)
+    @Import(HibernateConfigForTest.class)
     @ComponentScan(basePackages = {"se.freddejones.game.yakutia.dao"})
     static class TestConfiguration {}
 

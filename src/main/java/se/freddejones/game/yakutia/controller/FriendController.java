@@ -1,18 +1,14 @@
 package se.freddejones.game.yakutia.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import se.freddejones.game.yakutia.entity.Player;
 import se.freddejones.game.yakutia.entity.PlayerFriend;
+import se.freddejones.game.yakutia.model.FriendInviteDTO;
 import se.freddejones.game.yakutia.model.PlayerId;
 import se.freddejones.game.yakutia.model.dto.FriendDTO;
-import se.freddejones.game.yakutia.model.statuses.FriendStatus;
-import se.freddejones.game.yakutia.model.translators.PlayerToFriendMapper;
 import se.freddejones.game.yakutia.service.FriendService;
-import se.freddejones.game.yakutia.service.PlayerService;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -21,32 +17,28 @@ import java.util.List;
 public class FriendController {
 
     private final FriendService friendService;
-    private final PlayerService playerService;
-    private final PlayerToFriendMapper playerToFriendMapper;
 
     @Autowired
-    public FriendController(FriendService friendService, PlayerService playerService) {
+    public FriendController(FriendService friendService) {
         this.friendService = friendService;
-        this.playerService = playerService;
-        this.playerToFriendMapper = new PlayerToFriendMapper();
     }
 
     @RequestMapping(value  = "/invite", method = RequestMethod.POST)
     @ResponseBody
-    public void inviteFriend(@RequestBody final FriendDTO friendDTO) {
-//        friendService.inviteFriend(friendDTO.getPlayerId(), friendDTO.getFriendId());
+    public void inviteFriend(@RequestBody final FriendInviteDTO friendInviteDTO) {
+        friendService.inviteFriend(new PlayerId(friendInviteDTO.getPlayerId()), new PlayerId(friendInviteDTO.getFriendId()));
     }
 
     @RequestMapping(value = "/accept", method = RequestMethod.POST)
     @ResponseBody
-    public FriendDTO acceptFriendInvite(@RequestBody final FriendDTO friendDTO) {
+    public FriendInviteDTO acceptFriendInvite(@RequestBody final FriendInviteDTO friendInviteDTO) {
 //        return friendService.acceptFriendInvite(friendDTO.getPlayerId(), friendDTO.getFriendId());
         return null;
     }
 
     @RequestMapping(value = "/decline", method = RequestMethod.POST)
     @ResponseBody
-    public Boolean declineFriendInvite(@RequestBody final FriendDTO friendDTO) {
+    public Boolean declineFriendInvite(@RequestBody final FriendInviteDTO friendInviteDTO) {
 //        return friendService.declineFriendInvite(friendDTO.getPlayerId(), friendDTO.getFriendId());
         return null;
     }
@@ -54,22 +46,18 @@ public class FriendController {
     @RequestMapping(value = "/accepted/{playerId}", method = RequestMethod.GET)
     @ResponseBody
     public List<FriendDTO> getAllAcceptedFriends(@PathVariable("playerId") Long playerid) {
-        List<Player> acceptedFriends = friendService.getAllAcceptedFriends(new PlayerId(playerid));
-        PlayerToFriendMapper playerToFriendMapper = new PlayerToFriendMapper();
-        return playerToFriendMapper.map(acceptedFriends);
+        return friendService.getAllAcceptedFriendsForPlayer(new PlayerId(playerid));
     }
-//
-//    @RequestMapping(value = "/get/all/{playerId}", method = RequestMethod.GET)
-//    @ResponseBody
-//    public List<FriendDTO> getAllFriends(@PathVariable("playerId") Long playerid) {
-//        List<Player> invitedAndAcceptedFriends = friendService.getInvitedAndAcceptedFriends(new PlayerId(playerid));
-//        PlayerToFriendMapper playerToFriendMapper = new PlayerToFriendMapper();
-//        return playerToFriendMapper.map(invitedAndAcceptedFriends);
-//    }
+
+    @RequestMapping(value = "/invites/{playerId}", method = RequestMethod.GET)
+    @ResponseBody
+    public List<FriendDTO> getAllFriends(@PathVariable("playerId") Long playerid) {
+        return friendService.getAllFriendInvitesForPlayer(new PlayerId(playerid));
+    }
 
     @RequestMapping(value  = "/non/friends/{playerId}", method = RequestMethod.GET)
     @ResponseBody
-    public List<FriendDTO> getNonFriends(@PathVariable("playerId") Long playerid) {
+    public List<FriendInviteDTO> getNonFriends(@PathVariable("playerId") Long playerid) {
 
 //        // TODO Extract this to the service bean, pretty please
 //        List<Player> players = playerService.getAllPlayers();
@@ -94,7 +82,7 @@ public class FriendController {
 
     private boolean isFriendOrInvited(Player currentPlayer, Player p) {
         return friendCheckerIterator(currentPlayer.getFriends().iterator(), p.getPlayerId())
-                || friendInviteCheckerIterator(currentPlayer.getFriendsReqested().iterator(), p.getPlayerId());
+                || friendInviteCheckerIterator(currentPlayer.getFriendRequests().iterator(), p.getPlayerId());
 
     }
 

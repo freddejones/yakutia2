@@ -1,35 +1,28 @@
 package se.freddejones.game.yakutia.model.dto;
 
+public class FriendDTO {
 
-import se.freddejones.game.yakutia.model.statuses.FriendStatus;
+    private long playerId;
+    private String name;
 
-public class FriendDTO extends PlayerDTO {
+    public FriendDTO(long playerId, String name) {
+        this.playerId = playerId;
+        this.name = name;
+    }
 
-    private Long playerId;
-    private Long friendId;
-    private FriendStatus friendStatus;
-
-    public Long getPlayerId() {
+    public long getPlayerId() {
         return playerId;
     }
 
-    public void setPlayerId(Long playerId) {
+    public void setPlayerId(long playerId) {
         this.playerId = playerId;
     }
 
-    public Long getFriendId() {
-        return friendId;
+    public String getName() {
+        return name;
     }
 
-    public void setFriendId(Long friendId) {
-        this.friendId = friendId;
-    }
-
-    public FriendStatus getFriendStatus() {
-        return friendStatus;
-    }
-
-    public void setFriendStatus(FriendStatus friendStatus) {
-        this.friendStatus = friendStatus;
+    public void setName(String name) {
+        this.name = name;
     }
 }
