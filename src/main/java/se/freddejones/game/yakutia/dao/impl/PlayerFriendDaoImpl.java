@@ -30,6 +30,7 @@ public class PlayerFriendDaoImpl implements PlayerFriendDao {
         return new PlayerFriendId(playerFriend.getPlayerFriendId());
     }
 
+    // TODO remove this
     public List<PlayerFriend> getAll() {
         return sessionFactory.getCurrentSession()
                 .createQuery("SELECT pf from PlayerFriend pf").list();

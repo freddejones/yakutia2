@@ -31,9 +31,8 @@ public class FriendController {
 
     @RequestMapping(value = "/accept", method = RequestMethod.POST)
     @ResponseBody
-    public FriendInviteDTO acceptFriendInvite(@RequestBody final FriendInviteDTO friendInviteDTO) {
-//        return friendService.acceptFriendInvite(friendDTO.getPlayerId(), friendDTO.getFriendId());
-        return null;
+    public void acceptFriendInvite(@RequestBody final FriendInviteDTO friendInviteDTO) {    // TODO change nameof FriendInviteDTO
+        friendService.acceptFriendInvite(new PlayerId(friendInviteDTO.getPlayerId()), new PlayerId(friendInviteDTO.getFriendId()));
     }
 
     @RequestMapping(value = "/decline", method = RequestMethod.POST)

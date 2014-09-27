@@ -8,9 +8,8 @@ function(Backbone) {
         parse: function(response){
             for (var i=0; i<response.length; i++) {
                 this.push(new FriendModel({
-                    id: response[i].friendId,
-                    name: response[i].playerName,
-                    status: response[i].friendStatus
+                    id: response[i].playerId,
+                    name: response[i].name
                 }));
             }
             return this.models;

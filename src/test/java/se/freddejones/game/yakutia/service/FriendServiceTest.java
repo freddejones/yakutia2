@@ -82,6 +82,20 @@ public class FriendServiceTest {
         verify(playerDaoMock, times(2)).mergePlayer(any(Player.class));
     }
 
+    @Test
+    public void testShouldAcceptFriendInvite() {
+        when(playerDaoMock.getPlayerById(any(PlayerId.class))).thenReturn(mock(Player.class));
+        when(playerFriendDaoMock.getPlayerFriend(any(PlayerId.class), any(PlayerId.class))).thenReturn(mock(PlayerFriend.class));
+
+        // when
+        friendService.acceptFriendInvite(new PlayerId(1L), new PlayerId(2L));
+
+        verify(playerDaoMock, times(2)).getPlayerById(any(PlayerId.class));
+        verify(playerFriendDaoMock, times(1)).getPlayerFriend(any(PlayerId.class), any(PlayerId.class));
+        verify(playerFriendDaoMock, times(1)).persistPlayerFriendEntity(any(PlayerFriend.class));
+        verify(playerFriendDaoMock, times(1)).mergePlayerFriendEntity(any(PlayerFriend.class));
+    }
+
     private Set<PlayerFriend> getPlayerFriends(FriendStatus status) {
         Set<PlayerFriend> playerFriends = new HashSet<>();
         playerFriends.add(createPlayerFriend(status));
@@ -96,60 +110,4 @@ public class FriendServiceTest {
         return playerFriend;
     }
 
-    //    @Test
-//    public void testGetFriendThatHaveStatusInvited() throws Exception {
-//        // given
-//        when(playerDaoMock.getPlayerById(PLAYER_ID)).thenReturn(createNewPlayer());
-//
-//        // when
-//        List<Player> invitedFriends = friendService.getAllFriendInvitesForPlayer(PLAYER_ID);
-//
-//        // then
-//        assertThat(invitedFriends.size(), is(1));
-//    }
-//
-//    @Test
-//    public void testGetFriendThatHaveStatusAccepted() throws Exception {
-//        // given
-//        when(playerDaoMock.getPlayerById(PLAYER_ID)).thenReturn(createNewPlayer());
-//
-//        // when
-//        List<Player> acceptedFriends = friendService.getFriends(PLAYER_ID);
-//
-//        // then
-//        assertThat(acceptedFriends.size(), is(1));
-//    }
-//
-//    @Test
-//    public void testReturnFalseForNonSuccessFriendDecline() throws Exception {
-//        // given
-//        PlayerFriend pf = new PlayerFriend();
-//        pf.setPlayerFriendId(66L);
-//        when(playerFriendDaoMock.getPlayerFriend(FRIEND_ID, PLAYER_ID)).thenReturn(pf).thenReturn(pf);
-//
-//        // when
-//        boolean returnValue = friendService.declineFriendInvite(PLAYER_ID, FRIEND_ID);
-//
-//        // then
-//        assertThat(returnValue, is(false));
-//    }
-
-    private Player createNewPlayer() {
-
-        PlayerFriend playerFriend = new PlayerFriend();
-        playerFriend.setFriendStatus(FriendStatus.INVITED);
-        Set<PlayerFriend> friendInvites = new HashSet<>();
-        friendInvites.add(playerFriend);
-
-        PlayerFriend friend = new PlayerFriend();
-        friend.setFriendStatus(FriendStatus.ACCEPTED);
-        Set<PlayerFriend> friendsAccepted = new HashSet<>();
-        friendsAccepted.add(friend);
-
-        Player p = new Player();
-        p.setPlayerId(1L);
-        p.setFriendRequests(friendInvites);
-        p.setFriends(friendsAccepted);
-        return p;
-    }
 }

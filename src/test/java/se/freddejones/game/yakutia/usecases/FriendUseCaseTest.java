@@ -142,37 +142,9 @@ public class FriendUseCaseTest {
                 .andExpect(status().isOk());
     }
 
-    @Ignore
+
     @Test
-    public void UCF_02_InviteAndListNonFriends() throws Exception {
-        // given
-        TestdataHandler.loadChangeSet(TestDataSets.PLAYERS_ONLY_XML);
-        final byte[] request = convertDtoToByteArray(createFriendDTO());
-
-        // when
-        mockMvc.perform(post("/friend/invite/")
-                .content(request)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                // then
-                .andExpect(status().isOk());
-
-        mockMvc.perform((get("/friend/non/friends/1")))
-                .andDo(print())
-                // then
-                .andExpect(jsonPath("$", hasSize(3)))
-                .andExpect(jsonPath("$[*].playerId", containsInAnyOrder(3, 4, 5)));
-
-        mockMvc.perform((get("/friend/non/friends/2")))
-                .andDo(print())
-                        // then
-                .andExpect(jsonPath("$", hasSize(3)))
-                .andExpect(jsonPath("$[*].playerId", containsInAnyOrder(3,4,5)));
-    }
-
-    @Ignore
-    @Test
-    public void UC_F_03_AcceptFriendAndFetch() throws Exception {
+    public void UCF_05_AcceptFriendAndFetch() throws Exception {
         // given
         TestdataHandler.loadChangeSet(TestDataSets.PLAYER_PLAYERFRIEND_XML);
         FriendInviteDTO friendInviteDTO = new FriendInviteDTO();
@@ -186,23 +158,13 @@ public class FriendUseCaseTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 // then
-                .andExpect(content().string("{\"playerName\":\"fidde_filth\",\"email\":null,\"playerId\":null,\"friendId\":1,\"friendStatus\":\"ACCEPTED\"}"));
+                .andExpect(status().isOk());
 
         // when
-        mockMvc.perform(get("/friend/get/all/1"))
+        mockMvc.perform(get("/friend/accepted/1"))
                 .andDo(print())
                 // then
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[*].friendId", containsInAnyOrder(3, 2)))
-                .andExpect(jsonPath("$[*].playerId", containsInAnyOrder(1, 1)));
-
-        // when
-        mockMvc.perform(get("/friend/get/all/3"))
-                .andDo(print())
-                // then
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[*].friendId", containsInAnyOrder(1)))
-                .andExpect(jsonPath("$[*].playerId", containsInAnyOrder(3)));
+                .andExpect(jsonPath("$[*].playerId", containsInAnyOrder(3, 2)));
     }
 
     @Ignore
@@ -234,6 +196,34 @@ public class FriendUseCaseTest {
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[*].friendId", containsInAnyOrder(2)))
                 .andExpect(jsonPath("$[*].playerId", containsInAnyOrder(1)));
+    }
+
+    @Ignore
+    @Test
+    public void UCF_02_InviteAndListNonFriends() throws Exception {
+        // given
+        TestdataHandler.loadChangeSet(TestDataSets.PLAYERS_ONLY_XML);
+        final byte[] request = convertDtoToByteArray(createFriendDTO());
+
+        // when
+        mockMvc.perform(post("/friend/invite/")
+                .content(request)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                        // then
+                .andExpect(status().isOk());
+
+        mockMvc.perform((get("/friend/non/friends/1")))
+                .andDo(print())
+                        // then
+                .andExpect(jsonPath("$", hasSize(3)))
+                .andExpect(jsonPath("$[*].playerId", containsInAnyOrder(3, 4, 5)));
+
+        mockMvc.perform((get("/friend/non/friends/2")))
+                .andDo(print())
+                        // then
+                .andExpect(jsonPath("$", hasSize(3)))
+                .andExpect(jsonPath("$[*].playerId", containsInAnyOrder(3,4,5)));
     }
 
     @Ignore
